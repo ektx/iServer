@@ -1,3 +1,9 @@
+/*
+	iServer v.0.1
+	-----------------------------------------------
+
+*/
+
 var http = require('http');
 var express = require('express');
 var url = require('url');
@@ -28,14 +34,38 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // router
 app.get('/', function(req, res) {
-	res.render('demo');
-})
+	res.render('demo.ejs');
+});
+
+app.get('*', function(req, res, next) {
+	var _path = req.path;
+
+	console.log('ip:' + req.ip);
+	console.log(req + ' ' + req.path);
+
+	console.log(req.is('application/octet-stream'));
+
+	var _filePath;
+	if (_path.split('.')[1] === 'html') {
+		_filePath = _path.split('.')[0].replace('/', '');
+	} else {
+		_filePath = _path;
+	}
+	console.log(req.method + '-' + req.path);
+
+	res.render(_filePath, function(err) {
+		console.log(err)
+	});
+
+	next();
+});
 
 
 app.listen(8000, function() {
 	console.log('Welcome to Dev');
-	console.log('Server runing at localhost:8000 - ');
-	console.log('    __  __  _  _    __      __\n    ||\\//|  \\\\//   /  \\\\   (/_\n    || v |   ||    \\__//   __/)')
+	console.log('Server runing at localhost:8000');
+	console.log('===============================');
+	console.log('iServer')
 	console.log('===============================');
 	console.log('本地请访问: localhost:8000 \n         或 '+ addresses[1]+':8000');
 	console.log('内网请访问: '+ addresses[0]+':8000');
