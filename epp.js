@@ -1,5 +1,5 @@
 /*
-	iServer v.0.0.3
+	iServer v.0.1.0
 	-----------------------------------------------
 	支持页面生成
 	使用方法: localhost:8000/:make
@@ -12,11 +12,12 @@ var path = require('path')
 var os = require('os')
 
 var generate = require('./lib/generate.js')
+var ifiles = require('./lib/files.js')
 
 // 服务器网络信息
 var ifaces = os.networkInterfaces()
 var addresses = []
-var port = 9000;
+var port = 8000;
 
 for (var i in ifaces) {
 	for (var ii in ifaces[i]) {
@@ -30,10 +31,14 @@ for (var i in ifaces) {
 
 var app = express()
 
-app.set('views', __dirname + '/public')
+app.set('views', __dirname)
 app.set('view engine', 'ejs')
+app.use(express.static(__dirname))
 
-app.use(express.static(path.join(__dirname, 'public')))
+
+app.get('/favicon.ico', function(res, req, next) {
+	return
+})
 
 app.get('*', function(req, res, next) {
 	var _path = req.path
@@ -49,10 +54,16 @@ app.get('*', function(req, res, next) {
 	} else {
 		_filePath = _path
 	}
+
 	console.log(req.method + '-' + _filePath)
 
 	// 默认请求 demo
-	if (_filePath === '/') _filePath = 'demo'
+	if (_filePath === '/') {
+		var pathname = decodeURI(url.parse(req.url).pathname)
+
+		ifiles.serverStatic(req, res, pathname, __dirname);
+		return
+	}
 
 	if (_filePath === '/:make') {
 		var copyPath = __dirname + '/html'
