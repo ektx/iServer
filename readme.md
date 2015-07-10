@@ -1,7 +1,11 @@
-### iServer
-iojs server  
-v 0.0.2  
-用于前端开发,可以使用 ejs 来创建文件模板,从而减轻生成重复页面时,添加相同的内容时的重复功作.  
-包含 GenneratePages 功能  
+## iServer
+
+###iojs server  
+
+v 0.0.3  
+1.支持在服务状态下生成静态文件,不用重新开启新服务  
+2.修改了服务器对错误页面的处理能力  
+3.优化部分bug  
+
 
 查看 [GenneratePages](https://github.com/ektx/Node/tree/master/GenneratePages)
