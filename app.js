@@ -1,6 +1,6 @@
 /*
 	app Dev所用的Node服务器
-	v 2.2
+	v 2.3
 	---------------------------------------------------
 	1.支持显示服务IP，方便使用
 	zwl	 <myos.me>  2015-4-29
@@ -38,13 +38,15 @@ var i = 0;
 */
 function send404(res) {
 	console.log(fileLocation + ' 404!');
-	res.writeHead(404, {'Content-Type': 'text/html'});
-	res.end('<h3>404 Error!</h3>');	
+	res.writeHead(404, {'Content-Type': 'text/html; charset="utf8"'});
+	res.write('<h3>404 Error!</h3>');
+	res.write('<a href="/">返回首页</a>');
+	res.end();	
 }
 
 function send505(res) {
 	console.log(fileLocation + ' 505 Server Error!');
-	res.writeHead(505, {'Content-Type': 'text/html'});
+	res.writeHead(505, {'Content-Type': 'text/html; charset="utf8"'});
 	res.write('<h3>505 Server Error!</h2>')	
 }
 
@@ -54,11 +56,14 @@ function showDirecotry(req, res, filePath) {
 	fs.readdir(filePath, function(err, files) {
 		var html = getHTML(files, filePath);
 
-		res.writeHead(200, {'Content-Type': 'text/html'});
+		res.writeHead(200, {'Content-Type': 'text/html;charset="utf8"'});
 		res.write(html);
+		res.write('<h5>共有 '+files.length+' 个文件！');
+		res.write('</html>')
 		res.end();
 	})
 }
+
 
 /*
 	得到返回HTML
@@ -77,7 +82,7 @@ function getHTML(files, filePath) {
 	}
 
 	if (filePath.lastIndexOf('/') < 0) {
-		filePath += '\\';
+		// filePath += '\\';
 	}
 	console.log(filePath);
 
@@ -99,11 +104,14 @@ function getHTML(files, filePath) {
 		var filelink = filePath.replace(__dirname,'').split('\\');
 		var aFileLink = '';
 		filelink.pop();
-		filelink.splice(0,2);
+		filelink.shift();
 
-		body.push("<li><a href='/'>/</a>");
+		body.push('<li><a class="nav-tags" href="/">.</a>');
+
 		filelink.forEach(function(val, i) {
-			aFileLink += "<a href=\"";
+			if (i == 0) return;
+			
+			aFileLink += '<a class="nav-tags" href="';
 			for (var j = 0; j < filelink.length - i - 1; j++) {
 				aFileLink += '../';
 			}
@@ -133,7 +141,7 @@ function getHTML(files, filePath) {
 					aImg = "file";
 				}
 				// console.log(val);
-				body.push('<li><img class="osFileIco" src="../lib/img/'+aImg+'.png"/><a href="'+aURL+'">'+val+'</a></li>');
+				body.push('<li><img class="osFileIco" src="/lib/img/'+aImg+'.png"/><a href="'+aURL+'">'+val+'</a></li>');
 			}
 		});
 	} else {
@@ -142,10 +150,8 @@ function getHTML(files, filePath) {
 
 
 	body.push("</ul>");
-	body.push("<h5>共有 "+(body.length - 16)+" 个文件！");
 	body.push("</body>");
 
-	console.log(body.length - 16);
 	return body.join('');
 }
 
@@ -220,9 +226,9 @@ http.createServer(function(req, res) {
 
 }).listen(8888, function() {
 	console.log('Welcome to Dev');
-	console.log('Server runing at localhost:8888 - ');
+	console.log('====================================');
 	console.log('    __  __  _  _    __      __\n    ||\\//|  \\\\//   /  \\\\   (/_\n    || v |   ||    \\__//   __/)')
-	console.log('===============================');
+	console.log('====================================');
 	console.log('本地请访问: localhost:8888 \n         或 '+ addresses[1]+':8888');
 	console.log('内网请访问: '+ addresses[0]+':8888');
 
