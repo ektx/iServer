@@ -9,13 +9,14 @@ v0.1.2
 
 文件服务器开启方式:  
 ```javascript
-ifileServer = true
+// epp.js
+var ifileServer = true
 ```
 
 单网站服务器形式:
 ```javascript
 // epp.js
-ifileServer = false
+var ifileServer = false
 ```
 
 
