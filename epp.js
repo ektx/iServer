@@ -1,5 +1,5 @@
 /*
-	iServer v.0.1.0
+	iServer v.0.1.2
 	-----------------------------------------------
 	支持页面生成
 	使用方法: localhost:8000/:make
@@ -17,6 +17,11 @@ var ifiles = require('./lib/files.js')
 // 服务器网络信息
 var ifaces = os.networkInterfaces()
 var addresses = []
+
+// 默认设置
+// 是否需要文件服务器 true 是; false 否
+var ifileServer = true;
+// 默认端口设置
 var port = 8000;
 
 for (var i in ifaces) {
@@ -30,10 +35,11 @@ for (var i in ifaces) {
 };
 
 var app = express()
+var root = !ifileServer ? __dirname + '/public' : __dirname;
 
-app.set('views', __dirname)
+app.set('views', root)
 app.set('view engine', 'ejs')
-app.use(express.static(__dirname))
+app.use(express.static(root))
 
 
 app.get('/favicon.ico', function(res, req, next) {
@@ -59,17 +65,24 @@ app.get('*', function(req, res, next) {
 
 	// 默认请求 demo
 	if (_filePath === '/') {
-		var pathname = decodeURI(url.parse(req.url).pathname)
 
-		ifiles.serverStatic(req, res, pathname, __dirname);
+		if (!ifileServer) {
+			res.render('demo');
+		} else {
+			var pathname = decodeURI(url.parse(req.url).pathname)
+			
+			ifiles.serverStatic(req, res, pathname, __dirname);
+		}
+
+
 		return
 	}
 
 	if (_filePath === '/:make') {
 		var copyPath = __dirname + '/html'
-		var root = __dirname + '/public'
+		var root = __dirname + '/Public'
 
-		generate.generate(root, copyPath, app);
+		generate.generate(root, copyPath, app, ifileServer);
 		res.send('<h2>生成页面完成,请查看html文件夹</h2>')
 		return;
 	}
