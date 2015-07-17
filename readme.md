@@ -2,10 +2,31 @@
 
 ###iojs server  
 
-v0.1.2  
-1.新加支持文件服务器与单网站功能  
-2.修复自成页面的bug  
-3.部分细节优化  
+v.0.2.2  
+1.增强服务器支持中文名的页面工能  
+2.使用服务输出提醒功能  
+3.修复首次读取ejs时,控制台报错问题   
+
+使用方式:
+```javascript
+iojs epp.js
+```
+
+防止 ejs 模板下载设置:
+```javascript
+// server-static index.js 目录下相应位置添加:
+	return function serveStatic(req, res, next) {
+		if (req.method !== 'GET' && req.method !== 'HEAD') {
+			return next()
+		}
+		// 添加
+		if (req.path.indexOf('.ejs') > 0) {
+			//如果是ejs的文件转化成html文件
+			res.redirect(req.path.replace('.ejs', '.html'))
+			return // 防止ejs错误输出
+		}
+	// ...
+```
 
 文件服务器开启方式:  
 ```javascript
