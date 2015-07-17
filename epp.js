@@ -1,5 +1,5 @@
 /*
-	iServer v.0.1.2
+	iServer v.0.2.x
 	-----------------------------------------------
 	支持页面生成
 	使用方法: localhost:8000/:make
@@ -47,12 +47,10 @@ app.get('/favicon.ico', function(res, req, next) {
 })
 
 app.get('*', function(req, res, next) {
-	var _path = req.path
+	var _path = decodeURI(req.path)
 
-	console.log('ip:' + req.ip)
-	console.log(req.method + ' ' + req.path)
-
-	// console.log(req.headers.accept)
+	console.log('用户IP:' + req.ip)
+	console.log(req.method + ' ' + _path)
 
 	var _filePath;
 	if (_path.split('.')[1] == 'html') {
@@ -61,7 +59,7 @@ app.get('*', function(req, res, next) {
 		_filePath = _path
 	}
 
-	console.log(req.method + '-' + _filePath)
+	// console.log(req.method + '-' + _filePath)
 
 	// 默认请求 demo
 	if (_filePath === '/') {
@@ -94,7 +92,7 @@ app.get('*', function(req, res, next) {
 			console.log(err)
 			res.status(404).send('<h2>404</h2>')
 		} else {
-			res.end(html)
+			res.send(html)
 		}
 
 	})
