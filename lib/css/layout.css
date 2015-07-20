@@ -21,3 +21,17 @@ a {
 ul {
 	padding: 0;
 }
+
+.nav-tags {
+	font-size: 12px;
+	color: #0095dd;
+}
+.nav-tags:hover {
+	text-decoration: underline;
+}
+.nav-tags:after {
+	display: inline-block;
+	content: '/';
+	color: #ccc;
+	margin-left: 5px;
+}
