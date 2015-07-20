@@ -1,11 +1,12 @@
 /*
-	iServer v.0.2.x
+	iServer v.0.3.x
 	-----------------------------------------------
 	支持页面生成
 	使用方法: localhost:8000/:make
 */
 
 var http = require('http')
+var fs = require('fs')
 var express = require('express')
 var url = require('url')
 var path = require('path')
@@ -41,8 +42,8 @@ app.set('views', root)
 app.set('view engine', 'ejs')
 app.use(express.static(root))
 
-
-app.get('/favicon.ico', function(res, req, next) {
+app.get('/favicon.ico', function(req, res, next) {
+	res.end();
 	return
 })
 
@@ -59,23 +60,7 @@ app.get('*', function(req, res, next) {
 		_filePath = _path
 	}
 
-	// console.log(req.method + '-' + _filePath)
-
-	// 默认请求 demo
-	if (_filePath === '/') {
-
-		if (!ifileServer) {
-			res.render('demo');
-		} else {
-			var pathname = decodeURI(url.parse(req.url).pathname)
-			
-			ifiles.serverStatic(req, res, pathname, __dirname);
-		}
-
-
-		return
-	}
-
+	// 生成静态页面
 	if (_filePath === '/:make') {
 		var copyPath = __dirname + '/html'
 		var root = __dirname + '/Public'
@@ -85,8 +70,57 @@ app.get('*', function(req, res, next) {
 		return;
 	}
 
+	console.log(req.method + '-' + _filePath)
+
+	if (isDir(_path)) {
+		if (_filePath === '/') {
+
+			if (ifileServer) {
+				res.redirect('/public/')
+			} else {
+				res.render('demo')
+			}
+
+		} else {
+
+			if (ifileServer) {
+
+				var pathname = decodeURI(url.parse(req.url).pathname)
+				ifiles.serverStatic(req, res, pathname, __dirname)
+
+			} else {
+				res.redirect('/')
+			}
+		}
+		return
+	} else {
+		renderFile(res, _filePath)
+	}
+
+});
+
+
+function isDir(_path) {
+	__path = path.join(__dirname, _path)
+
+	if (fs.existsSync(__path)) {
+
+		var isDir = fs.statSync(__path).isDirectory(_path)
+		
+		console.log(isDir? '是目录':'非目录文件')
+
+		return isDir;
+	} else {
+		return false
+	}
+}
+
+
+function renderFile(res, _path) {
+	console.log('renderFile():' + _path)
+
 	// 错误处理
-	res.render(_filePath, function(err, html) {
+	res.render(_path, function(err, html) {
 		// 如果不存在此页面
 		if (err) {
 			console.log(err)
@@ -96,9 +130,7 @@ app.get('*', function(req, res, next) {
 		}
 
 	})
-
-	next()
-});
+}
 
 
 app.listen(port, function() {
