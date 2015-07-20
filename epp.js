@@ -99,7 +99,9 @@ app.get('*', function(req, res, next) {
 
 });
 
-
+/*
+	判断路径是否为目录
+*/
 function isDir(_path) {
 	__path = path.join(__dirname, _path)
 
@@ -116,6 +118,9 @@ function isDir(_path) {
 }
 
 
+/*
+	解析文件
+*/
 function renderFile(res, _path) {
 	console.log('renderFile():' + _path)
 
@@ -133,7 +138,20 @@ function renderFile(res, _path) {
 }
 
 
+// 创建指定文件夹
+function createPublic(file) {
+	var publicF = __dirname + file;
+
+	fs.exists(publicF, function(exists) {
+		if (!exists) {
+			fs.mkdir(publicF)
+		}
+	})
+}
+
 app.listen(port, function() {
+	createPublic('public')
+
 	console.log('Server runing at localhost:'+ port)
 	console.log('===============================')
 	console.log('iServer')
