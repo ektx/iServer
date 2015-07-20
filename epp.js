@@ -21,7 +21,7 @@ var addresses = []
 
 // 默认设置
 // 是否需要文件服务器 true 是; false 否
-var ifileServer = true;
+var ifileServer = false;
 // 默认端口设置
 var port = 8000;
 
@@ -158,4 +158,10 @@ app.listen(port, function() {
 	console.log('===============================')
 	console.log('本地请访问: http://localhost:'+ port +' \n         或 http://'+ addresses[1]+':'+ port)
 	console.log('内网请访问: http://'+ addresses[0]+':'+port)
+})
+
+process.stdin.resume();
+process.on('SIGINT', function() {
+	console.log('Bye!')
+	process.exit(0)
 })
