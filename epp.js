@@ -33,8 +33,8 @@ function commandStr(str) {
 // 是否需要文件服务器 true 是; false 否
 var ifileServer = commandStr('fileServer') ? commandStr('fileServer')[0].replace(/--\w+?:/, '') == 'true'? true: false : false;
 // 默认端口设置
-var _$_port = commandStr('port')[0].replace(/--\w+?:/, '')
-var port = commandStr('port') ? _$_port.length > 0 ? _$_port : 8000 : 8000;
+var _$_port = commandStr('port')
+var port = commandStr('port') ? _$_port[0].replace(/--\w+?:/, '').length > 0 ? _$_port : 8000 : 8000;
 
 
 for (var i in ifaces) {
