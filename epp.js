@@ -1,5 +1,5 @@
 /*
-	iServer v.0.3.x
+	iServer v.0.4.x
 	-----------------------------------------------
 	支持页面生成
 	使用方法: localhost:8000/:make
@@ -19,11 +19,15 @@ var ifiles = require('./lib/files.js')
 var ifaces = os.networkInterfaces()
 var addresses = []
 
+
+var args = process.argv.splice(2)
+var argServer = args.length > 0 ? args.join().match(/--fileServer:\w+(?=,?)/i)[0] : undefined
 // 默认设置
 // 是否需要文件服务器 true 是; false 否
-var ifileServer = false;
+var ifileServer = argServer ? argServer.replace(/--\w+?:/, '') == 'true'? true: false : false;
 // 默认端口设置
 var port = 8000;
+
 
 for (var i in ifaces) {
 	for (var ii in ifaces[i]) {
