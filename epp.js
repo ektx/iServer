@@ -1,4 +1,4 @@
-/*
+﻿/*
 	iServer v.0.4.x
 	-----------------------------------------------
 	支持页面生成
@@ -21,12 +21,20 @@ var addresses = []
 
 
 var args = process.argv.splice(2)
-var argServer = args.length > 0 ? args.join().match(/--fileServer:\w+(?=,?)/i)[0] : undefined
+
+function commandStr(str) {
+	var regExp = new RegExp('--'+str+':\\w+(?=,?)', 'i')
+	var argServer = args.length > 0 ? args.join().match(regExp) : undefined
+
+	return argServer	
+}
+
 // 默认设置
 // 是否需要文件服务器 true 是; false 否
-var ifileServer = argServer ? argServer.replace(/--\w+?:/, '') == 'true'? true: false : false;
+var ifileServer = commandStr('fileServer') ? commandStr('fileServer')[0].replace(/--\w+?:/, '') == 'true'? true: false : false;
 // 默认端口设置
-var port = 8000;
+var _$_port = commandStr('port')[0].replace(/--\w+?:/, '')
+var port = commandStr('port') ? _$_port.length > 0 ? _$_port : 8000 : 8000;
 
 
 for (var i in ifaces) {

@@ -2,13 +2,19 @@
 
 ###iojs server  
 
-#### v0.4.0
-`epp.js`
+#### `epp.js` v0.4.3
+
 * 新加--fileServer:[true|false]命令行功能开启服务器的文件模拟还是网站模拟
-* 增加退出服务问候
-`app.js`
+* 新加--port:[端口,如:8000] 指定端口
+* 增加退出服务问候  
+* 文件服务处理统一用使用 `lib\files.js` 文件 
+
+#### `app.js` v0.3.0 
 * 修正ejs模板文件下载问题
-* 增加退出服务问候   
+* 增加退出服务问候  
+* 文件服务处理统一用使用 `lib\files.js` 文件  
+* 优化了服务器大小   
+   
 
 
 使用方式:
@@ -22,6 +28,12 @@ node epp.js
 iojs epp.js --fileServer:true
 // or
 node epp.js --fileServer:true
+
+// 指定端口
+iojs epp.js --port:3000
+
+// 指定端口与打开文件服务器
+iojs epp.js --fileserver:true --port:3000
 ```
 
 防止 ejs 模板下载设置:
