@@ -1,6 +1,6 @@
 /*
 	app Dev所用的Node服务器
-	v 2.4
+	v 0.2.5
 	---------------------------------------------------
 	1.支持显示服务IP，方便使用
 	zwl	 <myos.me>  2015-4-29
@@ -222,12 +222,17 @@ http.createServer(function(req, res) {
 	// 对url转译
 	i++;
 	console.log(i + ': '+ pathname);
+
+	if (path.extname(pathname) == '.ejs') {
+		res.end()
+		return;
+	}
+
 	serverStatic(req, res, pathname);
 
 }).listen(8888, function() {
-	console.log('Welcome to Dev');
 	console.log('====================================');
-	console.log('    __  __  _  _    __      __\n    ||\\//|  \\\\//   /  \\\\   (/_\n    || v |   ||    \\__//   __/)')
+	console.log('Welcome to Dev');
 	console.log('====================================');
 	console.log('本地请访问: localhost:8888 \n         或 '+ addresses[1]+':8888');
 	console.log('内网请访问: '+ addresses[0]+':8888');
@@ -235,3 +240,8 @@ http.createServer(function(req, res) {
 
 });
 
+process.stdin.resume();
+process.on('SIGINT', function() {
+	console.log('Bye!')
+	process.exit(0)
+})
