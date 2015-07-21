@@ -3,8 +3,13 @@
 ###iojs server  
 
 #### v0.4.0
+```epp.js```
 * 新加--fileServer:[true|false]命令行功能开启服务器的文件模拟还是网站模拟
 * 增加退出服务问候
+```app.js```
+* 修正ejs模板文件下载问题
+* 增加退出服务问候   
+
 
 使用方式:
 ```javascript
