@@ -45,7 +45,7 @@ iojs epp.js --f:true --p:3000
   		  比如,可以把html的头部菜单单独存放在此,主页面里引用它
 
 
-- 防止 ejs 模板下载设置:
+## 防止 ejs 模板下载设置:
 ```js
 // server-static index.js 目录下相应位置添加:
 	return function serveStatic(req, res, next) {
@@ -61,7 +61,7 @@ iojs epp.js --f:true --p:3000
 	// ...
 ```
 
-### 相关资料  
+## 相关资料  
 查看 [GenneratePages](https://github.com/ektx/Node/tree/master/GenneratePages)  
 查看 [Express](http://expressjs.com/)  
 查看 [Ejs](http://ejs.co/)  
