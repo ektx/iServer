@@ -56,3 +56,4 @@ iojs epp.js --fileserver:true --port:3000
 查看 [GenneratePages](https://github.com/ektx/Node/tree/master/GenneratePages)  
 查看 [Express](http://expressjs.com/)  
 查看 [Ejs](http://ejs.co/)  
+查看 [Jade](http://jade-lang.com/)  
