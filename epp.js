@@ -14,28 +14,17 @@ var os = require('os')
 
 var generate = require('./lib/generate.js')
 var ifiles = require('./lib/files.js')
+var comStr = require('./lib/commandStr')
 
 // 服务器网络信息
 var ifaces = os.networkInterfaces()
 var addresses = []
 
-
-var args = process.argv.splice(2)
-
-function commandStr(str) {
-	var regExp = new RegExp('--'+str+':\\w+(?=,?)', 'i')
-	var argServer = args.length > 0 ? args.join().match(regExp) : undefined
-
-	return argServer	
-}
-
 // 默认设置
 // 是否需要文件服务器 true 是; false 否
-var ifileServer = commandStr('fileServer') ? commandStr('fileServer')[0].replace(/--\w+?:/, '') == 'true'? true: false : false;
+var ifileServer = comStr.commandStr(['fileServer','f'], false);
 // 默认端口设置
-var _$_port = commandStr('port')
-var port = commandStr('port') ? _$_port[0].replace(/--\w+?:/, '').length > 0 ? _$_port : 8000 : 8000;
-
+var port = comStr.commandStr(['port','p'], 8000);
 
 for (var i in ifaces) {
 	for (var ii in ifaces[i]) {
@@ -51,6 +40,7 @@ var app = express()
 var root = !ifileServer ? __dirname + '/public' : __dirname;
 
 app.set('views', root)
+// app.set('view engine', 'jade')
 app.set('view engine', 'ejs')
 app.use(express.static(root))
 
@@ -167,6 +157,8 @@ app.listen(port, function() {
 	console.log('Server runing at localhost:'+ port)
 	console.log('===============================')
 	console.log('iServer')
+	console.log('File Server               '+ifileServer)
+	console.log('Port                      '+port)
 	console.log('===============================')
 	console.log('本地请访问: http://localhost:'+ port +' \n         或 http://'+ addresses[1]+':'+ port)
 	console.log('内网请访问: http://'+ addresses[0]+':'+port)
