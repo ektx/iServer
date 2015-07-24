@@ -1,8 +1,7 @@
 ﻿/*
 	iServer v.0.5.1
 	-----------------------------------------------
-	支持页面生成
-	使用方法: localhost:8000/:make
+
 */
 
 var http = require('http')
@@ -111,8 +110,6 @@ function isDir(_path) {
 
 		var isDir = fs.statSync(__path).isDirectory(_path)
 		
-		console.log(isDir? '是目录':'非目录文件')
-
 		return isDir;
 	} else {
 		return false
@@ -156,11 +153,10 @@ app.listen(port, function() {
 
 	console.log('Server runing at localhost:'+ port)
 	console.log('===============================')
-	console.log('iServer')
+	console.log('iServer                 v 0.5.1\n-------------------------------')
 	console.log('File Server               '+ifileServer)
 	console.log('Port                      '+port)
-	console.log('===============================')
-	console.log('本地请访问: http://localhost:'+ port +' \n         或 http://'+ addresses[1]+':'+ port)
+	console.log('===============================\n本地请访问: http://localhost:'+ port +' \n         或 http://'+ addresses[1]+':'+ port)
 	console.log('内网请访问: http://'+ addresses[0]+':'+port)
 })
 
