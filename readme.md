@@ -2,7 +2,8 @@
 
 iojs server  
 - 是什么?  
-本地前端开发迷你服务器  
+本地前端开发迷你服务器,主要用于可以用模版的方式来开发你的静态页面  
+
 - 功能  
 用于开发预览网页,支持同网络下,多终端上页面查看  
 用于生成模板合成的静态页面  
@@ -10,12 +11,11 @@ iojs server
 查看访问者IP    
 
 ## 更新日志  
-#### `epp.js` `v0.5.1`
-
-* 优化命令行功能
-* 增加对`jada`有支持
-* 优化了控制台的输出
-* 增加了部分演示页面在`public`下
+#### `epp.js` `v0.6.0`
+* 增加服务器对`ejs`与`jade`模板混用支持
+* 修改`express`中的`serve-static`对`jade`模版支持
+* 增加了 `npm start` 来启动服务    
+* 优化服务  
 
 #### `app.js` `v0.3.0` 
 * 修正ejs模板文件下载问题
@@ -53,19 +53,21 @@ iojs epp.js --f:true --p:3000
   		  比如,可以把html的头部菜单单独存放在此,主页面里引用它
 
 
-## 防止 ejs 模板下载设置:
 ```js
 // server-static index.js 目录下相应位置添加:
 	return function serveStatic(req, res, next) {
 		if (req.method !== 'GET' && req.method !== 'HEAD') {
 			return next()
 		}
-		// 添加
 		if (req.path.indexOf('.ejs') > 0) {
 			//如果是ejs的文件转化成html文件
 			res.redirect(req.path.replace('.ejs', '.html'))
-			return // 防止ejs错误输出
-		}
+			return
+		} else if (req.path.indexOf('.jade') > 0) {
+			// 防止发送jade模版文件流
+			res.redirect(req.path.replace('.jade', '_jade'))
+			return
+    }
 	// ...
 ```
 

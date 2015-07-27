@@ -1,3 +1,9 @@
+#### `epp.js` `v0.6.0`
+* 增加服务器对`ejs`与`jade`模板混用支持
+* 修改`express`中的`serve-static`对`jade`模版支持
+* 增加了 `npm start` 来启动服务    
+* 优化服务 
+
 #### `epp.js` v0.5.1
 
 * 优化命令行功能

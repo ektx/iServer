@@ -1,12 +1,14 @@
 ﻿/*
-	iServer v.0.5.1
+	iServer
 	-----------------------------------------------
 
 */
 
+'use strict';
+
+var express = require('express')
 var http = require('http')
 var fs = require('fs')
-var express = require('express')
 var url = require('url')
 var path = require('path')
 var os = require('os')
@@ -41,14 +43,16 @@ var root = !ifileServer ? __dirname + '/public' : __dirname;
 app.set('views', root)
 // app.set('view engine', 'jade')
 app.set('view engine', 'ejs')
+// app.engine('.jade', require('jade').__express)
 app.use(express.static(root))
 
-app.get('/favicon.ico', function(req, res, next) {
+app.get('/favicon.ico', function(req, res) {
 	res.end();
 	return
 })
 
-app.get('*', function(req, res, next) {
+
+app.get('*', function(req, res) {
 	var _path = decodeURI(req.path)
 
 	console.log('用户IP:' + req.ip)
@@ -92,10 +96,24 @@ app.get('*', function(req, res, next) {
 			} else {
 				res.redirect('/')
 			}
+
 		}
 		return
 	} else {
-		renderFile(res, _filePath)
+
+		var lastWord = _filePath.lastIndexOf('_jade')
+
+		if (lastWord > 0 && lastWord + 5 == _filePath.length) {
+			
+			_filePath = _filePath.replace(/(_jade)$/g, '.jade').substr(1)
+			
+			res.render(_filePath)
+
+		} else {
+			
+			renderFile(res, _filePath)
+		}
+
 	}
 
 });
@@ -104,7 +122,7 @@ app.get('*', function(req, res, next) {
 	判断路径是否为目录
 */
 function isDir(_path) {
-	__path = path.join(__dirname, _path)
+	var __path = path.join(__dirname, _path)
 
 	if (fs.existsSync(__path)) {
 
@@ -121,7 +139,7 @@ function isDir(_path) {
 	解析文件
 */
 function renderFile(res, _path) {
-	console.log('renderFile():' + _path)
+
 
 	// 错误处理
 	res.render(_path, function(err, html) {
@@ -148,16 +166,24 @@ function createPublic(file) {
 	})
 }
 
+function serverStart(version) {
+	var html = '==================================\n';
+
+	html += 'iServer                   v '+ version;
+	html += '\n----------------------------------';
+	html += '\nFile Server               '+ifileServer;
+	html += '\nPort                      '+port;
+	html += '\n----------------------------------\n本地请访问: http://localhost:'+ port +' \n        或: http://'+ addresses[1]+':'+ port;
+	html += '\n内网请访问: http://'+ addresses[0]+':'+port;
+	html += '\n=================================='
+
+	console.log(html)
+}
+
 app.listen(port, function() {
 	createPublic('public')
 
-	console.log('Server runing at localhost:'+ port)
-	console.log('===============================')
-	console.log('iServer                 v 0.5.1\n-------------------------------')
-	console.log('File Server               '+ifileServer)
-	console.log('Port                      '+port)
-	console.log('===============================\n本地请访问: http://localhost:'+ port +' \n         或 http://'+ addresses[1]+':'+ port)
-	console.log('内网请访问: http://'+ addresses[0]+':'+port)
+	serverStart('0.6.0')
 })
 
 process.stdin.resume();

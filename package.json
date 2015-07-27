@@ -1,0 +1,19 @@
+{
+	"name": "iServer",
+	"description": "io.js/node.js server",
+	"keywords": [
+		"web", "iojs/node.js"
+	],
+	"version": "0.6.0",
+	"author": {
+		"name": "zwl",
+		"email": "530675800@qq.com",
+		"url": "http://myos.me"
+	},
+	"scripts": {
+		"start": "iojs epp.js"
+	},
+	"engines": {
+		"node": ">=0.10.0"
+	}
+}
