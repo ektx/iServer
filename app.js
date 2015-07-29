@@ -31,13 +31,12 @@ for (var i in ifaces) {
 
 var root = __dirname;
 var fileLocation;
-var i = 0;
 
 http.createServer(function(req, res) {
 	var pathname = decodeURI(url.parse(req.url).pathname);
 	// 对url转译
-	i++;
-	console.log(i + ': '+ pathname);
+
+	console.log(req.method + ' ' + pathname)
 
 	if (path.extname(pathname) == '.ejs') {
 		res.end()
