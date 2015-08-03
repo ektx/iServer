@@ -11,11 +11,12 @@ iojs server
 查看访问者IP    
 
 ## 更新日志  
-#### `epp.js` `v0.6.0`
-* 增加服务器对`ejs`与`jade`模板混用支持
-* 修改`express`中的`serve-static`对`jade`模版支持
-* 增加了 `npm start` 来启动服务    
-* 优化服务  
+#### `epp.js` `v0.7.1`
+* 修复生成开发环境文件夹错误问题  
+* 新加启动服务器时在浏览器中打开网页  
+* 新加支持 `jade` 文件的页面生成  
+* 优化代码处理  
+
 
 #### `app.js` `v0.3.0` 
 * 修正ejs模板文件下载问题
@@ -26,7 +27,7 @@ iojs server
 
 
 ## 使用方式:  
-首先您要保证你的电脑上安装了[IOJS](https://iojs.org/en/index.html)或[node.js](https://nodejs.org/)  
+首先您要保证你的电脑上安装了 [IOJS](https://iojs.org/en/index.html) 或 [node.js](https://nodejs.org/)  
 
 - 启动方式:
 ```sh
@@ -43,6 +44,13 @@ iojs epp.js --port:3000
 iojs epp.js --fileserver:true --port:3000
 // 简约方式
 iojs epp.js --f:true --p:3000
+
+// 启动服务器时,自动打开浏览器
+// --open: [browsername] 以默认浏览器打开
+// --o: [browsername]    以默认浏览器打开
+
+// browsername : [true | iexplore | chrome | firefox | opera ]
+iojs epp.js --open:true
 ```
 
 ## 文件夹说明  
@@ -72,6 +80,8 @@ iojs epp.js --f:true --p:3000
 ```
 
 ## 相关资料  
+查看 [node.js](https://nodejs.org/)  
+查看 [IOJS](https://iojs.org/en/index.html)  
 查看 [GenneratePages](https://github.com/ektx/Node/tree/master/GenneratePages)  
 查看 [Express](http://expressjs.com/)  
 查看 [Ejs](http://ejs.co/)  
