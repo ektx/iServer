@@ -46,10 +46,10 @@ iojs epp.js --fileserver:true --port:3000
 iojs epp.js --f:true --p:3000
 
 // 启动服务器时,自动打开浏览器
-// --open: [browsername] 以默认浏览器打开
-// --o: [browsername]    以默认浏览器打开
+// --open: true 以默认浏览器打开
+// --o: true    以默认浏览器打开
 
-// browsername : [true | iexplore | chrome | firefox | opera ]
+// --open : [true | iexplore | chrome | firefox | opera ]
 iojs epp.js --open:true
 ```
 
