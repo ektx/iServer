@@ -16,6 +16,8 @@ var os = require('os')
 var generate = require('./lib/generate.js')
 var ifiles = require('./lib/files.js')
 var comStr = require('./lib/commandStr')
+var open = require('./lib/open')
+
 
 // 服务器网络信息
 var ifaces = os.networkInterfaces()
@@ -26,6 +28,8 @@ var addresses = []
 var ifileServer = comStr.commandStr(['fileServer','f'], false);
 // 默认端口设置
 var port = comStr.commandStr(['port','p'], 8000);
+var browserName = 'Off';
+
 
 for (var i in ifaces) {
 	for (var ii in ifaces[i]) {
@@ -36,6 +40,22 @@ for (var i in ifaces) {
 	}
 
 };
+
+function openBrowser() {
+	var openAppName = comStr.commandStr(['open','o'], '');
+	if (openAppName) {
+		var url = 'http://'+addresses[0]+':'+port;
+
+		openAppName = openAppName == 'true' ? '' : openAppName;
+		
+		open(url, openAppName)
+
+		browserName = openAppName == '' ? 'default': openAppName;
+	}
+
+	return browserName;
+}
+
 
 var app = express()
 var root = !ifileServer ? __dirname + '/public' : __dirname;
@@ -157,8 +177,7 @@ function renderFile(res, _path) {
 
 // 创建指定文件夹
 function createPublic(file) {
-	var publicF = __dirname + file;
-
+	var publicF = path.join(__dirname, file);
 	fs.exists(publicF, function(exists) {
 		if (!exists) {
 			fs.mkdir(publicF)
@@ -173,6 +192,7 @@ function serverStart(version) {
 	html += '\n----------------------------------';
 	html += '\nFile Server               '+ifileServer;
 	html += '\nPort                      '+port;
+	html += '\nBrowser                   '+browserName;
 	html += '\n----------------------------------\n本地请访问: http://localhost:'+ port +' \n        或: http://'+ addresses[1]+':'+ port;
 	html += '\n内网请访问: http://'+ addresses[0]+':'+port;
 	html += '\n=================================='
@@ -183,7 +203,10 @@ function serverStart(version) {
 app.listen(port, function() {
 	createPublic('public')
 
-	serverStart('0.6.0')
+	openBrowser()
+
+	serverStart('0.7.1')
+
 })
 
 process.stdin.resume();
