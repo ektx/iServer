@@ -205,7 +205,7 @@ app.listen(port, function() {
 
 	openBrowser()
 
-	serverStart('0.7.1')
+	serverStart('0.7.2')
 
 })
 

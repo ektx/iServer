@@ -11,11 +11,12 @@ iojs server
 查看访问者IP    
 
 ## 更新日志  
-#### `epp.js` `v0.7.1`
+#### `epp.js` `v0.7.2`
 * 修复生成开发环境文件夹错误问题  
 * 新加启动服务器时在浏览器中打开网页  
 * 新加支持 `jade` 文件的页面生成  
 * 优化代码处理  
+* 增加 `npm satrt` 打开文件服务器与打开浏览器  
 
 
 #### `app.js` `v0.3.0` 
@@ -44,6 +45,7 @@ iojs epp.js --port:3000
 iojs epp.js --fileserver:true --port:3000
 // 简约方式
 iojs epp.js --f:true --p:3000
+npm start // 效果如上
 
 // 启动服务器时,自动打开浏览器
 // --open: true 以默认浏览器打开
