@@ -2,11 +2,11 @@
 	"name": "iServer",
 	"description": "io.js/node.js server",
 	"keywords": [
-		"web", "iojs/node.js"
+		"web", "iojs/node.js","前端开发工具"
 	],
-	"version": "0.7.1",
+	"version": "0.7.4",
 	"author": {
-		"name": "zwl",
+		"name": "ektx",
 		"email": "530675800@qq.com",
 		"url": "http://myos.me"
 	},
@@ -14,6 +14,7 @@
 		"start": "iojs epp.js --f:true --o:true"
 	},
 	"engines": {
-		"node": ">=0.10.0"
+		"node": ">=0.10.0",
+		"iojs": ">=2.x"
 	}
 }
