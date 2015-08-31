@@ -13,7 +13,7 @@ var url = require('url')
 var path = require('path')
 var os = require('os')
 
-var generate = require('./lib/generate2.js')
+var generate = require('./lib/generate.js')
 var ifiles = require('./lib/files.js')
 var comStr = require('./lib/commandStr')
 var open = require('./lib/open')
