@@ -90,7 +90,7 @@ app.get('*', function(req, res) {
 		var copyPath = __dirname + '/html'
 		var root = __dirname + '/Public'
 
-		generate.generate(root, copyPath, app, ifileServer);
+		generate.generate(root, copyPath);
 		res.send('<h2>生成页面完成,请查看html文件夹</h2>')
 		return;
 	}
@@ -205,7 +205,7 @@ app.listen(port, function() {
 
 	openBrowser()
 
-	serverStart('0.7.2')
+	serverStart('0.8.0')
 
 })
 
