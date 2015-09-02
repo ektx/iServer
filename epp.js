@@ -86,9 +86,18 @@ app.get('*', function(req, res) {
 	}
 
 	// 生成静态页面
-	if (_filePath === '/:make') {
-		var copyPath = __dirname + '/html'
-		var root = __dirname + '/Public'
+	console.log('_filePath:'+_filePath)
+	if (/\/:make/.test(_filePath)) {
+
+		var _dir = path.dirname(_filePath)
+
+		console.log('dirname:'+_dir)
+
+		var root = __dirname + _dir
+		var copyPath = __dirname + _dir.replace(/public/i, 'html')
+
+		console.log('now url:'+root)
+		console.log('copy url:'+copyPath)
 
 		generate.generate(root, copyPath);
 		res.send('<h2>生成页面完成,请查看html文件夹</h2>')
@@ -205,7 +214,7 @@ app.listen(port, function() {
 
 	openBrowser()
 
-	serverStart('0.8.0')
+	serverStart('0.8.5')
 
 })
 
