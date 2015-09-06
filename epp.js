@@ -86,7 +86,6 @@ app.get('*', function(req, res) {
 	}
 
 	// 生成静态页面
-	console.log('_filePath:'+_filePath)
 	if (/\/:make/.test(_filePath)) {
 
 		var _dir = path.dirname(_filePath)
