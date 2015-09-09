@@ -213,7 +213,7 @@ app.listen(port, function() {
 
 	openBrowser()
 
-	serverStart('0.8.5')
+	serverStart('0.8.7')
 
 })
 
