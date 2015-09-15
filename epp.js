@@ -13,15 +13,12 @@ var url = require('url')
 var path = require('path')
 var os = require('os')
 
-var generate = require('./lib/generate.js')
-var ifiles = require('./lib/files.js')
+var generate = require('./lib/generate')
+var ifiles = require('./lib/files')
 var comStr = require('./lib/commandStr')
 var open = require('./lib/open')
 
 
-// 服务器网络信息
-var ifaces = os.networkInterfaces()
-var addresses = []
 
 // 默认设置
 // 是否需要文件服务器 true 是; false 否
@@ -30,6 +27,9 @@ var ifileServer = comStr.commandStr(['fileServer','f'], false);
 var port = comStr.commandStr(['port','p'], 8000);
 var browserName = 'Off';
 
+// 服务器网络信息
+var ifaces = os.networkInterfaces()
+var addresses = []
 
 for (var i in ifaces) {
 	for (var ii in ifaces[i]) {
@@ -71,11 +71,11 @@ app.get('/favicon.ico', function(req, res) {
 	return
 })
 
-
 app.get('*', function(req, res) {
 	var _path = decodeURI(req.path)
 
-	console.log('用户IP:' + req.ip)
+	console.log('用户IP: ' + req.ip.replace(/:|f/g, ''))
+
 	console.log(req.method + ' ' + _path)
 
 	var _filePath;
@@ -119,7 +119,7 @@ app.get('*', function(req, res) {
 			if (ifileServer) {
 
 				var pathname = decodeURI(url.parse(req.url).pathname)
-				ifiles.serverStatic(req, res, pathname, __dirname)
+				ifiles.serverStatic(req, res, pathname, __dirname, addresses)
 
 			} else {
 				res.redirect('/')
@@ -213,7 +213,7 @@ app.listen(port, function() {
 
 	openBrowser()
 
-	serverStart('0.8.7')
+	serverStart('0.8.5')
 
 })
 
