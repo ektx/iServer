@@ -193,10 +193,10 @@ function createPublic(file) {
 	})
 }
 
-function serverStart(version) {
+function serverStart() {
 	var html = '==================================\n';
 
-	html += 'iServer                   v '+ version;
+	html += 'iServer                   ';
 	html += '\n----------------------------------';
 	html += '\nFile Server               '+ifileServer;
 	html += '\nPort                      '+port;
@@ -213,7 +213,7 @@ app.listen(port, function() {
 
 	openBrowser()
 
-	serverStart('0.8.5')
+	serverStart()
 
 })
 
