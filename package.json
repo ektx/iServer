@@ -11,7 +11,8 @@
 		"url": "http://myos.me"
 	},
 	"scripts": {
-		"start": "iojs epp.js --f:true --o:true"
+		"start": "iojs epp.js --f:true --o:true",
+		"open" : "iojs epp.js --o:true"
 	},
 	"engines": {
 		"node": ">=0.10.0",
