@@ -48,12 +48,12 @@ function getHTML(files, filePath) {
 		// body.push("<li><a href='..'>上一级</a></li>");
 
 		// 创建目录面包屑
-		var filelink = filePath.replace(__dirname,'').split('\\');
+		var _this_dir = __dirname.replace(/bin/, 'public');
+
+		var filelink = path.normalize(filePath).replace(_this_dir,'').split('\\');
 		var aFileLink = '';
 
 		filelink.pop();
-		filelink.pop();
-		filelink.shift();
 
 		body.push('<li><a class="nav-tags" href="/">.</a>');
 
