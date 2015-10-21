@@ -1,21 +1,20 @@
 {
-	"name": "iServer",
-	"description": "io.js/node.js server",
-	"keywords": [
-		"web", "iojs/node.js","前端开发工具"
-	],
-	"version": "0.9.3",
-	"author": {
-		"name": "ektx",
-		"email": "530675800@qq.com",
-		"url": "http://myos.me"
-	},
-	"scripts": {
-		"start": "iojs epp.js --f:true --o:true",
-		"open" : "iojs epp.js --o:true"
-	},
-	"engines": {
-		"node": ">=0.10.0",
-		"iojs": ">=2.x"
-	}
+  "name": "iServer",
+  "version": "1.0.0",
+  "description": "iojs/nodejs server",
+  "main": "epp.js",
+  "scripts": {},
+  "keywords": [
+    "io.js",
+    "server",
+    "node.js"
+  ],
+  "author": "ektx",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "ejs": "^2.3.4",
+    "express": "^4.13.3",
+    "jade": "^1.11.0",
+    "mime": "^1.3.4"
+  }
 }

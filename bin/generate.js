@@ -13,8 +13,9 @@ var fs = require('fs');
 var ejs = require('ejs');
 var jade = require('jade');
 
+var delaySend;
 
-exports.generate = function(root, copyPath) {
+exports.generate = function(res, root, copyPath) {
 	console.log('--------- GENERATE ---------')
 	copyPath = path.normalize(copyPath);
 	var delayPath = [];
@@ -38,7 +39,7 @@ exports.generate = function(root, copyPath) {
 			
 					i= 0;
 
-					readFile(root, copyPath)
+					readFile(root, copyPath, res)
 			
 					return;
 				}
@@ -60,7 +61,7 @@ exports.generate = function(root, copyPath) {
 		} else {
 			i= 0;
 
-			readFile(root, copyPath)
+			readFile(root, copyPath, res)
 		};
 
 		console.log('Root Path: '+ root)
@@ -68,7 +69,10 @@ exports.generate = function(root, copyPath) {
 
 }
 
-function readFile(path, cPath) {
+function readFile(path, cPath, res) {
+
+	var r = res;
+
 	fs.readdir(path, function(err, files) {
 		if (err) throw err;
 		
@@ -78,13 +82,16 @@ function readFile(path, cPath) {
 		for (var i = 0; i < fileLen; i++) {
 			var _src = path + '/' + files[i]
 			var _crc = cPath + '/' + files[i]
-			checkFile(files[i], _src, _crc)
+			checkFile(files[i], _src, _crc, res)
 		}
+
+
 	})
+
 }
 
 
-function checkFile(fileName, _url, _curl) {
+function checkFile(fileName, _url, _curl, res) {
 	fs.stat(_url, function(err, st) {
 		if (err) throw err;
 
@@ -93,8 +100,6 @@ function checkFile(fileName, _url, _curl) {
 			var _fpath = '';
 
 			if (path.extname(fileName) == '.ejs' || path.extname(fileName) == '.jade') {
-
-				console.log(_curl)
 
 				_fpath = getHTMLPath(fileName, _url, _curl);
 				
@@ -115,6 +120,7 @@ function checkFile(fileName, _url, _curl) {
 					makeFiles(fileName, _url, _curl)
 				} else {
 					console.log(' x - ' + fileName)
+
 				}
 			})
 
@@ -182,6 +188,7 @@ function makeFiles(fileName, _url, _curl) {
 		var writeS = fs.createWriteStream(_curl)
 		readS.pipe(writeS)
 	}
+
 }
 
 function createFolders(src, curl) {
