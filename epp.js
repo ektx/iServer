@@ -11,214 +11,47 @@ var http = require('http')
 var fs = require('fs')
 var url = require('url')
 var path = require('path')
-var os = require('os')
 
-var generate = require('./lib/generate')
-var ifiles = require('./lib/files')
-var comStr = require('./lib/commandStr')
-var open = require('./lib/open')
+var colors = require('colors')
 
-
+var server = require('./bin/server')
+var ifiles = require('./bin/ifiles')
+var getIPs = require('./bin/getIPs')
 
 // 默认设置
-// 是否需要文件服务器 true 是; false 否
-var ifileServer = comStr.commandStr(['fileServer','f'], false);
 // 默认端口设置
-var port = comStr.commandStr(['port','p'], 8000);
-var browserName = 'Off';
-
-// 服务器网络信息
-var ifaces = os.networkInterfaces()
-var addresses = []
-
-for (var i in ifaces) {
-	for (var ii in ifaces[i]) {
-		var address = ifaces[i][ii];
-		if (address.family === 'IPv4') {
-			addresses.push(address.address);
-		}
-	}
-
-};
-
-function openBrowser() {
-	var openAppName = comStr.commandStr(['open','o'], '');
-	if (openAppName) {
-		var url = 'http://'+addresses[0]+':'+port;
-
-		openAppName = openAppName == 'true' ? '' : openAppName;
-		
-		open(url, openAppName)
-
-		browserName = openAppName == '' ? 'default': openAppName;
-	}
-
-	return browserName;
-}
-
-
+var port = 8001;
 var app = express()
-var root = !ifileServer ? __dirname + '/public' : __dirname;
+var root = __dirname;
 
 app.set('views', root)
-// app.set('view engine', 'jade')
 app.set('view engine', 'ejs')
-// app.engine('.jade', require('jade').__express)
-app.use(express.static(root))
 
 app.get('/favicon.ico', function(req, res) {
 	res.end();
 	return
 })
 
+
 app.get('*', function(req, res) {
-	var _path = decodeURI(req.path)
+	var _css = '/bin/css/layout.css';
+	var _fIco = '/bin/img/file.png';
+	var _dIco = '/bin/img/folder.png';
+	var _path = req.path;
 
-	console.log('用户IP: ' + req.ip.replace(/:|f/g, ''))
-
-	console.log(req.method + ' ' + _path)
-
-	var _filePath;
-	if (_path.split('.')[1] == 'html') {
-		_filePath = _path.split('.')[0].replace('/', '')
-	} else {
-		_filePath = _path
+	if (!(_path == _css || _path == _fIco || _path == _dIco)) {
+		console.log(req.method.bgGreen +' - ' +decodeURI(_path))
 	}
 
-	// 生成静态页面
-	if (/\/:make/.test(_filePath)) {
-
-		var _dir = path.dirname(_filePath)
-
-		console.log('dirname:'+_dir)
-
-		var root = __dirname + _dir
-		var copyPath = __dirname + _dir.replace(/public/i, 'html')
-
-		console.log('now url:'+root)
-		console.log('copy url:'+copyPath)
-
-		generate.generate(root, copyPath);
-		res.send('<h2>生成页面完成,请查看html文件夹</h2>')
-		return;
-	}
-
-	console.log(req.method + '-' + _filePath)
-
-	if (isDir(_path)) {
-		if (_filePath === '/') {
-
-			if (ifileServer) {
-				res.redirect('/public/')
-			} else {
-				res.render('demo')
-			}
-
-		} else {
-
-			if (ifileServer) {
-
-				var pathname = decodeURI(url.parse(req.url).pathname)
-				ifiles.serverStatic(req, res, pathname, __dirname, addresses)
-
-			} else {
-				res.redirect('/')
-			}
-
-		}
-		return
-	} else {
-
-		var lastWord = _filePath.lastIndexOf('_jade')
-
-		if (lastWord > 0 && lastWord + 5 == _filePath.length) {
-			
-			_filePath = _filePath.replace(/(_jade)$/g, '.jade').substr(1)
-			
-			res.render(_filePath)
-
-		} else {
-			
-			renderFile(res, _filePath)
-		}
-
-	}
-
-});
-
-/*
-	判断路径是否为目录
-*/
-function isDir(_path) {
-	var __path = path.join(__dirname, _path)
-
-	if (fs.existsSync(__path)) {
-
-		var isDir = fs.statSync(__path).isDirectory(_path)
-		
-		return isDir;
-	} else {
-		return false
-	}
-}
-
-
-/*
-	解析文件
-*/
-function renderFile(res, _path) {
-
-
-	// 错误处理
-	res.render(_path, function(err, html) {
-		// 如果不存在此页面
-		if (err) {
-			console.log(err)
-			res.status(404).send('<h2>404</h2>')
-		} else {
-			res.send(html)
-		}
-
-	})
-}
-
-
-// 创建指定文件夹
-function createPublic(file) {
-	var publicF = path.join(__dirname, file);
-	fs.exists(publicF, function(exists) {
-		if (!exists) {
-			fs.mkdir(publicF)
-		}
-	})
-}
-
-function serverStart() {
-	var html = '==================================\n';
-
-	html += 'iServer                   ';
-	html += '\n----------------------------------';
-	html += '\nFile Server               '+ifileServer;
-	html += '\nPort                      '+port;
-	html += '\nBrowser                   '+browserName;
-	html += '\n----------------------------------\n本地请访问: http://localhost:'+ port +' \n        或: http://'+ addresses[1]+':'+ port;
-	html += '\n内网请访问: http://'+ addresses[0]+':'+port;
-	html += '\n=================================='
-
-	console.log(html)
-}
-
-app.listen(port, function() {
-	createPublic('public')
-
-	openBrowser()
-
-	serverStart()
-
+	server.serverStatic(req, res, root, _path);
 })
 
-process.stdin.resume();
-process.on('SIGINT', function() {
-	console.log('Bye!')
-	process.exit(0)
+
+app.listen(port, function() {
+	console.log('-------------------------\nWelcome to iServer 1.0\n-------------------------'.rainbow)
+
+	var zip = getIPs().IPv4;
+	for (var i in zip) {
+		console.log(zip[i] + ':' + port)
+	}
 })
