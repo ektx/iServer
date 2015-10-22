@@ -7,9 +7,14 @@
   "keywords": [
     "io.js",
     "server",
-    "node.js"
+    "node.js",
+    "jade",
+    "ejs"
   ],
-  "author": "ektx",
+  "author": {
+    "name": "ektx",
+    "email": "ektx1989@gmail.com"
+  },
   "dependencies": {
     "colors": "^1.1.2",
     "ejs": "^2.3.4",
