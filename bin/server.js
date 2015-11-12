@@ -38,9 +38,14 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 	fs.stat(_path, function(err, stats) {
 		if (err) {
 			console.log('No: '+_path)
+
 			// 如是根目录不存在,则生成根目录
-			if (path.dirname(_path) === path.dirname(root)) {
-				mkdirs(_path)
+			if (path.dirname(_path) === root) {
+				console.log('hahaha')
+				ifiles.mkdirs(res, _path)
+			} else {
+				
+				ifiles.sendError(res, 404)
 			}
 			return;
 		}

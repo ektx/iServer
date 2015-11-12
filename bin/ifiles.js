@@ -5,7 +5,7 @@ var mime = require('../node_modules/mime');
 
 // 智能生成文件夹
 // 如果指定的文件夹的父级也不存在的话,则同时生成
-function mkdirs(_path) {
+exports.mkdirs = function (res, _path) {
 	var delayPath = [];
 
 	var toMk = function(_path) {
@@ -21,6 +21,8 @@ function mkdirs(_path) {
 				}
 			}
 		})
+
+		res.redirect('/')
 	}
 
 	toMk(_path);
@@ -187,7 +189,8 @@ exports.sendFile = function(req, res, filePath) {
 	--------------------------------------------
 */
 exports.sendError = function sendError(res, codeNo) {
-	console.log(fileLocation + codeNo + ' Server Error!');
+	console.log(codeNo + ' Server Error!');
 	res.writeHead(codeNo, {'Content-Type': 'text/html; charset=UTF-8'});
-	res.write('<h3>'+codeNo+' Server Error!</h2>')	
+	res.write('<h3>'+codeNo+'!</h2>');
+	res.end()	
 }
