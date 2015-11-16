@@ -1,6 +1,6 @@
 {
   "name": "iServer",
-  "version": "1.0.0",
+  "version": "1.1.5",
   "description": "iojs/nodejs server",
   "main": "epp.js",
   "scripts": {},
