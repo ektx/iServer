@@ -4,6 +4,7 @@ var path = require('path');
 
 var ifiles = require('./ifiles');
 var generate = require('./generate')
+var colors = require('colors')
 
 /*
 	文件服务主功能
@@ -37,11 +38,10 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 	
 	fs.stat(_path, function(err, stats) {
 		if (err) {
-			console.log('No: '+_path)
+			console.log('No:'.white.bgRed+' - '+_path)
 
 			// 如是根目录不存在,则生成根目录
 			if (path.dirname(_path) === root) {
-				console.log('hahaha')
 				ifiles.mkdirs(res, _path)
 			} else {
 				
