@@ -40,7 +40,7 @@ app.get('*', function(req, res) {
 	var _path = req.path;
 
 	if (!(_path == _css || _path == _fIco || _path == _dIco)) {
-		console.log(req.method.bgGreen +' - ' +decodeURI(_path))
+		console.log(req.method.bgGreen.white +' - ' +decodeURI(_path))
 	}
 
 	server.serverStatic(req, res, root, _path);

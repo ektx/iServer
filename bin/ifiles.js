@@ -189,7 +189,7 @@ exports.sendFile = function(req, res, filePath) {
 	--------------------------------------------
 */
 exports.sendError = function sendError(res, codeNo) {
-	console.log(codeNo + ' Server Error!');
+	// console.log(codeNo + ' Server Error!');
 	res.writeHead(codeNo, {'Content-Type': 'text/html; charset=UTF-8'});
 	res.write('<h3>'+codeNo+'!</h2>');
 	res.end()	
