@@ -41,6 +41,7 @@ function getHTML(files, filePath) {
 	body.push('<html><head><meta charset="utf-8">')
 	body.push('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">')
 	body.push('<link rel="stylesheet" type="text/css" href="/bin/css/layout.css">')
+	body.push('<link rel="icon" type="image/x-icon" href="/bin/favicon.png">')
 	body.push('<title>'+title+'</title>')
 	body.push('</head><body>')
 	body.push('<h3>'+title+'</h3>')
