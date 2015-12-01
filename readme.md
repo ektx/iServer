@@ -8,7 +8,9 @@ node epp.js
 ```
 - 生成方式
 在要生成的目录下：
-![make01](/Public/demo/demoImg/make01.jpg)  
+
+![make01](/Public/demo/demoImg/make01.jpg)
+  
 ![make01](/Public/demo/demoImg/make02.jpg)  
  
 ## 功能说明:    
