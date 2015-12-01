@@ -1,48 +1,20 @@
-## iServer
+## iServer 2
+![iServer 2](favicon.png 'Server 2.0')  
 
-iojs server  
-- 是什么?  
-1.Nodejs 文件服务器  
-2.让开发者使用`ejs`和`jade`来组件化开发自己的静态页面   
+- 启动方式
+```sh
+node epp.js
+```
+ 
+### 功能说明:    
+1. Nodejs 文件服务器  
+2. 让开发者使用`ejs`和`jade`来组件化开发自己的静态页面     
+3. 支持样式的合并与压缩功能  
 
 ## 更新日志
-#### `epp.js` `v1.1.6`  
-1.添加建议路径  
-如果没有指定的文件则为用户推荐ejs或jade的模板文件
-当然前提是在请求html的时候
-
-目标是为了解决 jQuery load请求时可以统一使用
-/dome/page.html 的方法  
-
-
-#### `epp.js` `v1.1.5`  
-1.修改请求与错误输出效果  
-2.其它细节修改  
-
-
-#### `epp.js` `v1.1.0`  
-1.支持404输出  
-2.修复不能自己创建 public 文件夹问题    
-
-#### `epp.js` `v1.0.0`
-全新重写了服务方式  
-
-
-#### `app.js` `v0.3.0` 
-* 修正ejs模板文件下载问题
-* 增加退出服务问候  
-* 文件服务处理统一用使用 `lib\files.js` 文件  
-* 优化了服务器大小   
-   
-
-
-## 使用方式:  
-首先您要保证你的电脑上安装了 [IOJS](https://iojs.org/en/index.html) 或 [node.js](https://nodejs.org/)  
-
-- 启动方式:
-```sh
-iojs epp.js
-```
+#### `epp.js` `v 2.0.0`  
+新加样式合并与压缩功能  
+  
 
 ## 相关资料  
 查看 [node.js](https://nodejs.org/)  
