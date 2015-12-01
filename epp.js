@@ -37,9 +37,11 @@ app.get('*', function(req, res) {
 	var _css = '/bin/css/layout.css';
 	var _fIco = '/bin/img/file.png';
 	var _dIco = '/bin/img/folder.png';
+	var _favicon = '/bin/favicon.png';
 	var _path = req.path;
 
-	if (!(_path == _css || _path == _fIco || _path == _dIco)) {
+	// 过滤以上文件请求提示
+	if (!(_path == _css || _path == _fIco || _path == _dIco || _path == _favicon)) {
 		console.log(req.method.bgGreen.white +' - ' +decodeURI(_path))
 	}
 

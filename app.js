@@ -12,7 +12,7 @@ var path = require('path');
 var fs = require('fs');
 var os = require('os');
 
-var ifiles = require('./lib/files.js')
+var ifiles = require('./bin/ifiles')
 
 // 服务器网络信息
 var ifaces = os.networkInterfaces();
