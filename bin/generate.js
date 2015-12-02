@@ -1,9 +1,10 @@
 /*
 	静态页面生成器
-	v 0.1.5
+	v 0.2.0
 	----------------------------------------------------
 	支持 ejs 或 jade模板文件共存,同时支持生成文件  
 	修改文件生成方式,对没有发生变化的内容不再一起生成
+	新加对css的合并压缩功能 
 */
 
 
@@ -12,6 +13,8 @@ var path = require('path');
 var fs = require('fs');
 var ejs = require('ejs');
 var jade = require('jade');
+
+var css = require('./css');
 
 var delaySend;
 
@@ -151,7 +154,7 @@ function outputs(fileName, _url, _curl) {
 
 }
 
-// 获取html的路径
+// 获取jade和ejs生成后的文件html的路径
 function getHTMLPath(fileName, _url, _curl) {
 	var filesname = '', filespath = '';
 
@@ -174,12 +177,21 @@ function getHTMLPath(fileName, _url, _curl) {
 function makeFiles(fileName, _url, _curl) {
 	console.log(' U - ' + _curl)
 
+
 	// 如果文件是以 ejs 或是 jade 的类型
 	if (path.extname(fileName) === '.ejs' || path.extname(fileName) === '.jade') {
 
 		// 生成HTML
 		outputs(fileName, _url, _curl);
 	
+	} 
+	// 如果是样式，且不是压缩过的样式
+	else if (path.extname(fileName) === '.css' && path.basename(fileName, '.css').indexOf('.min') === -1) {
+
+		// 样式以下划线命名的将要被忽略
+		if (path.basename(fileName).substr(0, 1) !== '_')
+			css.css(_url, _curl);
+
 	}
 	// 除html以外直接复制
 	else {
