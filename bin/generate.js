@@ -1,10 +1,14 @@
 /*
 	静态页面生成器
-	v 0.2.0
+	v 0.2.2
 	----------------------------------------------------
 	支持 ejs 或 jade模板文件共存,同时支持生成文件  
 	修改文件生成方式,对没有发生变化的内容不再一起生成
 	新加对css的合并压缩功能 
+
+	U - [文件路径] 生成成功文件
+	x - [文件名]   没有更新的文件
+	！- [文件名]   冲突文件
 */
 
 
@@ -119,8 +123,13 @@ function checkFile(fileName, _url, _curl, res) {
 				}
 
 				// 如果文件已经存在,则判断是否要更新
+
 				if (sts.mtime < st.mtime) {
-					makeFiles(fileName, _url, _curl)
+					if (sts.size > st.size) {
+						console.log(' ! - '+ fileName)
+					} else {
+						makeFiles(fileName, _url, _curl)
+					}
 				} else {
 					console.log(' x - ' + fileName)
 
@@ -137,7 +146,7 @@ function checkFile(fileName, _url, _curl, res) {
 	})
 }
 
-
+// 输出文件
 function outputs(fileName, _url, _curl) {
 	var html = '';
 
