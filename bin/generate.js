@@ -9,6 +9,7 @@
 	U - [文件路径] 生成成功文件
 	x - [文件名]   没有更新的文件
 	！- [文件名]   冲突文件
+	@ - [文件名]   生成文件大于新于模板文件
 */
 
 
@@ -123,16 +124,22 @@ function checkFile(fileName, _url, _curl, res) {
 				}
 
 				// 如果文件已经存在,则判断是否要更新
-
 				if (sts.mtime < st.mtime) {
-					if (sts.size > st.size) {
+					// 如果文件不是ejs或jade的模板，则提示文件有冲突
+					// 冲突：模板的文件没有生成的文件大，可能是修改了生成文件或是模板文件删除内容太多
+					if (sts.size > st.size && path.extname(fileName) != '.ejs' && path.extname(fileName) != '.jade') {
 						console.log(' ! - '+ fileName)
-					} else {
+					} 
+					// 模板文件不考虑大小问题
+					// 以模板为准生成
+					else {
 						makeFiles(fileName, _url, _curl)
 					}
 				} else {
-					console.log(' x - ' + fileName)
-
+					// 生成文件样式有改动
+					if (sts.size > st.size && path.extname(fileName) != '.ejs' && path.extname(fileName) != '.jade') {
+						console.log(' @ - '+ fileName)
+					}
 				}
 			})
 
