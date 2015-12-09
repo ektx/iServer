@@ -22,11 +22,14 @@ var jade = require('jade');
 var css = require('./css');
 
 var delaySend;
+var generateType = '';
 
 exports.generate = function(res, root, copyPath, _type) {
 	console.log('--------- GENERATE ---------')
 	copyPath = path.normalize(copyPath);
 	var delayPath = [];
+	
+	generateType = _type;
 
 	var mkdirs = function(toURL) {
 
@@ -47,7 +50,7 @@ exports.generate = function(res, root, copyPath, _type) {
 			
 					i= 0;
 
-					readFile(root, copyPath, res, _type)
+					readFile(root, copyPath, res)
 			
 					return;
 				}
@@ -69,7 +72,7 @@ exports.generate = function(res, root, copyPath, _type) {
 		} else {
 			i= 0;
 
-			readFile(root, copyPath, res, _type)
+			readFile(root, copyPath, res)
 		};
 
 		console.log('Root Path: '+ root)
@@ -77,7 +80,7 @@ exports.generate = function(res, root, copyPath, _type) {
 
 }
 
-function readFile(path, cPath, res, _type) {
+function readFile(path, cPath, res) {
 
 	var r = res;
 
@@ -90,7 +93,8 @@ function readFile(path, cPath, res, _type) {
 		for (var i = 0; i < fileLen; i++) {
 			var _src = path + '/' + files[i]
 			var _crc = cPath + '/' + files[i]
-			checkFile(files[i], _src, _crc, res, _type)
+
+			checkFile(files[i], _src, _crc, res)
 		}
 
 
@@ -99,7 +103,7 @@ function readFile(path, cPath, res, _type) {
 }
 
 
-function checkFile(fileName, _url, _curl, res, _type) {
+function checkFile(fileName, _url, _curl, res) {
 	fs.stat(_url, function(err, st) {
 		if (err) throw err;
 
@@ -128,7 +132,7 @@ function checkFile(fileName, _url, _curl, res, _type) {
 					// 如果文件不是ejs或jade的模板，则提示文件有冲突
 					// 冲突：模板的文件没有生成的文件大，可能是修改了生成文件或是模板文件删除内容太多
 					// 注：在强制下会覆盖生成
-					if (sts.size > st.size && path.extname(fileName) != '.ejs' && path.extname(fileName) != '.jade' && _type == 'make') {
+					if (sts.size > st.size && path.extname(fileName) != '.ejs' && path.extname(fileName) != '.jade' && generateType == 'make') {
 						console.log(' ! - '+ fileName)
 					} 
 					// 模板文件不考虑大小问题

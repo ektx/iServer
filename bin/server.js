@@ -31,7 +31,6 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 		if (/important/.test(reqPath)) {
 			_type = 'important';
 		}
-
 		var copyPath = _dir.replace(/public/i, 'html')
 
 		generate.generate(res, _dir, copyPath, _type);
@@ -120,7 +119,7 @@ function sendMakeHTML(res) {
 	html += '<link rel="stylesheet" type="text/css" href="/bin/css/layout.css">';
 	html += '<title>成功</title></head><body>';
 	html += '<h2>生成页面完成,请查看html文件夹</h2>';
-	html += '<a target="_blank" href=":importent">覆盖生成</a>';
+	html += '<a target="_blank" href=":important">覆盖生成</a>';
 
 	html += '</body>';
 
