@@ -1,6 +1,6 @@
 /*
 	静态页面生成器
-	v 0.2.2
+	v 0.2.3
 	----------------------------------------------------
 	支持 ejs 或 jade模板文件共存,同时支持生成文件  
 	修改文件生成方式,对没有发生变化的内容不再一起生成
@@ -23,7 +23,7 @@ var css = require('./css');
 
 var delaySend;
 
-exports.generate = function(res, root, copyPath) {
+exports.generate = function(res, root, copyPath, _type) {
 	console.log('--------- GENERATE ---------')
 	copyPath = path.normalize(copyPath);
 	var delayPath = [];
@@ -47,7 +47,7 @@ exports.generate = function(res, root, copyPath) {
 			
 					i= 0;
 
-					readFile(root, copyPath, res)
+					readFile(root, copyPath, res, _type)
 			
 					return;
 				}
@@ -69,7 +69,7 @@ exports.generate = function(res, root, copyPath) {
 		} else {
 			i= 0;
 
-			readFile(root, copyPath, res)
+			readFile(root, copyPath, res, _type)
 		};
 
 		console.log('Root Path: '+ root)
@@ -77,7 +77,7 @@ exports.generate = function(res, root, copyPath) {
 
 }
 
-function readFile(path, cPath, res) {
+function readFile(path, cPath, res, _type) {
 
 	var r = res;
 
@@ -90,7 +90,7 @@ function readFile(path, cPath, res) {
 		for (var i = 0; i < fileLen; i++) {
 			var _src = path + '/' + files[i]
 			var _crc = cPath + '/' + files[i]
-			checkFile(files[i], _src, _crc, res)
+			checkFile(files[i], _src, _crc, res, _type)
 		}
 
 
@@ -99,7 +99,7 @@ function readFile(path, cPath, res) {
 }
 
 
-function checkFile(fileName, _url, _curl, res) {
+function checkFile(fileName, _url, _curl, res, _type) {
 	fs.stat(_url, function(err, st) {
 		if (err) throw err;
 
@@ -127,7 +127,8 @@ function checkFile(fileName, _url, _curl, res) {
 				if (sts.mtime < st.mtime) {
 					// 如果文件不是ejs或jade的模板，则提示文件有冲突
 					// 冲突：模板的文件没有生成的文件大，可能是修改了生成文件或是模板文件删除内容太多
-					if (sts.size > st.size && path.extname(fileName) != '.ejs' && path.extname(fileName) != '.jade') {
+					// 注：在强制下会覆盖生成
+					if (sts.size > st.size && path.extname(fileName) != '.ejs' && path.extname(fileName) != '.jade' && _type == 'make') {
 						console.log(' ! - '+ fileName)
 					} 
 					// 模板文件不考虑大小问题
