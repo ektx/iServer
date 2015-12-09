@@ -22,15 +22,19 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 	var _path = path.join(root, reqPath);
 
 	// 生成静态页面
-	if (/\/:make/.test(reqPath)) {
+	if (/\/:[make|important]/.test(reqPath)) {
 
 		var _dir = path.dirname(_path)
+		var _type = 'make';
 
-		// console.log('dirname:'+_dir)
+		// 判断是否是覆盖生成请求
+		if (/important/.test(reqPath)) {
+			_type = 'important';
+		}
 
 		var copyPath = _dir.replace(/public/i, 'html')
 
-		generate.generate(res, _dir, copyPath);
+		generate.generate(res, _dir, copyPath, _type);
 
 		sendMakeHTML(res);
 		return;
@@ -105,13 +109,20 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 
 }
 
-
+/*
+	生成页面
+	-----------------------------------------------
+	ektx1989 <530675800@qq.com>
+*/
 function sendMakeHTML(res) {
 	var html = '<!doctype html><html><head><meta charset="utf-8">';
 	html += '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">';
 	html += '<link rel="stylesheet" type="text/css" href="/bin/css/layout.css">';
 	html += '<title>成功</title></head><body>';
-	html += '<h2>生成页面完成,请查看html文件夹</h2></body>';
+	html += '<h2>生成页面完成,请查看html文件夹</h2>';
+	html += '<a target="_blank" href=":importent">覆盖生成</a>';
+
+	html += '</body>';
 
 	res.send(html)
 
