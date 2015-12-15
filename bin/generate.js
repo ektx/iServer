@@ -33,14 +33,14 @@ exports.generate = function(res, root, copyPath, _type) {
 
 	var mkdirs = function(toURL) {
 
+		// console.log(toURL)
 		fs.mkdir(toURL, function(err) {
 			// 生成文件夹错误,
 			// 则去找上级生成,并把当前的缓存起来
 			if (err) {
-				
 				delayPath.push(toURL);
 
-				var _path = toURL.replace(/\\\w+$/, '')
+				var _path = toURL.replace(/\\\w+$|\w+$/, '')
 
 				mkdirs(_path)
 
@@ -67,7 +67,7 @@ exports.generate = function(res, root, copyPath, _type) {
 	fs.stat(copyPath, function(err, stats) {
 
 		if (err) { 
-			// console.log(err);
+			console.log('not have dir');
 			mkdirs(copyPath)
 		} else {
 			i= 0;
