@@ -46,3 +46,19 @@ ul {
 	color: #0095dd;
 	margin: 0;
 }
+
+/*强制生成*/
+.make-pro {
+	padding: 5px 15px;
+    color: #FF4500;
+    border: 1px solid #FF4500;
+    border-radius: 3px;
+    transition: background .3s ease, color .3s ease;
+}
+.make-pro:hover {
+	background-color: #FF4500;
+	color: #fff;
+}
+.make-pro:active {
+	box-shadow: inset 2px 2px 3px #CA552A;
+}
