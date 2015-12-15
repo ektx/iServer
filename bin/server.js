@@ -119,7 +119,7 @@ function sendMakeHTML(res) {
 	html += '<link rel="stylesheet" type="text/css" href="/bin/css/layout.css">';
 	html += '<title>成功</title></head><body>';
 	html += '<h2>生成页面完成,请查看html文件夹</h2>';
-	html += '<a target="_blank" href=":important">覆盖生成</a>';
+	html += '<a class="make-pro" href=":important">覆盖生成</a>';
 
 	html += '</body>';
 
