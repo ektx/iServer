@@ -21,7 +21,7 @@ var jade = require('jade');
 
 var css = require('./css');
 
-var delaySend;
+var delaySend = [];
 var generateType = '';
 
 exports.generate = function(res, root, copyPath, _type) {
@@ -64,19 +64,17 @@ exports.generate = function(res, root, copyPath, _type) {
 	}
 
 	// 指定生成目录判断,创建
-	fs.stat(copyPath, function(err, stats) {
+	try {
+		fs.statSync(copyPath);
 
-		if (err) { 
-			console.log('not have dir');
-			mkdirs(copyPath)
-		} else {
-			i= 0;
+		i = 0;
+		readFile(root, copyPath, res)
+	} catch(err) {
+		console.log('not have dir');
+		mkdirs(copyPath)
+	}
 
-			readFile(root, copyPath, res)
-		};
-
-		console.log('Root Path: '+ root)
-	})
+	return delaySend
 
 }
 
@@ -197,7 +195,7 @@ function getHTMLPath(fileName, _url, _curl) {
 // 处理文件
 function makeFiles(fileName, _url, _curl) {
 	console.log(' U - ' + _curl)
-
+	delaySend.push(_curl)
 
 	// 如果文件是以 ejs 或是 jade 的类型
 	if (path.extname(fileName) === '.ejs' || path.extname(fileName) === '.jade') {
