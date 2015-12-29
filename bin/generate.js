@@ -1,3 +1,4 @@
+
 /*
 	静态页面生成器
 	v 0.2.4
@@ -256,3 +257,4 @@ function createFolders(src, curl, delaySend) {
 
 	}
 }
+
