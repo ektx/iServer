@@ -1,6 +1,6 @@
 /*
 	静态页面生成器
-	v 0.2.3
+	v 0.2.4
 	----------------------------------------------------
 	支持 ejs 或 jade模板文件共存,同时支持生成文件  
 	修改文件生成方式,对没有发生变化的内容不再一起生成
@@ -9,7 +9,7 @@
 	U - [文件路径] 生成成功文件
 	x - [文件名]   没有更新的文件
 	！- [文件名]   冲突文件
-	@ - [文件名]   生成文件大于新于模板文件
+	@ - [文件名]   生成文件有改动
 */
 
 
@@ -21,141 +21,160 @@ var jade = require('jade');
 
 var css = require('./css');
 
-var delaySend;
+var delaySend = [];
 var generateType = '';
 
 exports.generate = function(res, root, copyPath, _type) {
 	console.log('--------- GENERATE ---------')
 	copyPath = path.normalize(copyPath);
-	var delayPath = [];
+	// 清空数据防止缓存
+	var delayPath = [], delaySend = [];
 	
 	generateType = _type;
 
 	var mkdirs = function(toURL) {
 
-		// console.log(toURL)
-		fs.mkdir(toURL, function(err) {
-			// 生成文件夹错误,
-			// 则去找上级生成,并把当前的缓存起来
-			if (err) {
-				delayPath.push(toURL);
+		try {
+			var isMS = fs.mkdirSync(toURL)
 
+			if (!isMS) {
+				if(delayPath.length == 0) {
+					console.log('文件夹生成完成!')
+					delaySend = readFile(root, copyPath, delaySend)
+
+					return;
+				}
+
+				// 反向调用地址列表
+				// 然后删除最初的那个
+				var _toPath = (delayPath.reverse())[0]
+				delayPath.shift()
+				mkdirs(_toPath)
+			}
+		} catch(err) {
+			// 返回错误为无法生成时
+			if (err.code === 'ENOENT') {
+
+				delayPath.push(toURL);
+				// window | mac
 				var _path = toURL.replace(/\\\w+$|\w+$/, '')
 
 				mkdirs(_path)
-
-			} else {
-
-				if (delayPath.length == 0) {
-			
-					i= 0;
-
-					readFile(root, copyPath, res)
-			
-					return;
-				}
-				// 反向调用地址列表
-				mkdirs(delayPath.reverse()[0])
-				// 然后删除最初的那个
-				delayPath.pop()
 			}
-		})
+		}
 
 	}
 
+
+
 	// 指定生成目录判断,创建
-	fs.stat(copyPath, function(err, stats) {
+	try {
+		fs.statSync(copyPath);
+		delaySend = readFile(root, copyPath, delaySend)
 
-		if (err) { 
-			console.log('not have dir');
-			mkdirs(copyPath)
-		} else {
-			i= 0;
+	} catch(err) {
+		console.log('not have dir');
+		mkdirs(copyPath)
+	}
 
-			readFile(root, copyPath, res)
-		};
-
-		console.log('Root Path: '+ root)
-	})
+	return delaySend
 
 }
 
-function readFile(path, cPath, res) {
+/*
+	读取文件夹下的文件
+	----------------------------------
+*/
+function readFile(path, cPath, delaySend) {
 
-	var r = res;
+	var filesArr = fs.readdirSync(path);
 
-	fs.readdir(path, function(err, files) {
-		if (err) throw err;
-		
-		var fileLen = files.length;
+	for (var i = 0, fileLen = filesArr.length; i < fileLen; i++) {
+		(function(i) {
 
-		// 读取文件夹下的内容
-		for (var i = 0; i < fileLen; i++) {
-			var _src = path + '/' + files[i]
-			var _crc = cPath + '/' + files[i]
+			// delaySend.push(filesArr[i])
+			var _src = path  + '/' + filesArr[i]
+			var _crc = cPath + '/' + filesArr[i]
 
-			checkFile(files[i], _src, _crc, res)
-		}
+			checkFile(filesArr[i], _src, _crc, delaySend)
+		})(i)
+	}
 
-
-	})
+	
+	return delaySend
 
 }
 
 
-function checkFile(fileName, _url, _curl, res) {
-	fs.stat(_url, function(err, st) {
-		if (err) throw err;
+function checkFile(fileName, _url, _curl, delaySend) {
 
-		// 是文件
-		if (st.isFile()) {
-			var _fpath = '';
+	try {
+		// 判断文件上否存在
+		var _f = fs.statSync(_url)
 
+		// 如果是文件
+		if (_f.isFile()) {
+			var _fpath = false;
+
+			// 模板转 HTML
 			if (path.extname(fileName) == '.ejs' || path.extname(fileName) == '.jade') {
 
 				_fpath = getHTMLPath(fileName, _url, _curl);
-				
 			}
 
 			// 判断要复制到的文件夹中是否已经有此文件了
-			fs.stat(_fpath?_fpath: _curl, function(err, sts) {
-				// 如果不存在,则生成
-				if (err) {
+			try {
+				var _ff = fs.statSync(_fpath ? _fpath: _curl)
 
-					// console.log(err)
-					makeFiles(fileName, _url, _curl)
-					return;
-				}
-
-				// 如果文件已经存在,则判断是否要更新
-				if (sts.mtime < st.mtime) {
+				// 当前文件内容较新
+				if (_ff.mtime < _f.mtime) {
 					// 如果文件不是ejs或jade的模板，则提示文件有冲突
 					// 冲突：模板的文件没有生成的文件大，可能是修改了生成文件或是模板文件删除内容太多
+					// 当前文件比生成区文件小（主要是非模板文件）
 					// 注：在强制下会覆盖生成
-					if (sts.size > st.size && path.extname(fileName) != '.ejs' && path.extname(fileName) != '.jade' && generateType == 'make') {
+					if (_ff.size > _f.size && 
+						path.extname(fileName) != '.ejs' && 
+						path.extname(fileName) != '.jade' && 
+						generateType == 'make'
+					) {
 						console.log(' ! - '+ fileName)
+						delaySend.push(' ! - '+ fileName)
 					} 
 					// 模板文件不考虑大小问题
 					// 以模板为准生成
 					else {
-						makeFiles(fileName, _url, _curl)
+						makeFiles(fileName, _url, _curl, delaySend)
 					}
-				} else {
-					// 生成文件样式有改动
-					if (sts.size > st.size && path.extname(fileName) != '.ejs' && path.extname(fileName) != '.jade') {
+				} 
+
+				// 生成区文件较新
+				else {
+					if (path.extname(fileName) != '.ejs' && 
+						path.extname(fileName) != '.jade' &&
+						path.extname(fileName) != '.html'
+					) {
 						console.log(' @ - '+ fileName)
+						delaySend.push(' @ - '+ fileName)
 					}
 				}
-			})
+			} catch (err) {
+				// 如果不存在,则生成
+				makeFiles(fileName, _url, _curl, delaySend)
+				return;
+			}
 
-		} 
-		// 是文件夹
-		else if (st.isDirectory()) {
-			// 复制非组件的文件夹
-			if (fileName !== 'parts') createFolders(_url, _curl)
 		}
 
-	})
+		// 是文件夹
+		else if (_f.isDirectory()) {
+			// 复制非组件的文件夹
+			if (fileName !== 'parts') createFolders(_url, _curl, delaySend)
+		}
+
+	} catch (err) {
+		console.log(err)
+	}
+
 }
 
 // 输出文件
@@ -195,9 +214,9 @@ function getHTMLPath(fileName, _url, _curl) {
 }
 
 // 处理文件
-function makeFiles(fileName, _url, _curl) {
+function makeFiles(fileName, _url, _curl, delaySend) {
 	console.log(' U - ' + _curl)
-
+	delaySend.push(' U - ' + _curl+'\n')
 
 	// 如果文件是以 ejs 或是 jade 的类型
 	if (path.extname(fileName) === '.ejs' || path.extname(fileName) === '.jade') {
@@ -224,9 +243,16 @@ function makeFiles(fileName, _url, _curl) {
 
 }
 
-function createFolders(src, curl) {
-	fs.mkdir(curl, function() {
-		// 读取要复制文件夹下内容
-		readFile(src, curl)
-	})
+function createFolders(src, curl, delaySend) {
+	// fs.mkdir(curl, function() {
+	// 	// 读取要复制文件夹下内容
+	// 	readFile(src, curl)
+	// })
+	try {
+		var isMS = fs.mkdirSync(curl)
+
+		readFile(src, curl, delaySend)
+	} catch (err) {
+
+	}
 }
