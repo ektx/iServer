@@ -1,0 +1,64 @@
+@charset "utf-8";
+
+body {
+	font-family: "Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+li {
+	list-style: none;
+	line-height: 22px;
+}
+
+.osFileIco {
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+}
+a {
+	margin-left: 10px;
+	text-decoration: none;
+	color: #333;
+}
+ul {
+	padding: 0;
+}
+
+.nav-tags {
+	font-size: 12px;
+	color: #0095dd;
+}
+.nav-tags:hover {
+	text-decoration: underline;
+}
+.nav-tags:after {
+	display: inline-block;
+	content: '/';
+	color: #ccc;
+	margin-left: 5px;
+}
+
+.i-footer {
+	font-size: 12px;
+	margin: 0;
+}
+.i-footer a {
+	font-size: 12px;
+	font-weight: bold;
+	color: #0095dd;
+	margin: 0;
+}
+
+/*强制生成*/
+.make-pro {
+	padding: 5px 15px;
+    color: #FF4500;
+    border: 1px solid #FF4500;
+    border-radius: 3px;
+    transition: background .3s ease, color .3s ease;
+}
+.make-pro:hover {
+	background-color: #FF4500;
+	color: #fff;
+}
+.make-pro:active {
+	box-shadow: inset 2px 2px 3px #CA552A;
+}
