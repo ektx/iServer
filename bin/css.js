@@ -72,11 +72,19 @@ exports.css = function(oldPath, outputPath) {
 			// 如果没有引用样式
 			// 直接输出，并压缩
 			else {
-				var readS = fs.createReadStream(oldPath);
-				var writeS = fs.createWriteStream(outputPath);
-				readS.pipe(writeS);
-
 				minCss(cssname, outdirname, data);
+
+				if (oldPath === outputPath) return;
+				
+				// 合成文件
+				fs.writeFile(outputPath, data, 'utf8', function(err) {
+					if (err) { 
+						console.log('!！')
+					} else {
+						console.log(':: '+ cssname);
+					}
+				});
+
 			}
 		}
 	})
@@ -96,18 +104,23 @@ function minCss(cssname, outputPath, css) {
 	// \t 去换行
 	// \s{2,} 去出现2次以上的空格
 	// \/\*(.|\r\n|\n)*?\*\/ 去注释
-	// \;(?=(\n|\r\n)*?\}) 去样式中最后一个 ;
+	// \;(?=(\n|\r\n|\t)*?\}) 去样式中最后一个 ;
 	/* 
 		\s(?=\{) 去 .classname { .. }中的{前空格或是
 				 去 @keyframes animate { to { }} {前的空格
 
 		\s(?=\() 去除(前的空格
+		,\s      去,后的空格
 	*/
 
-	var minOutputCss = css.replace(/(\t|\s{2,}|\/\*(.|\r\n|\n)*?\*\/|\;(?=(\n|\r\n)*?\})|\s(?=\{)|\s(?=\())/g, '');
+	var minOutputCss = css.replace(/(\t|\s{2,}|\/\*(.|\r\n|\n)*?\*\/|\;(?=(\n|\r\n|\t)*?\})|\s(?=\{)|\s(?=\())/g, '');
 
 	// 去 : 后的空格
 	minOutputCss = minOutputCss.replace(/:\s/g, ':');
+
+	minOutputCss = minOutputCss.replace(/,\s/g, ',');
+
+	minOutputCss = minOutputCss.replace(/\s>\s/g, '>')
 	
 	// console.log('整合样式:' + css);
 
