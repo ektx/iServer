@@ -128,6 +128,7 @@ function checkFile(fileName, _url, _curl, delaySend) {
 				var _ff = fs.statSync(_fpath ? _fpath: _curl)
 
 				// 当前文件内容较新
+					console.log(generateType)
 				if (_ff.mtime < _f.mtime) {
 					// 如果文件不是ejs或jade的模板，则提示文件有冲突
 					// 冲突：模板的文件没有生成的文件大，可能是修改了生成文件或是模板文件删除内容太多
@@ -148,11 +149,13 @@ function checkFile(fileName, _url, _curl, delaySend) {
 					}
 				} 
 
-				// 生成区文件较新
+				// 生成区文件较新较大
 				else {
-					if (path.extname(fileName) != '.ejs' && 
+					if (_ff.size > _f.size &&
+						path.extname(fileName) != '.ejs' && 
 						path.extname(fileName) != '.jade' &&
-						path.extname(fileName) != '.html'
+						path.extname(fileName) != '.html' &&
+						path.extname(fileName) != '.htm'
 					) {
 						console.log(' @ - '+ fileName)
 						delaySend.push(' @ - '+ fileName)
@@ -249,12 +252,13 @@ function createFolders(src, curl, delaySend) {
 	// 	// 读取要复制文件夹下内容
 	// 	readFile(src, curl)
 	// })
+
 	try {
 		var isMS = fs.mkdirSync(curl)
-
-		readFile(src, curl, delaySend)
 	} catch (err) {
 
 	}
+
+	readFile(src, curl, delaySend)
 }
 
