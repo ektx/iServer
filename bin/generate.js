@@ -128,7 +128,6 @@ function checkFile(fileName, _url, _curl, delaySend) {
 				var _ff = fs.statSync(_fpath ? _fpath: _curl)
 
 				// 当前文件内容较新
-					console.log(generateType)
 				if (_ff.mtime < _f.mtime) {
 					// 如果文件不是ejs或jade的模板，则提示文件有冲突
 					// 冲突：模板的文件没有生成的文件大，可能是修改了生成文件或是模板文件删除内容太多
