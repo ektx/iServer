@@ -233,6 +233,7 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 
 		// 样式以下划线命名的将要被忽略
 		if (path.basename(fileName).substr(0, 1) !== '_')
+			css.css(_url, _url);
 			css.css(_url, _curl);
 
 	}
@@ -247,10 +248,6 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 }
 
 function createFolders(src, curl, delaySend) {
-	// fs.mkdir(curl, function() {
-	// 	// 读取要复制文件夹下内容
-	// 	readFile(src, curl)
-	// })
 
 	try {
 		var isMS = fs.mkdirSync(curl)
