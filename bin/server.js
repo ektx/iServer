@@ -1,6 +1,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var ejs = require('ejs');
 
 var ifiles = require('./ifiles');
 var generate = require('./generate')
@@ -35,7 +36,11 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 
 		var html = generate.generate(res, _dir, copyPath, _type);
 
-		sendMakeHTML(res, html);
+		// sendMakeHTML(res, html);
+
+		var _html = ejs.render(fs.readFileSync(__dirname + '/make.ejs', 'utf8'), {MArr: html});
+
+		res.send(_html)
 
 		return;
 	}
@@ -106,26 +111,5 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 
 	}
 	isStat(_path)
-
-}
-
-/*
-	生成页面
-	-----------------------------------------------
-	ektx1989 <530675800@qq.com>
-*/
-function sendMakeHTML(res, xhtml) {
-
-	var html = '<!doctype html><html><head><meta charset="utf-8">';
-	html += '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">';
-	html += '<link rel="stylesheet" type="text/css" href="/bin/css/layout.css">';
-	html += '<title>成功</title></head><body>';
-	html += '<b>'+xhtml+'</b>'
-	html += '<h2>生成页面完成,请查看html文件夹</h2>';
-	html += '<a class="make-pro" href=":important">覆盖生成</a>';
-
-	html += '</body>';
-
-	res.send(html)
 
 }
