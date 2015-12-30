@@ -12,8 +12,6 @@ exports.css = function(oldPath, outputPath) {
 		if (err) {
 			console.log(err)
 		} else {
-			console.log('css: ' + oldPath);
-			console.log('css: '+outputPath);
 			
 			var outpouCss = '@charset "utf-8";\n';
 			var RegImport = new RegExp("(\\w+\\/?)*.css(?=')", "gi");
@@ -122,10 +120,6 @@ function minCss(cssname, outputPath, css) {
 
 	minOutputCss = minOutputCss.replace(/\s>\s/g, '>')
 	
-	// console.log('整合样式:' + css);
-
-	// console.log(minOutputCss);
-
 	fs.writeFile(newdir, minOutputCss, 'utf8', function(err){
 		if (err) console.log(err);
 		console.log('OK!')
