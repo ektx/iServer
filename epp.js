@@ -20,7 +20,10 @@ var getIPs = require('./bin/getIPs')
 
 // 默认设置
 // 默认端口设置
-var port = 8001;
+var packageInfo = JSON.parse(fs.readFileSync(__dirname+'/package.json', 'utf8'));
+var port = packageInfo.config.port;
+var version = packageInfo.name +' '+ packageInfo.version;
+
 var app = express()
 var root = __dirname;
 
@@ -50,7 +53,7 @@ app.get('*', function(req, res) {
 
 
 app.listen(port, function() {
-	console.log('-------------------------\nWelcome to iServer 1.0\n-------------------------'.rainbow)
+	console.log(('=================================\nWelcome to '+version+'\n=================================').rainbow)
 
 	var zip = getIPs().IPv4;
 	for (var i in zip) {
