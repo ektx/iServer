@@ -27,9 +27,10 @@ var generateType = '';
 
 exports.generate = function(res, root, copyPath, _type) {
 	console.log('--------- GENERATE ---------')
+
 	copyPath = path.normalize(copyPath);
 	// 清空数据防止缓存
-	var delayPath = [], delaySend = [];
+	var delayPath = [], delaySend = [], changeList = [];
 	
 	generateType = _type;
 
@@ -66,7 +67,8 @@ exports.generate = function(res, root, copyPath, _type) {
 
 	}
 
-
+	// 遍历模板
+	getPartsList(root, changeList)
 
 	// 指定生成目录判断,创建
 	try {
@@ -154,7 +156,8 @@ function checkFile(fileName, _url, _curl, delaySend) {
 						path.extname(fileName) != '.ejs' && 
 						path.extname(fileName) != '.jade' &&
 						path.extname(fileName) != '.html' &&
-						path.extname(fileName) != '.htm'
+						path.extname(fileName) != '.htm' &&
+						generateType === 'make'
 					) {
 						console.log(' @ - '+ fileName)
 						delaySend.push(' @ - '+ fileName)
@@ -171,7 +174,9 @@ function checkFile(fileName, _url, _curl, delaySend) {
 		// 是文件夹
 		else if (_f.isDirectory()) {
 			// 复制非组件的文件夹
-			if (fileName !== 'parts') createFolders(_url, _curl, delaySend)
+			if (fileName !== 'parts') {
+				createFolders(_url, _curl, delaySend)
+			}
 		}
 
 	} catch (err) {
@@ -258,3 +263,24 @@ function createFolders(src, curl, delaySend) {
 	readFile(src, curl, delaySend)
 }
 
+/*
+	对parts文件进行缓存
+	---------------------------------------
+	当parts中的文件发生变化时，更新其所有相关有引用文件
+
+*/
+function getPartsList (path, listArr) {
+	var filesArr = fs.readdirSync(path);
+
+	for (var i = 0, fileLen = filesArr.length; i < fileLen; i++) {
+		(function(i) {
+
+			console.log('== '+filesArr[i])
+
+			if (filesArr[i] === 'parts') {
+				console.log('have mod')
+				
+			}
+		})(i)
+	}
+}

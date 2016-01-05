@@ -8,20 +8,29 @@ var path = require('path');
 */
 exports.css = function(oldPath, outputPath) {
 
-	fs.readFile(oldPath, 'utf8', function(err, data) {
-		if (err) {
-			console.log(err)
+	try {
+
+
+		var data = fs.readFileSync(oldPath, 'utf8');
+		// 输出路径
+		var cssname = path.basename(oldPath, '.css');
+		var outdirname = path.dirname(outputPath);
+
+		if (oldPath === outputPath) {
+
+			minCss(cssname, outdirname, data);
+
 		} else {
-			
-			var outpouCss = '@charset "utf-8";\n';
-			var RegImport = new RegExp("(\\w+\\/?)*.css(?=')", "gi");
+
+			var RegImport = new RegExp("((\\.|\\w)+\\/?)*.css(?=')", "gi");
 			var importCss = data.match(RegImport) || [];
 			// css name
-			var cssname = path.basename(oldPath, '.css');
 			var dirname = path.dirname(oldPath);
-			// 输出路径
-			var outdirname = path.dirname(outputPath);
 
+			// 要输出的样式内容
+			var outpouCss = data;
+			// 清除 import 引用样式
+			outpouCss = outpouCss.replace(/@import.*?.css('|")\);/gi, '')
 
 			console.log('@import 引用样式有:' + importCss + '\n个数有:'+importCss.length);
 
@@ -33,7 +42,7 @@ exports.css = function(oldPath, outputPath) {
 						var newImpPath = path.normalize(dirname + '/' + importCss[i]);
 
 						// 读取引用样式内容
-						fs.stat(newImpPath, function(err,cssdate) {
+						fs.stat(newImpPath, function(err, cssdate) {
 							if (err) {
 								console.log(newImpPath + ' 引用样式表不存在!!')
 							} else {
@@ -57,7 +66,7 @@ exports.css = function(oldPath, outputPath) {
 									}
 								});
 
-								console.log('合成文件：'+cssname)
+								console.log('压缩文件：'+cssname)
 
 								minCss(cssname, outdirname, outpouCss)
 							}
@@ -72,8 +81,6 @@ exports.css = function(oldPath, outputPath) {
 			else {
 				minCss(cssname, outdirname, data);
 
-				if (oldPath === outputPath) return;
-				
 				// 合成文件
 				fs.writeFile(outputPath, data, 'utf8', function(err) {
 					if (err) { 
@@ -85,7 +92,11 @@ exports.css = function(oldPath, outputPath) {
 
 			}
 		}
-	})
+
+	} catch (err) {
+		console.log(err)
+	}
+
 }
 
 
