@@ -271,6 +271,7 @@ function createFolders(src, curl, delaySend) {
 */
 function getPartsList (path, listArr) {
 	var filesArr = fs.readdirSync(path);
+	console.log('******* ' + path)
 
 	for (var i = 0, fileLen = filesArr.length; i < fileLen; i++) {
 		(function(i) {
