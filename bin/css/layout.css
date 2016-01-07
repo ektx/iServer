@@ -60,9 +60,6 @@ ul {
 .make-pro:hover {
 	color: #09F;
 }
-.make-pro:active {
-	box-shadow: inset 2px 2px 3px #CA552A;
-}
 
 .make-list li {
 	font-size: 14px;
@@ -82,4 +79,26 @@ ul {
     background: #09f;
     color: #fff;
     display: block;
+}
+
+.make-type-btns {
+	float: right;
+	font-size: 12px;
+	color: #AAA;
+	margin: 0;
+}
+.make-type-btns li {
+	display: inline-block;
+	margin: 5px 3px;
+	cursor: pointer;
+	line-height: 14px;
+}
+.make-type-btns li:hover {
+	border-bottom: 1px solid #AAA;
+}
+.make-type-btns li.current {
+	color: #09F;
+}
+.make-type-btns li.current:hover {
+	border-bottom-color: #09F
 }
