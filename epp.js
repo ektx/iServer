@@ -17,12 +17,23 @@ var colors = require('colors')
 var server = require('./bin/server')
 var ifiles = require('./bin/ifiles')
 var getIPs = require('./bin/getIPs')
+var comStr = require('./bin/commandStr').commandStr()
+var open   = require('./bin/open')
+
 
 // 默认设置
-// 默认端口设置
 var packageInfo = JSON.parse(fs.readFileSync(__dirname+'/package.json', 'utf8'));
-var port = packageInfo.config.port;
 var version = packageInfo.name +' '+ packageInfo.version;
+
+if (!comStr) {
+	return;
+} else if (comStr === 'getVersion') {
+	console.log(version);
+	return
+}
+
+// 默认端口设置
+var port = comStr.port || packageInfo.config.port;
 
 var app = express()
 var root = __dirname;
@@ -33,7 +44,9 @@ app.set('view engine', 'ejs')
 app.get('/favicon.ico', function(req, res) {
 	res.end();
 	return
-})
+});
+
+
 
 
 app.get('*', function(req, res) {
@@ -60,3 +73,4 @@ app.listen(port, function() {
 		console.log(zip[i] + ':' + port)
 	}
 })
+
