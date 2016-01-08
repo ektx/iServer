@@ -64,6 +64,37 @@ app.get('*', function(req, res) {
 	server.serverStatic(req, res, root, _path);
 })
 
+// 项目工作配置目录
+var projectConfig = '/public/Mis/Dev/Data/config.json';
+// 配置数据
+var configInfo = false;
+
+app.post('*', function(req, res) {
+	var _path = req.path;
+
+	// 如果没有缓存数据
+	if (!configInfo) {
+		configInfo = JSON.parse(fs.readFileSync(__dirname + projectConfig, 'utf8'))
+	}
+
+	var sendMes = {
+		"form": "iServer",
+		"status": true
+	}
+
+	// 请求路径
+	var dataPath = __dirname + path.dirname(projectConfig) + '/' + configInfo[decodeURI(_path)];
+
+	// sendMes.mes = fs.readFileSync(dataPath, 'utf8').replace(/\t|\r|\n/g, '');
+	sendMes.mes = JSON.stringify(fs.readFileSync(dataPath, 'utf8'))
+	console.log(sendMes.mes)
+
+	// sendMes.mes = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
+
+	res.json(sendMes)
+
+})
+
 
 app.listen(port, function() {
 	console.log(('=================================\nWelcome to '+version+'\n=================================').rainbow)
