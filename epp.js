@@ -25,9 +25,7 @@ var open   = require('./bin/open')
 var packageInfo = JSON.parse(fs.readFileSync(__dirname+'/package.json', 'utf8'));
 var version = packageInfo.name +' '+ packageInfo.version;
 
-if (!comStr) {
-	return;
-} else if (comStr === 'getVersion') {
+if (comStr === 'getVersion') {
 	console.log(version);
 	return
 }
