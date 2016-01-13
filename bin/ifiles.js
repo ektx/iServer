@@ -43,7 +43,7 @@ function getHTML(files, filePath) {
 	body.push('<link rel="stylesheet" type="text/css" href="/bin/css/layout.css">')
 	body.push('<link rel="icon" type="image/x-icon" href="/bin/favicon.png">')
 	body.push('<title>'+title+'</title>')
-	body.push('</head><body>')
+	body.push('</head><body class="server-body">')
 	body.push('<h3>'+title+'</h3>')
 	body.push('<ul>')
 

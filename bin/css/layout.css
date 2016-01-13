@@ -102,3 +102,7 @@ ul {
 .make-type-btns li.current:hover {
 	border-bottom-color: #09F
 }
+
+.server-body {
+	margin: 0 0 0 20px;
+}
