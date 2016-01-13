@@ -1,4 +1,4 @@
-﻿/*
+/*
 	iServer
 	-----------------------------------------------
 
@@ -63,31 +63,32 @@ app.get('*', function(req, res) {
 })
 
 // 项目工作配置目录
-var projectConfig = '/public/Mis/Dev/Data/config.json';
+var projectConfig = '/bin/config.json';
 // 配置数据
 var configInfo = false;
 
 app.post('*', function(req, res) {
 	var _path = req.path;
 
-	// 如果没有缓存数据
-	if (!configInfo) {
-		configInfo = JSON.parse(fs.readFileSync(__dirname + projectConfig, 'utf8'))
-	}
+	console.log(req.method.bgBlue.white +' - ' +decodeURI(_path))
+
+	// 项目请求目录
+	var _PRO_PATH = _path.match(/\/.*(?=\/)/)[0].substr(1);
+	// 获取主配置文件
+	var _PRO_CON  = getJSONNote(__dirname + projectConfig);
+
+
+	configInfo = getJSONNote(__dirname + '/public/'+_PRO_CON[_PRO_PATH]+'/Dev/Data/config.json');
 
 	var sendMes = {
 		"form": "iServer",
 		"status": true
 	}
 
-	// 请求路径
-	var dataPath = __dirname + path.dirname(projectConfig) + '/' + configInfo[decodeURI(_path)];
+	// 请求模拟路径
+	var dataPath = __dirname + '/public/'+_PRO_CON[_PRO_PATH]+'/Dev/Data/' + configInfo[decodeURI(_path)];
 
-	// sendMes.mes = fs.readFileSync(dataPath, 'utf8').replace(/\t|\r|\n/g, '');
-	sendMes.mes = JSON.stringify(fs.readFileSync(dataPath, 'utf8'))
-	console.log(sendMes.mes)
-
-	// sendMes.mes = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
+	sendMes.mes = getJSONNote(dataPath);
 
 	res.json(sendMes)
 
@@ -103,3 +104,24 @@ app.listen(port, function() {
 	}
 })
 
+/* 
+	获取JSON
+	-------------------------------------
+	去除JSON中的注释 
+*/
+function getJSONNote (dataPath) {
+	var JSONInner = {};
+
+	try {
+
+		JSONInner = fs.readFileSync(dataPath, 'utf8').replace(/\/{2}.+/g, '')
+	} catch (err) {
+		console.log('无法找到配置文件 '.bgRed.white+dataPath.bgYellow.white)
+	}
+
+	// console.log(JSONInner)
+
+	JSONInner = JSON.parse(JSONInner);
+
+	return JSONInner
+}

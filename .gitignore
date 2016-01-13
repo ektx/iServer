@@ -1,3 +1,4 @@
 #忽略 HTML 文件夹
 /html
 /public
+/bin/config.json
