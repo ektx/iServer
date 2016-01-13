@@ -12,13 +12,38 @@ node epp.js
 * 让开发者使用`ejs`和`jade`来组件化开发自己的静态页面     
 * 支持样式的合并与压缩功能
 * 生成文件统计与输出
-* 覆盖生成功能    
+* 覆盖生成功能  
+* 本地模拟数据引用    
 
 ## 更新日志
 * 优化样式压缩功能  
 * 新加生成文件统计  
 * 优化页面样式   
   
+## 本地模拟数据使用方式  
+```js
+/* 1. 在`bin`中新建个 `config.json`
+   添加数据
+   比如你的请求为：
+   post /demo/getUseList 
+   请求doem中getUseList模拟数据 
+   其中首个//之间请统一起来,用来指定public的文件夹
+
+*/
+{
+	'demo': 'demo'
+}
+
+/*  2.在 demo/data/config.josn中添加路径
+	
+*/
+{
+	'/demo/getUsrList': 'getUsrList.json'
+}
+
+// 3.添加 getUsrList.json 数据
+
+```
 
 ## 相关资料  
 查看 [node.js](https://nodejs.org/)  
