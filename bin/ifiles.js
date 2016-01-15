@@ -169,22 +169,14 @@ exports.sendFile = function(req, res, filePath) {
         }
 	} else {
 
-		var stream = fs.createReadStream(filePath, 'utf8');
+		var stream = fs.createReadStream(filePath);
 
 		stream.on('error', function() {
 			sendError(res, 505)
 		})
-		stream.on('data', function(chunk) {
-			console.log(chunk)
-		})
-
-
-		mime.define({
-			"text/x-scss": ['txt']
-		})
-		console.log(path.basename(filePath))
-		console.log(mime.lookup(path.basename(filePath)))
-		console.log(mime.lookup('txt'))
+		// stream.on('data', function(chunk) {
+		// 	console.log(chunk)
+		// })
 
 		res.writeHead(
 			200,
