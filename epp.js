@@ -87,7 +87,6 @@ app.post('*', function(req, res) {
 
 	// 请求模拟路径
 	var dataPath = __dirname + '/public/'+_PRO_CON[_PRO_PATH]+'/Dev/Data/' + configInfo[decodeURI(_path)];
-
 	sendMes.mes = getJSONNote(dataPath);
 
 	res.json(sendMes)
@@ -114,12 +113,13 @@ function getJSONNote (dataPath) {
 
 	try {
 
-		JSONInner = fs.readFileSync(dataPath, 'utf8').replace(/\/{2}.+/g, '')
+		JSONInner = fs.readFileSync(dataPath, 'utf8')
+		// 去注释和压缩空格
+		JSONInner = JSONInner.replace(/(\/{2}.+)|\s/g, '')
+
 	} catch (err) {
 		console.log('无法找到配置文件 '.bgRed.white+dataPath.bgYellow.white)
 	}
-
-	// console.log(JSONInner)
 
 	JSONInner = JSON.parse(JSONInner);
 
