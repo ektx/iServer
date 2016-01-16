@@ -174,6 +174,7 @@ exports.sendFile = function(req, res, filePath) {
 		stream.on('error', function() {
 			sendError(res, 505)
 		})
+
 		// stream.on('data', function(chunk) {
 		// 	console.log(chunk)
 		// })
