@@ -179,6 +179,10 @@ exports.sendFile = function(req, res, filePath) {
 		// 	console.log(chunk)
 		// })
 
+		mime.define({
+			'text/css': ['scss']
+		})
+
 		res.writeHead(
 			200,
 			{'Content-Type': mime.lookup(path.basename(filePath))}
