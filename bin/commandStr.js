@@ -1,30 +1,36 @@
 var args = process.argv.splice(2)
-var comString = args.join()
+var comString = args.join('')
 
+
+// 把命令行的内容换成JSON之后，返回出去
 exports.commandStr = function() {
 
-	var result = false;
+	var result = {};
 
-	// 帮助信息
-	if (/h|help/i.test(comString)) {
-		printHelp('h');
-		result = false;
+	for (var i of args) {
 
-	} 
-	// 版本信息
-	else if (/v|version/i.test(comString)) {
-		result = 'getVersion'
+		var name = i.split(':')[0].replace(/-/g, '');
+		var inner = i.split(':')[1] || true;
 
-	} 
-	// 其它非特定
-	else  {
-		// 端口号
-		if (/p|port/i.test(comString)) {
-			var port = comString.match(/(p|port),(\w+)/)[2];
-			result = {
-				port: port
-			}
+		// 格式化输出
+		switch (name) {
+			case 'p':
+				name = 'port';
+				break;
+
+			case 'b':
+				name = 'browser';
+				break;
+
+			case 'h':
+				name = 'help';
+				break;
 		}
+
+		// 对空命令不添加,eg: -h - - - 
+		// => {help:true}
+		if (name)
+			result[name] = inner;
 	}
 
 	return result;	
@@ -35,14 +41,11 @@ exports.commandStr = function() {
 	帮助信息
 	----------------------------------
 */
-function printHelp(type) {
-	if (type == 'h') {
+exports.printHelp = function () {
+	var Hstr = 'Usage: node epp.js [ -p port] [...]\n\n';
+	Hstr += 'Options\n';
+	Hstr += '-p, -port       iserver 端口号\n';
+	Hstr += '-v, -version    iServer 版本信息\n';
 
-		var Hstr = 'Usage: node epp.js [ -p port] [...]\n\n';
-		Hstr += 'Options\n';
-		Hstr += '-p, -port       iserver 端口号\n';
-		Hstr += '-v, -version    iServer 版本信息\n';
-
-		console.log(Hstr)
-	}
+	console.log(Hstr)
 }
