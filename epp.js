@@ -17,21 +17,25 @@ var colors = require('colors')
 var server = require('./bin/server')
 var ifiles = require('./bin/ifiles')
 var getIPs = require('./bin/getIPs')
-var comStr = require('./bin/commandStr').commandStr()
+var comStr = require('./bin/commandStr')
+var _command = comStr.commandStr();
 var open   = require('./bin/open')
-
 
 // 默认设置
 var packageInfo = JSON.parse(fs.readFileSync(__dirname+'/package.json', 'utf8'));
 var version = packageInfo.name +' '+ packageInfo.version;
 
-if (comStr === 'getVersion') {
-	console.log(version);
+if (_command.v || _command.help) {
+	if (_command.v) {
+		console.log(version);
+	} else {
+		console.log(comStr.printHelp())
+	}
 	return
 }
 
 // 默认端口设置
-var port = comStr.port || packageInfo.config.port;
+var port = _command.port || packageInfo.config.port;
 
 var app = express()
 var root = __dirname;
@@ -43,9 +47,6 @@ app.get('/favicon.ico', function(req, res) {
 	res.end();
 	return
 });
-
-
-
 
 app.get('*', function(req, res) {
 	var _css = '/bin/css/layout.css';
@@ -97,6 +98,11 @@ app.post('*', function(req, res) {
 app.listen(port, function() {
 	console.log(('=================================\nWelcome to '+version+'\n=================================').rainbow)
 
+	if (_command.browser) {
+
+		openBrowser(_command.browser)
+	}
+
 	var zip = getIPs().IPv4;
 	for (var i in zip) {
 		console.log(zip[i] + ':' + port)
@@ -124,4 +130,29 @@ function getJSONNote (dataPath) {
 	JSONInner = JSON.parse(JSONInner);
 
 	return JSONInner
+}
+
+/*
+	在浏览器中打开页面
+	--------------------------------------
+
+*/
+function openBrowser(browserName) {
+
+	var hostName = getIPs().IPv4;
+
+	if (typeof browserName == 'boolean') browserName = ''
+
+	for (var i in hostName) {
+		if (hostName[i] == '127.0.0.1') {
+			hostName.splice(i,1);
+		}
+	}
+
+	console.log(hostName)
+
+	var url = 'http://'+hostName[0]+':'+port;
+
+	open(url, browserName)
+
 }
