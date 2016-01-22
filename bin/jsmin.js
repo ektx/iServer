@@ -32,7 +32,7 @@ function setPath (inputPath, outputPath, sourceMap, makelist) {
 		}
 
 		// 压缩处理文件
-		if (path.extname(inputfile) === '.js') {
+		if (path.extname(inputfile) === '.js' && path.extname(path.parse(i).name) !== '.min') {
 			var outPathDir = path.dirname(outputfile);
 			var getMinJS = generateMinJS(inputfile, sourceMap);
 
@@ -78,7 +78,7 @@ function setPath (inputPath, outputPath, sourceMap, makelist) {
 
 			for (var i of files) {
 				// 只对 js 文件且为非压缩文件处理
-				if (path.parse(i).ext === '.js' && path.extname(path.parse(i).name) !== '.min') {
+				if (path.parse(i).ext === '.js') {
 
 					// 指定输出路径
 					var _int = inputPath + '/'+ i;
