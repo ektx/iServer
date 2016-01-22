@@ -1,7 +1,7 @@
 
 /*
 	静态页面生成器
-	v 0.2.4
+	v 0.3.0
 	----------------------------------------------------
 	支持 ejs 或 jade模板文件共存,同时支持生成文件  
 	修改文件生成方式,对没有发生变化的内容不再一起生成
@@ -21,6 +21,7 @@ var ejs = require('ejs');
 var jade = require('jade');
 
 var css = require('./css');
+var js = require('./jsmin');
 
 var delaySend = [];
 var generateType = '';
@@ -226,28 +227,32 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 	console.log(' U - ' + _curl)
 	delaySend.push(' U - ' + _curl+'\n')
 
-	// 如果文件是以 ejs 或是 jade 的类型
-	if (path.extname(fileName) === '.ejs' || path.extname(fileName) === '.jade') {
+	var _extname = path.extname(fileName);
 
-		// 生成HTML
-		outputs(fileName, _url, _curl);
-	
-	} 
-	// 如果是样式，且不是压缩过的样式
-	else if (path.extname(fileName) === '.css' && path.basename(fileName, '.css').indexOf('.min') === -1) {
+	switch (_extname) {
+		// 如果文件是以 ejs 或是 jade 的类型
+		case '.ejs':
+		case '.jade':
+			// 生成 HTML
+			outputs(fileName, _url, _curl);
+			break;
 
-		// 样式以下划线命名的将要被忽略
-		if (path.basename(fileName).substr(0, 1) !== '_')
-			css.css(_url, _url);
-			css.css(_url, _curl);
+		// 如果是样式，且不是压缩过的样式
+		case '.css':
+			if (path.basename(fileName, '.css').indexOf('.min') === -1) {
+				// 样式以下划线命名的将要被忽略
+				if (path.basename(fileName).substr(0, 1) !== '_') {
+					css.css(_url, _url);
+					css.css(_url, _curl);
+				}
+			}
+			break;
 
-	}
-	// 除html以外直接复制
-	else {
-
-		var readS = fs.createReadStream(_url)
-		var writeS = fs.createWriteStream(_curl)
-		readS.pipe(writeS)
+		default:
+			// 除html以外直接复制
+			var readS = fs.createReadStream(_url)
+			var writeS = fs.createWriteStream(_curl)
+			readS.pipe(writeS)
 	}
 
 }
