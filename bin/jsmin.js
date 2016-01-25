@@ -9,17 +9,13 @@ var mime = require('mime');
 // @sourceMap: [boolean] 是否生成 source map
 // @makelist:  [Array]   返回生成文件列表
 function setPath (inputPath, outputPath, sourceMap, makelist) {
-	
-	if (typeof makelist != 'array') {
-		var makelist = [];
-	}
+
 
 	// 生成文件
 	// @inputfile:  [string]  源文件路径
 	// @outputfile: [string]  输出文件路径
 	// @inputfile:  [boolean] 是否生成 source map
 	var makeFile = function(inputfile, outputfile, sourceMap) {
-
 		// 如果源文件和输出目录不在同一个目录
 		// 复制原来的文件到指定目录
 		if (path.dirname(inputfile) != path.dirname(outputfile)) {
@@ -32,8 +28,9 @@ function setPath (inputPath, outputPath, sourceMap, makelist) {
 		}
 
 		// 压缩处理文件
-		if (path.extname(inputfile) === '.js' && path.extname(path.parse(i).name) !== '.min') {
-			var outPathDir = path.dirname(outputfile);
+		if (path.extname(inputfile) === '.js' && path.extname(path.parse(inputfile).name) !== '.min') {
+
+			outputfile = outputfile.replace('.js', '.min.js');
 			var getMinJS = generateMinJS(inputfile, sourceMap);
 
 			// 生成压缩 js
@@ -50,6 +47,14 @@ function setPath (inputPath, outputPath, sourceMap, makelist) {
 
 		}
 	};
+
+
+	inputPath = path.normalize(inputPath).replace(/\\/g, '/');
+	outputPath = path.normalize(outputPath).replace(/\\/g, '/');
+
+	if (typeof makelist != 'array') {
+		var makelist = [];
+	}
 
 
 	try {
@@ -83,8 +88,6 @@ function setPath (inputPath, outputPath, sourceMap, makelist) {
 					// 指定输出路径
 					var _int = inputPath + '/'+ i;
 					var _out = outputPath + '/'+ i;
-					// 修改压缩名称
-					_out = _out.replace('.js', '.min.js')
 
 					makeFile(_int, _out, sourceMap)
 				}
@@ -115,11 +118,10 @@ function generateMinJS(inputPath, sourceMap) {
 	} else {
 		result = uglifyJS.minify(inputPath)
 	}
-
 	return result;
 }
 
-exports.jsmin = setPath
+exports.min = setPath
 
 // TEST
 // console.log(setPath('E:/xxx','E:/xx', true))
