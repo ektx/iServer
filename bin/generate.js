@@ -248,6 +248,10 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 			}
 			break;
 
+		case '.js':
+			js.min(_url, _curl, true)
+			break;
+
 		default:
 			// 除html以外直接复制
 			var readS = fs.createReadStream(_url)
