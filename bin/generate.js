@@ -245,7 +245,13 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 					css.css(_url, _url);
 					css.css(_url, _curl);
 				}
+			} else {
+				// min 文件直接输出
+				var readS = fs.createReadStream(_url)
+				var writeS = fs.createWriteStream(_curl)
+				readS.pipe(writeS)
 			}
+
 			break;
 
 		case '.js':
@@ -281,16 +287,15 @@ function createFolders(src, curl, delaySend) {
 function getPartsList (path, listArr) {
 	var filesArr = fs.readdirSync(path);
 	console.log('******* ' + path)
+	console.log('******* ' + filesArr)
 
-	for (var i = 0, fileLen = filesArr.length; i < fileLen; i++) {
-		(function(i) {
+	for (var i of filesArr) {
 
-			console.log('== '+filesArr[i])
+			console.log('== '+i)
 
-			if (filesArr[i] === 'parts') {
+			if (i === 'parts') {
 				console.log('have mod')
 				
 			}
-		})(i)
 	}
 }
