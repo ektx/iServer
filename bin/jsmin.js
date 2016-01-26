@@ -109,6 +109,9 @@ function setPath (inputPath, outputPath, sourceMap, makelist) {
 function generateMinJS(inputPath, sourceMap) {
 	var result = {};
 
+	console.log(inputPath)
+	console.log(path.basename(inputPath))
+
 	if (sourceMap) {
 		sourceMap = inputPath+'.map';
 
@@ -118,10 +121,19 @@ function generateMinJS(inputPath, sourceMap) {
 	} else {
 		result = uglifyJS.minify(inputPath)
 	}
+
+	result.code = result.code.replace(inputPath, path.basename(inputPath, '.js'))
+	
+	var mapReg = new RegExp(path.dirname(inputPath) + '/', 'g')
+
+	result.map = result.map.replace(mapReg, '')
+	result.map = result.map.replace(/js\.map/g, 'map')
+
 	return result;
 }
+
 
 exports.min = setPath
 
 // TEST
-// console.log(setPath('E:/xxx','E:/xx', true))
+console.log(setPath('E:/xxx','E:/xx', true))
