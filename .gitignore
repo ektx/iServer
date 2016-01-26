@@ -1,5 +1,7 @@
 #忽略 HTML 文件夹
 /html
-/Public
+/Public/*
 /bin/config.json
 /node_modules
+
+!/Public/demo/
