@@ -284,18 +284,121 @@ function createFolders(src, curl, delaySend) {
 	当parts中的文件发生变化时，更新其所有相关有引用文件
 
 */
-function getPartsList (path, listArr) {
-	var filesArr = fs.readdirSync(path);
-	console.log('******* ' + path)
-	console.log('******* ' + filesArr)
+function getPartsList (_path, listArr) {
+	var filesArr = fs.readdirSync(_path);
+	var result = [];
+	// 当前项目中所有 parts 文件夹
+	var partsDirArr = [];
+	console.log('******* ' + _path)
 
-	for (var i of filesArr) {
+	/*
+		获取所有的 parts 目录
+		然后把parts的内部文件统一处理
+	*/ 
+	var forEachDir = function(_pathName) {
+		var dirFilses = fs.readdirSync(_pathName);
 
-			console.log('== '+i)
+		// 遍历文件夹中的文件
+		for (var i of dirFilses) {
+			var newPath = path.normalize(path.join(_pathName,i));
+			var fileStat = fs.statSync(newPath);
 
-			if (i === 'parts') {
-				console.log('have mod')
-				
+			// 只查看文件夹
+			if (fileStat.isDirectory()) {
+				// 文件夹只能是 parts 文件夹
+				if (i === 'parts') {
+					partsDirArr.push(newPath)
+				}
+				// 不是parts文件夹，我们再对内部文件遍历
+				// 把它内部的所有 parts 文件夹列出来
+				else {
+					// console.log('Dir name: '+ newPath)
+					forEachDir(newPath)
+				}
 			}
+		}
+	};
+
+
+	// 得到所有 parts 文件夹下的文件
+	var getPartsFile = function (dirPath) {
+
+		var partsDirFiles = fs.readdirSync(dirPath);
+		// 是否有版本文件，默认为无
+		// 在没有时，所有的关联文件默认是会被更新到的
+		var isVersionFile = false;
+		var versionFile = {};
+		// 当前版本文件的路径
+		var versionPath = path.join(dirPath, 'version.json');
+		// console.log('V P :' + versionPath)
+
+		try {
+			// 读取版本文件内容
+			versionFile = fs.readFileSync(versionPath)
+			// 解释成json，以方便使用
+			versionFile = JSON.parse(versionFile)
+			// 如果正常读取到了版本文件
+			isVersionFile = true;
+
+		} catch (err) {
+			console.log('Warning: Not have version!\n' + err)
+		}
+
+		// 遍历文件，然后对文件进行属性进行对比
+		// 以得到发生变化的文件信息
+		for (var filesname of partsDirFiles) {
+			var filePath = path.join(dirPath, filesname);
+			var fileStat = fs.statSync(filePath);
+
+			// 处理的文件不包含版本控制文件
+			if (filesname !== 'version.json') {
+
+				// 当文件是目录时
+				if (fileStat.isDirectory()) {
+					getPartsFile(filePath)
+				} 
+				// 当只是文件时
+				else if (fileStat.isFile()) {
+
+					var timeStr = +new Date(fileStat.mtime);
+
+					// 如果没有版本控制文件在
+					if (!isVersionFile) {
+						versionFile[filesname] = timeStr;
+						result.push(filesname)
+					}
+					// 如果版本控制在的话
+					else {
+						// 判断文件的修改时间是否变化了
+						if (versionFile[filesname] !== timeStr) {
+							// console.log('= C = ', filesname)
+							// console.log(versionFile[filesname])
+							// console.log(timeStr)
+							versionFile[filesname] = timeStr;
+							result.push(filesname)
+						}
+					}
+
+				}
+			}
+		}
+
+		// 更新或生成版本控制文件
+		fs.writeFile(versionPath, JSON.stringify(versionFile), {encodeing: 'utf8'})
 	}
+
+
+
+
+
+
+	forEachDir(_path)
+	// console.log('所有 Parts 文件夹: ', partsDirArr)
+
+	for (var i of partsDirArr) {
+		getPartsFile(i)
+	}
+
+	console.log('变动过的子模板有：\n' + result)
+	return result 
 }
