@@ -1,0 +1,17 @@
+@charset "utf-8";
+/* 
+	HUMMINGBIRDUI
+	------------------------------
+	CSS                 time.css
+ */
+/* 选择时间的样式 */
+
+body, section, div, span, figure,
+h1, h2, h3, h4, p,
+i, b,
+ul, li, ol, input, button {
+	margin: 0;
+	padding: 0;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+}
