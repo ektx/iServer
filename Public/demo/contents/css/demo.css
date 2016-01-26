@@ -1,19 +1,19 @@
 @charset "utf-8";
 /* 
-	HUMMINGBIRDUI
+	DEMO CSS
 	------------------------------
-	CSS                 layout.css
+	ektx                  demo.css
  */
 /* 选择时间的样式 */
-@import url('../time.css');
-@import url('parts/alert.css');
+@import url('parts/reset.css');
 
-body, section, div, span, figure,
-h1, h2, h3, h4, p,
-i, b,
-ul, li, ol, input, button {
-	margin: 0;
-	padding: 0;
-	-webkit-tap-highlight-color: transparent;
-	-webkit-touch-callout: none;
+nav {
+	font-size: 0;
+}
+nav li {
+	display: inline-block;
+	font-size: 16px;
+	margin: 0 15px;
+	line-height: 32px;
+	text-transform: uppercase;
 }
