@@ -109,9 +109,6 @@ function setPath (inputPath, outputPath, sourceMap, makelist) {
 function generateMinJS(inputPath, sourceMap) {
 	var result = {};
 
-	console.log(inputPath)
-	console.log(path.basename(inputPath))
-
 	if (sourceMap) {
 		sourceMap = inputPath+'.map';
 
@@ -136,4 +133,4 @@ function generateMinJS(inputPath, sourceMap) {
 exports.min = setPath
 
 // TEST
-console.log(setPath('E:/xxx','E:/xx', true))
+// console.log(setPath('E:/xxx','E:/xx', true))
