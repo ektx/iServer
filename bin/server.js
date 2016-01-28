@@ -100,7 +100,7 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 						var suggestExtName = '.ejs';
 
 						// 参数大于1时，这时建议已经在处理过 ejs 的建议了
-						if (statsArr.length > 1) {
+						if (statsArr.length > 1 && statsArr[1] !== '.jade') {
 							suggestExtName = '.jade'
 						}
 
