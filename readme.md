@@ -1,5 +1,5 @@
-## iServer 2.7
-![iServer 2](/bin/favicon.png 'Server 2.7')  
+## iServer 2.8
+![iServer 2](/bin/favicon.png 'Server 2.8')  
 
 
 - 启动方式
