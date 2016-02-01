@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>MAKE HTML</title>
+	<link rel="stylesheet" type="text/css" href="/bin/css/layout.css">
+</head>
+<body>
+<form class="make-form" action="">
+	<input type="url" placeholder="生成页面URL">
+
+	<a class="make-pro" href=":important">覆盖生成</a>
+
+	<ul class="make-type-btns">
+		<li class="current">All</li>
+		<li>HTML</li>
+		<li>Css</li>
+		<li>Js</li>
+		<li>Other</li>
+	</ul>
+</form>
+
+<div class="make-ul-box">
+	<ul class="make-list">
+		<% for (var i = 0, l = MArr.length; i < l; i++) {%>
+		<li><%= (i+1) +' '+ MArr[i] %></li>
+		<% } %>
+	</ul>
+</div>
+
+<script>
+	var listArr = document.querySelectorAll('.make-list li');
+	// 添加样式 
+	for (var i = 0, len = listArr.length; i < len; i++) {
+		var className = listArr[i].innerHTML.replace(/.+\.(?=.+)/gi, '').replace(/\n/g, '');
+
+		className = className.toLocaleLowerCase();
+		switch (className) {
+			case 'html':
+			case 'jade':
+			case 'ejs':
+			case 'htm':
+				className = 'html';
+				break;
+
+			case 'css':
+			case 'js':
+				break;
+
+			default:
+				className = 'other';
+		}
+
+		listArr[i].setAttribute('class', className)
+	}
+
+	// 切换事件
+	document.querySelector('.make-type-btns').addEventListener('click',function(e){
+		// alert(this.innerHTML)
+		if (!e.target.classList.contains('make-type-btns')) {
+			// 除去之前的状态
+			document.querySelector('.current').classList.remove('current');
+			// 添加当前点击元素状态
+			e.target.classList.add('current');
+
+			var className = e.target.innerHTML.toLocaleLowerCase();
+
+			NodeList.prototype.forEach = Array.prototype.forEach;
+			document.querySelectorAll('.make-list li').forEach(function(e){
+
+				if (className == 'all') {
+					e.style.display = 'block';
+					return;
+				}
+
+				if (!e.classList.contains(className)) {
+					e.style.display = 'none';
+				} else {
+					e.style.display = 'block'
+				}
+			})
+		}
+	})
+</script>
+</body>
+</html>

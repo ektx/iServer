@@ -1,7 +1,7 @@
 
 /*
 	静态页面生成器
-	v 0.2.4
+	v 0.3.0
 	----------------------------------------------------
 	支持 ejs 或 jade模板文件共存,同时支持生成文件  
 	修改文件生成方式,对没有发生变化的内容不再一起生成
@@ -21,15 +21,17 @@ var ejs = require('ejs');
 var jade = require('jade');
 
 var css = require('./css');
+var js = require('./jsmin');
 
 var delaySend = [];
 var generateType = '';
 
 exports.generate = function(res, root, copyPath, _type) {
 	console.log('--------- GENERATE ---------')
+
 	copyPath = path.normalize(copyPath);
 	// 清空数据防止缓存
-	var delayPath = [], delaySend = [];
+	var delayPath = [], delaySend = [], changeList = [];
 	
 	generateType = _type;
 
@@ -66,7 +68,8 @@ exports.generate = function(res, root, copyPath, _type) {
 
 	}
 
-
+	// 遍历模板
+	getPartsList(root, changeList)
 
 	// 指定生成目录判断,创建
 	try {
@@ -148,11 +151,14 @@ function checkFile(fileName, _url, _curl, delaySend) {
 					}
 				} 
 
-				// 生成区文件较新
+				// 生成区文件较新较大
 				else {
-					if (path.extname(fileName) != '.ejs' && 
+					if (_ff.size > _f.size &&
+						path.extname(fileName) != '.ejs' && 
 						path.extname(fileName) != '.jade' &&
-						path.extname(fileName) != '.html'
+						path.extname(fileName) != '.html' &&
+						path.extname(fileName) != '.htm' &&
+						generateType === 'make'
 					) {
 						console.log(' @ - '+ fileName)
 						delaySend.push(' @ - '+ fileName)
@@ -169,7 +175,9 @@ function checkFile(fileName, _url, _curl, delaySend) {
 		// 是文件夹
 		else if (_f.isDirectory()) {
 			// 复制非组件的文件夹
-			if (fileName !== 'parts') createFolders(_url, _curl, delaySend)
+			if (fileName !== 'parts') {
+				createFolders(_url, _curl, delaySend)
+			}
 		}
 
 	} catch (err) {
@@ -219,42 +227,178 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 	console.log(' U - ' + _curl)
 	delaySend.push(' U - ' + _curl+'\n')
 
-	// 如果文件是以 ejs 或是 jade 的类型
-	if (path.extname(fileName) === '.ejs' || path.extname(fileName) === '.jade') {
+	var _extname = path.extname(fileName);
 
-		// 生成HTML
-		outputs(fileName, _url, _curl);
-	
-	} 
-	// 如果是样式，且不是压缩过的样式
-	else if (path.extname(fileName) === '.css' && path.basename(fileName, '.css').indexOf('.min') === -1) {
+	switch (_extname) {
+		// 如果文件是以 ejs 或是 jade 的类型
+		case '.ejs':
+		case '.jade':
+			// 生成 HTML
+			outputs(fileName, _url, _curl);
+			break;
 
-		// 样式以下划线命名的将要被忽略
-		if (path.basename(fileName).substr(0, 1) !== '_')
-			css.css(_url, _curl);
+		// 如果是样式，且不是压缩过的样式
+		case '.css':
+			if (path.basename(fileName, '.css').indexOf('.min') === -1) {
+				// 样式以下划线命名的将要被忽略
+				if (path.basename(fileName).substr(0, 1) !== '_') {
+					css.css(_url, _url);
+					css.css(_url, _curl);
+				}
+			} else {
+				// min 文件直接输出
+				var readS = fs.createReadStream(_url)
+				var writeS = fs.createWriteStream(_curl)
+				readS.pipe(writeS)
+			}
 
-	}
-	// 除html以外直接复制
-	else {
+			break;
 
-		var readS = fs.createReadStream(_url)
-		var writeS = fs.createWriteStream(_curl)
-		readS.pipe(writeS)
+		case '.js':
+			js.min(_url, _curl, true)
+			break;
+
+		default:
+			// 除html以外直接复制
+			var readS = fs.createReadStream(_url)
+			var writeS = fs.createWriteStream(_curl)
+			readS.pipe(writeS)
 	}
 
 }
 
 function createFolders(src, curl, delaySend) {
-	// fs.mkdir(curl, function() {
-	// 	// 读取要复制文件夹下内容
-	// 	readFile(src, curl)
-	// })
+
 	try {
 		var isMS = fs.mkdirSync(curl)
-
-		readFile(src, curl, delaySend)
 	} catch (err) {
 
 	}
+
+	readFile(src, curl, delaySend)
 }
 
+/*
+	对parts文件进行缓存
+	---------------------------------------
+	当parts中的文件发生变化时，更新其所有相关有引用文件
+
+*/
+function getPartsList (_path, listArr) {
+	var filesArr = fs.readdirSync(_path);
+	var result = [];
+	// 当前项目中所有 parts 文件夹
+	var partsDirArr = [];
+	console.log('******* ' + _path)
+
+	/*
+		获取所有的 parts 目录
+		然后把parts的内部文件统一处理
+	*/ 
+	var forEachDir = function(_pathName) {
+		var dirFilses = fs.readdirSync(_pathName);
+
+		// 遍历文件夹中的文件
+		for (var i of dirFilses) {
+			var newPath = path.normalize(path.join(_pathName,i));
+			var fileStat = fs.statSync(newPath);
+
+			// 只查看文件夹
+			if (fileStat.isDirectory()) {
+				// 文件夹只能是 parts 文件夹
+				if (i === 'parts') {
+					partsDirArr.push(newPath)
+				}
+				// 不是parts文件夹，我们再对内部文件遍历
+				// 把它内部的所有 parts 文件夹列出来
+				else {
+					// console.log('Dir name: '+ newPath)
+					forEachDir(newPath)
+				}
+			}
+		}
+	};
+
+
+	// 得到所有 parts 文件夹下的文件
+	var getPartsFile = function (dirPath) {
+
+		var partsDirFiles = fs.readdirSync(dirPath);
+		// 是否有版本文件，默认为无
+		// 在没有时，所有的关联文件默认是会被更新到的
+		var isVersionFile = false;
+		var versionFile = {};
+		// 当前版本文件的路径
+		var versionPath = path.join(dirPath, 'version.json');
+		// console.log('V P :' + versionPath)
+
+		try {
+			// 读取版本文件内容
+			versionFile = fs.readFileSync(versionPath)
+			// 解释成json，以方便使用
+			versionFile = JSON.parse(versionFile)
+			// 如果正常读取到了版本文件
+			isVersionFile = true;
+
+		} catch (err) {
+			console.log('Warning: Not have version!\n' + err)
+		}
+
+		// 遍历文件，然后对文件进行属性进行对比
+		// 以得到发生变化的文件信息
+		for (var filesname of partsDirFiles) {
+			var filePath = path.join(dirPath, filesname);
+			var fileStat = fs.statSync(filePath);
+
+			// 处理的文件不包含版本控制文件
+			if (filesname !== 'version.json') {
+
+				// 当文件是目录时
+				if (fileStat.isDirectory()) {
+					getPartsFile(filePath)
+				} 
+				// 当只是文件时
+				else if (fileStat.isFile()) {
+
+					var timeStr = +new Date(fileStat.mtime);
+
+					// 如果没有版本控制文件在
+					if (!isVersionFile) {
+						versionFile[filesname] = timeStr;
+						result.push(filesname)
+					}
+					// 如果版本控制在的话
+					else {
+						// 判断文件的修改时间是否变化了
+						if (versionFile[filesname] !== timeStr) {
+							// console.log('= C = ', filesname)
+							// console.log(versionFile[filesname])
+							// console.log(timeStr)
+							versionFile[filesname] = timeStr;
+							result.push(filesname)
+						}
+					}
+
+				}
+			}
+		}
+
+		// 更新或生成版本控制文件
+		fs.writeFile(versionPath, JSON.stringify(versionFile), {encodeing: 'utf8'})
+	}
+
+
+
+
+
+
+	forEachDir(_path)
+	// console.log('所有 Parts 文件夹: ', partsDirArr)
+
+	for (var i of partsDirArr) {
+		getPartsFile(i)
+	}
+
+	console.log('变动过的子模板有：\n' + result)
+	return result 
+}

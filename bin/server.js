@@ -1,6 +1,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var ejs = require('ejs');
 
 var ifiles = require('./ifiles');
 var generate = require('./generate')
@@ -35,97 +36,109 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 
 		var html = generate.generate(res, _dir, copyPath, _type);
 
-		sendMakeHTML(res, html);
+		var _html = ejs.render(fs.readFileSync(__dirname + '/make.ejs', 'utf8'), {MArr: html});
+
+		res.send(_html)
 
 		return;
 	}
 
 	// 是否存在文件
-	var isStat = function(_path, _backupPath) {
+	var isStat = function(_path) {
+
+		// 文件路径参数集
+		// 用来收集建议信息
+		var statsArr = arguments;
+
+		// 生成建议路径
+		if (statsArr.length > 1) {
+			// 修改文件名
+			var extName = path.extname(_path);
+			_path = _path.replace(extName, statsArr[1]);
+			console.log('Suggest Path:'.white.bgYellow, _path)
+		}
 
 		fs.stat(_path, function(err, stats) {
 			if (err) {
-				console.log('No:'.white.bgRed+' - '+_path)
+				console.log('No '.white.bgRed+' - '+_path)
+				
 				/* 
-					如果没有指定的文件则为用户推荐ejs或jade的模板文件
+					如果没有找到的文件
+					则为用户推荐ejs或jade的模板文件
 					当然前提是在请求html的时候
 
-					目标是为了解决 jQuery load请求时可以统一使用
+					目标是为了解决 
+					1.jQuery load请求时可以统一使用
 					/dome/page.html 的方法
-					
+					2.导航上直接使用以html为后缀的文件跳转名
 				*/
 
-				if (_backupPath) {
-					_path = _backupPath +'.jade';
-					
-					console.log('Recommended address:'.white.bgGreen + _path)
+				// 文件后缀名是什么
+				var fileExtName = ''
 
-					isStat(_path);
-					return;
+				// 当在原始请求时，参数只有地址
+				// 这时长度为1，我们取文件格式
+				// 判断是否满足以下建议形式的文件
+				if (statsArr.length == 1) {
+					fileExtName = path.extname(_path)
+				} 
+				// 当是建议文件时，我们会增加2个参数进去
+				// 用来处理建议内容
+				else {
+					// 取得建议文件的原始格式
+					fileExtName = statsArr[2]
 				}
 
-				if (path.extname(_path) === '.html') {
-					// 截取原地址
-					var cutPath = _path.substr(0, _path.length-5);
-					// 先尝试看 ejs的模板
-					_path = cutPath + '.ejs';
+				switch (fileExtName) {
+					// 在请求的HTML不存在时
+					// 我们先去尝试请求 ejs 模板文件
+					// 然后在 ejs 的模板也不存在时，尝试jade模板
+					// 如果您使用 jade 的比较多，可以修改下面文件
+					case '.html':
 
-					// 建议路径
-					console.log('Recommended address:'.white.bgGreen + _path)
+						// 添加建议格式 ejs
+						var suggestExtName = '.ejs';
 
-					// 再次判断文件是否存在
-					isStat(_path, cutPath)
-					return;
+						// 参数大于1时，这时建议已经在处理过 ejs 的建议了
+						if (statsArr.length > 1 && statsArr[1] !== '.jade') {
+							suggestExtName = '.jade'
+						}
+
+						isStat(_path, suggestExtName, '.html');
+						return;
+
 				}
 
-				console.log(_path)
-
-				// 如是根目录不存在,则生成根目录
-				if (path.dirname(_path) === root) {
-					ifiles.mkdirs(res, _path)
-				} else {
-					
-					ifiles.sendError(res, 404)
-				}
+				// 如果没有建议文件或建议文件也不存在
+				// 提示 404
+				ifiles.sendError(res, 404)
 				return;
 			}
 
+			// 如果请求的文件存在
+			// 判断是文件还是文件夹
+			// 文件则显示内容
 			if (stats.isFile()) {
 
-				if (path.extname(_path) === '.ejs' || path.extname(_path) === '.jade') {
+				// 如果文件是ejs或是jade
+				// 我们渲染成页面输出，防止下载下来了
+				if (path.extname(_path) === '.ejs' || 
+					path.extname(_path) === '.jade') {
 					res.render(_path);
 				} else {
 
 					ifiles.sendFile(req, res, _path)
 				}
 
-			} else if(stats.isDirectory()) {
+			} 
+			// 文件夹则显示内部的文件目录
+			else if(stats.isDirectory()) {
 				ifiles.showDirecotry(res, root, reqPath)
 			}
 		})
 
 	}
+
 	isStat(_path)
-
-}
-
-/*
-	生成页面
-	-----------------------------------------------
-	ektx1989 <530675800@qq.com>
-*/
-function sendMakeHTML(res, xhtml) {
-
-	var html = '<!doctype html><html><head><meta charset="utf-8">';
-	html += '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">';
-	html += '<link rel="stylesheet" type="text/css" href="/bin/css/layout.css">';
-	html += '<title>成功</title></head><body>';
-	html += '<b>'+xhtml+'</b>'
-	html += '<h2>生成页面完成,请查看html文件夹</h2>';
-	html += '<a class="make-pro" href=":important">覆盖生成</a>';
-
-	html += '</body>';
-
-	res.send(html)
 
 }
