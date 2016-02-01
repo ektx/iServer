@@ -8,22 +8,29 @@ var path = require('path');
 */
 exports.css = function(oldPath, outputPath) {
 
-	fs.readFile(oldPath, 'utf8', function(err, data) {
-		if (err) {
-			console.log(err)
+	try {
+
+
+		var data = fs.readFileSync(oldPath, 'utf8');
+		// 输出路径
+		var cssname = path.basename(oldPath, '.css');
+		var outdirname = path.dirname(outputPath);
+
+		if (oldPath === outputPath) {
+
+			minCss(cssname, outdirname, data);
+
 		} else {
-			console.log('css: ' + oldPath);
-			console.log('css: '+outputPath);
-			
-			var outpouCss = '@charset "utf-8";\n';
-			var RegImport = new RegExp("(\\w+\\/?)*.css(?=')", "gi");
+
+			var RegImport = new RegExp("((\\.|\\w)+\\/?)*.css(?=')", "gi");
 			var importCss = data.match(RegImport) || [];
 			// css name
-			var cssname = path.basename(oldPath, '.css');
 			var dirname = path.dirname(oldPath);
-			// 输出路径
-			var outdirname = path.dirname(outputPath);
 
+			// 要输出的样式内容
+			var outpouCss = data;
+			// 清除 import 引用样式
+			outpouCss = outpouCss.replace(/@import.*?.css('|")\);/gi, '')
 
 			console.log('@import 引用样式有:' + importCss + '\n个数有:'+importCss.length);
 
@@ -35,7 +42,7 @@ exports.css = function(oldPath, outputPath) {
 						var newImpPath = path.normalize(dirname + '/' + importCss[i]);
 
 						// 读取引用样式内容
-						fs.stat(newImpPath, function(err,cssdate) {
+						fs.stat(newImpPath, function(err, cssdate) {
 							if (err) {
 								console.log(newImpPath + ' 引用样式表不存在!!')
 							} else {
@@ -59,7 +66,7 @@ exports.css = function(oldPath, outputPath) {
 									}
 								});
 
-								console.log('合成文件：'+cssname)
+								console.log('压缩文件：'+cssname)
 
 								minCss(cssname, outdirname, outpouCss)
 							}
@@ -72,14 +79,24 @@ exports.css = function(oldPath, outputPath) {
 			// 如果没有引用样式
 			// 直接输出，并压缩
 			else {
-				var readS = fs.createReadStream(oldPath);
-				var writeS = fs.createWriteStream(outputPath);
-				readS.pipe(writeS);
-
 				minCss(cssname, outdirname, data);
+
+				// 合成文件
+				fs.writeFile(outputPath, data, 'utf8', function(err) {
+					if (err) { 
+						console.log('!！')
+					} else {
+						console.log(':: '+ cssname);
+					}
+				});
+
 			}
 		}
-	})
+
+	} catch (err) {
+		console.log(err)
+	}
+
 }
 
 
@@ -96,23 +113,24 @@ function minCss(cssname, outputPath, css) {
 	// \t 去换行
 	// \s{2,} 去出现2次以上的空格
 	// \/\*(.|\r\n|\n)*?\*\/ 去注释
-	// \;(?=(\n|\r\n)*?\}) 去样式中最后一个 ;
+	// \;(?=(\n|\r\n|\t)*?\}) 去样式中最后一个 ;
 	/* 
 		\s(?=\{) 去 .classname { .. }中的{前空格或是
 				 去 @keyframes animate { to { }} {前的空格
 
 		\s(?=\() 去除(前的空格
+		,\s      去,后的空格
 	*/
 
-	var minOutputCss = css.replace(/(\t|\s{2,}|\/\*(.|\r\n|\n)*?\*\/|\;(?=(\n|\r\n)*?\})|\s(?=\{)|\s(?=\())/g, '');
+	var minOutputCss = css.replace(/(\t|\s{2,}|\/\*(.|\r\n|\n)*?\*\/|\;(?=(\n|\r\n|\t)*?\})|\s(?=\{)|\s(?=\())/g, '');
 
 	// 去 : 后的空格
 	minOutputCss = minOutputCss.replace(/:\s/g, ':');
+
+	minOutputCss = minOutputCss.replace(/,\s/g, ',');
+
+	minOutputCss = minOutputCss.replace(/\s>\s/g, '>')
 	
-	// console.log('整合样式:' + css);
-
-	// console.log(minOutputCss);
-
 	fs.writeFile(newdir, minOutputCss, 'utf8', function(err){
 		if (err) console.log(err);
 		console.log('OK!')

@@ -1,7 +1,11 @@
 @charset "utf-8";
 
+body, div, p  {
+	margin: 0;
+	padding: 0
+}
 body {
-	font-family: "Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	font: 16px "Microsoft Yahei","Hiragino Sans GB","Helvetica Neue",sans-serif,"SimHei",Arial;
 }
 li {
 	list-style: none;
@@ -49,16 +53,56 @@ ul {
 
 /*强制生成*/
 .make-pro {
-	padding: 5px 15px;
-    color: #FF4500;
-    border: 1px solid #FF4500;
-    border-radius: 3px;
-    transition: background .3s ease, color .3s ease;
+    color: #666;
+    font-size: 14px;
+    transition: color .3s ease;
 }
 .make-pro:hover {
-	background-color: #FF4500;
-	color: #fff;
+	color: #09F;
 }
-.make-pro:active {
-	box-shadow: inset 2px 2px 3px #CA552A;
+
+.make-list li {
+	font-size: 14px;
+	padding: 3px 10px;
+	color: #333;
+}
+.make-list li:nth-child(odd) {
+	background: #f5f5f5;
+}
+
+.make-form input[type="url"] {
+	width: 94%;
+    padding: 14px 3%;
+    margin: 0;
+    border: none;
+    font-size: 16px;
+    background: #09f;
+    color: #fff;
+    display: block;
+}
+
+.make-type-btns {
+	float: right;
+	font-size: 12px;
+	color: #AAA;
+	margin: 0;
+}
+.make-type-btns li {
+	display: inline-block;
+	margin: 5px 3px;
+	cursor: pointer;
+	line-height: 14px;
+}
+.make-type-btns li:hover {
+	border-bottom: 1px solid #AAA;
+}
+.make-type-btns li.current {
+	color: #09F;
+}
+.make-type-btns li.current:hover {
+	border-bottom-color: #09F
+}
+
+.server-body {
+	margin: 0 0 0 20px;
 }
