@@ -112,6 +112,32 @@ function readFile(path, cPath, delaySend) {
 
 function checkFile(fileName, _url, _curl, delaySend) {
 
+	// @type 模板类型
+	// @str  模板内容
+	var includePath = function(type, str) {
+		console.log(type)
+		console.log(str)
+
+		var includeArr = []
+		,	strArr = [];
+
+		if (type == '.ejs') {
+			
+			strArr = str.match(/<%-.+(?=(%>))/g);
+
+			for (var modPath of strArr) {
+				includeArr.push(modPath.match(/'.+(?=')/)[0].substr(1))
+			}
+			
+		} else {
+
+			includeArr = str.match(/include (.+)/g)
+		}
+
+
+		return includeArr
+	}
+
 	try {
 		// 判断文件上否存在
 		var _f = fs.statSync(_url)
@@ -122,6 +148,20 @@ function checkFile(fileName, _url, _curl, delaySend) {
 
 			// 模板转 HTML
 			if (path.extname(fileName) == '.ejs' || path.extname(fileName) == '.jade') {
+			
+				console.log(fileName)
+				// console.log(path.dirname(_url))
+				// console.log(_url)
+				// console.log(_url.replace(_path, ''))
+
+				var read = fs.readFileSync(_url, 'utf8');
+				var thisIncludeArr = includePath(path.extname(fileName), read)
+
+				// console.log(includePath(path.extname(fileName), read))
+
+				if (thisIncludeArr.length > 0) {
+					console.log(fileName, '存在子模板:'+thisIncludeArr)
+				}
 
 				_fpath = getHTMLPath(fileName, _url, _curl);
 			}
@@ -187,14 +227,18 @@ function checkFile(fileName, _url, _curl, delaySend) {
 }
 
 // 输出文件
+// @fileName 文件名
+// @_url 原始路径
+// @_curl 复制目标路径
 function outputs(fileName, _url, _curl) {
 	var html = '';
 
+
 	if (path.extname(fileName) == '.ejs') {
 
-		var read = fs.readFileSync;
+		var read = fs.readFileSync(_url, 'utf8');
 
-		html = ejs.render(read(_url, 'utf8'), {filename: _url});
+		html = ejs.render(read, {filename: _url});
 	} else {
 		html = jade.renderFile(_url)
 	}
@@ -289,7 +333,8 @@ function getPartsList (_path, listArr) {
 	var result = [];
 	// 当前项目中所有 parts 文件夹
 	var partsDirArr = [];
-	console.log('******* ' + _path)
+	console.log('******* GET MODS *******')
+	console.log('Pro. Add. : ' + _path)
 
 	/*
 		获取所有的 parts 目录
@@ -330,7 +375,7 @@ function getPartsList (_path, listArr) {
 		var versionFile = {};
 		// 当前版本文件的路径
 		var versionPath = path.join(dirPath, 'version.json');
-		// console.log('V P :' + versionPath)
+		console.log('V P :' + versionPath)
 
 		try {
 			// 读取版本文件内容
@@ -349,6 +394,8 @@ function getPartsList (_path, listArr) {
 		for (var filesname of partsDirFiles) {
 			var filePath = path.join(dirPath, filesname);
 			var fileStat = fs.statSync(filePath);
+
+			// console.log(fileStat)
 
 			// 处理的文件不包含版本控制文件
 			if (filesname !== 'version.json') {
