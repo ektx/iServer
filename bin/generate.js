@@ -31,8 +31,11 @@ exports.generate = function(res, root, copyPath, _type) {
 
 	copyPath = path.normalize(copyPath);
 	// 清空数据防止缓存
-	var delayPath = [], delaySend = [], changeList = [];
-	
+	var delayPath = []
+	, delaySend   = []
+	, changeList  = []
+	, cachingModObj = {}
+
 	generateType = _type;
 
 	var mkdirs = function(toURL) {
@@ -43,7 +46,7 @@ exports.generate = function(res, root, copyPath, _type) {
 			if (!isMS) {
 				if(delayPath.length == 0) {
 					console.log('文件夹生成完成!')
-					delaySend = readFile(root, copyPath, delaySend, changeModArr)
+					delaySend = readFile(root, copyPath, delaySend, changeModArr, cachingModObj)
 
 					return;
 				}
@@ -74,7 +77,7 @@ exports.generate = function(res, root, copyPath, _type) {
 	// 指定生成目录判断,创建
 	try {
 		fs.statSync(copyPath);
-		delaySend = readFile(root, copyPath, delaySend, changeModArr)
+		delaySend = readFile(root, copyPath, delaySend, changeModArr, cachingModObj)
 
 	} catch(err) {
 		console.log('not have dir');
@@ -89,7 +92,7 @@ exports.generate = function(res, root, copyPath, _type) {
 	读取文件夹下的文件
 	----------------------------------
 */
-function readFile(path, cPath, delaySend, changeModArr) {
+function readFile(path, cPath, delaySend, changeModArr, cachingModObj) {
 
 	var filesArr = fs.readdirSync(path);
 
@@ -100,7 +103,7 @@ function readFile(path, cPath, delaySend, changeModArr) {
 			var _src = path  + '/' + filesArr[i]
 			var _crc = cPath + '/' + filesArr[i]
 
-			checkFile(filesArr[i], _src, _crc, delaySend, changeModArr)
+			checkFile(filesArr[i], _src, _crc, delaySend, changeModArr, cachingModObj)
 		})(i)
 	}
 
@@ -110,15 +113,15 @@ function readFile(path, cPath, delaySend, changeModArr) {
 }
 
 
-function checkFile(fileName, _url, _curl, delaySend, changeModArr) {
+function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj) {
 
 	// @type 模板类型
 	// @str  模板内容
-	var includePath = function(type, str) {
+	var getIncludeMod = function(type, str) {
 
 		var includeArr = []
 		,	strArr = [];
-
+		
 		if (type == '.ejs') {
 			
 			strArr = str.match(/<%-.+(?=(%>))/g);
@@ -145,6 +148,57 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr) {
 		return includeArr
 	}
 
+
+	var includePath = function(type, url, cache) {
+
+
+		var returnARR = []
+
+		var str = fs.readFileSync(url, 'utf8');
+
+		var arr = getIncludeMod(type, str);
+
+		if (arr.length > 0) {
+			// 遍历此模板
+			for (var innerMod of arr) {
+
+				var innerModPath = path.join(path.dirname(url), innerMod)
+				// console.log('innerModPath: ',innerModPath)
+				// console.log('innerModPath dirname: ',path.dirname(url))
+
+				// 在缓存模板中
+				if (innerModPath in cache) {
+
+					returnARR.push(innerModPath)
+					returnARR = returnARR.concat(cache[innerModPath])
+				} 
+				// 不在缓存模板中
+				else {
+					var innerArr = includePath(type, innerModPath, cache)
+					var outArr = []
+
+					// 添加当前自身的完整路径
+					outArr.push(innerModPath)
+					cache[innerModPath] = []
+
+					// 添加内部包含的所有路径
+					for (var iA of innerArr) {
+						outArr.push(iA)
+						cache[innerModPath].push(iA)
+					}
+
+					returnARR = returnARR.concat(outArr)
+
+				}
+			}
+		}
+
+		// console.log('includePath: '+returnARR)
+		return returnARR
+
+	}
+
+
 	try {
 		// 判断文件上否存在
 		var _f = fs.statSync(_url)
@@ -156,29 +210,25 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr) {
 			// 模板转 HTML
 			if (path.extname(fileName) == '.ejs' || path.extname(fileName) == '.jade') {
 			
-				// console.log(fileName)
-				// console.log(_url)
-				// console.log('changeModArr: ',changeModArr)
-				// console.log(_url.replace(_path, ''))
-
 				if (changeModArr.length > 0) {
+					
 
-					var read = fs.readFileSync(_url, 'utf8');
-					var thisIncludeArr = includePath(path.extname(fileName), read)
-
-					// console.log(includePath(path.extname(fileName), read))
+					var thisIncludeArr = includePath(path.extname(fileName), _url, cachingModObj)
 
 					if (thisIncludeArr.length > 0) {
-						// console.log(fileName, '存在子模板:'+thisIncludeArr)
 
 						for (var changeMod of thisIncludeArr) {
-							// console.log(inArray(changeMod, changeModArr))
+
 							if (inArray(changeMod, changeModArr) > -1) {
-								console.log('变化的子模板是：', changeMod)
+								// console.log('变化的子模板是：', changeMod)
 								
 								makeFiles(fileName, _url, _curl, delaySend)
 								break;
 							}
+
+							// else {
+							// 	console.log('不是变化的模板: ',changeMod)
+							// }
 							
 						}
 					}
@@ -238,7 +288,7 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr) {
 		else if (_f.isDirectory()) {
 			// 复制非组件的文件夹
 			if (fileName !== 'parts') {
-				createFolders(_url, _curl, delaySend, changeModArr)
+				createFolders(_url, _curl, delaySend, changeModArr, cachingModObj)
 			}
 		}
 
@@ -333,7 +383,7 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 
 }
 
-function createFolders(src, curl, delaySend, changeModArr) {
+function createFolders(src, curl, delaySend, changeModArr, cachingModObj) {
 
 	try {
 		var isMS = fs.mkdirSync(curl)
@@ -341,7 +391,7 @@ function createFolders(src, curl, delaySend, changeModArr) {
 
 	}
 
-	readFile(src, curl, delaySend, changeModArr)
+	readFile(src, curl, delaySend, changeModArr, cachingModObj)
 }
 
 /*
@@ -397,7 +447,7 @@ function getPartsList (_path, listArr) {
 		var versionFile = {};
 		// 当前版本文件的路径
 		var versionPath = path.join(dirPath, 'version.json');
-		console.log('V P :' + versionPath)
+		// console.log('V P :' + versionPath)
 
 		try {
 			// 读取版本文件内容
@@ -443,7 +493,7 @@ function getPartsList (_path, listArr) {
 							// console.log(versionFile[filesname])
 							// console.log(timeStr)
 							versionFile[filesname] = timeStr;
-							result.push(filePath.replace(_path, '').substr(1).replace(/\\/g,'/'))
+							result.push(filePath)
 						}
 					}
 
