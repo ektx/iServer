@@ -29,7 +29,7 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 		var _type = 'make';
 
 		// 判断是否是覆盖生成请求
-		if (/important/.test(reqPath)) {
+		if (/important\/*$/.test(reqPath)) {
 			_type = 'important';
 		}
 		var copyPath = _dir.replace(/public/i, 'html')

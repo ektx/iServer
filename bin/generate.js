@@ -62,9 +62,7 @@ exports.generate = function(res, root, copyPath, _type) {
 			if (err.code === 'ENOENT') {
 
 				delayPath.push(toURL);
-				// window | mac
-				var _path = toURL.replace(/\\\w+$|\w+$/, '')
-
+				var _path = path.dirname(toURL)
 				mkdirs(_path)
 			}
 		}
@@ -80,8 +78,9 @@ exports.generate = function(res, root, copyPath, _type) {
 		delaySend = readFile(root, copyPath, delaySend, changeModArr, cachingModObj)
 
 	} catch(err) {
-		console.log('not have dir');
+		console.log('not have dir', copyPath);
 		mkdirs(copyPath)
+
 	}
 
 	return delaySend
@@ -209,7 +208,7 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 
 			// 模板转 HTML
 			if (path.extname(fileName) == '.ejs' || path.extname(fileName) == '.jade') {
-			
+			console.log('changeModArr', changeModArr)
 				if (changeModArr.length > 0) {
 					
 
@@ -293,7 +292,7 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 		}
 
 	} catch (err) {
-		console.log(err)
+		console.log(err, '\n没有文件')
 	}
 
 }
