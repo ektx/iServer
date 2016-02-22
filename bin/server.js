@@ -85,8 +85,13 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 				// 当是建议文件时，我们会增加2个参数进去
 				// 用来处理建议内容
 				else {
-					// 取得建议文件的原始格式
-					fileExtName = statsArr[2]
+					// 如果当前是采用建议地址
+					// 如果建议文件扩展名是 jade,那就结束建议
+					// 只有为 ejs 建议时，才进行第2次建议
+					if (statsArr[1] !== '.ejs') {
+						// 取得建议文件的原始格式
+						fileExtName = statsArr[2]
+					}
 				}
 
 				switch (fileExtName) {
