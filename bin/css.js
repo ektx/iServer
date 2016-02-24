@@ -6,7 +6,9 @@ var path = require('path');
 	@oldPath : 原始目录
 	@outputPath : 目标目录
 */
-exports.css = function(oldPath, outputPath) {
+exports.css = css;
+
+function css(oldPath, outputPath) {
 
 	try {
 
@@ -22,8 +24,10 @@ exports.css = function(oldPath, outputPath) {
 
 		} else {
 
-			var RegImport = new RegExp("((\\.|\\w)+\\/?)*.css(?=')", "gi");
+			// var RegImport = new RegExp("((\\.|\\w)+\\/?)*.css(?=')", "gi");
+			var RegImport = new RegExp(".+.css('|\")\\)", "gi");
 			var importCss = data.match(RegImport) || [];
+			console.log(importCss)
 			// css name
 			var dirname = path.dirname(oldPath);
 
@@ -82,13 +86,12 @@ exports.css = function(oldPath, outputPath) {
 				minCss(cssname, outdirname, data);
 
 				// 合成文件
-				fs.writeFile(outputPath, data, 'utf8', function(err) {
-					if (err) { 
-						console.log('!！')
-					} else {
-						console.log(':: '+ cssname);
-					}
-				});
+				console.log('No @:', oldPath)
+				data = null;
+
+				var readS = fs.createReadStream(oldPath)
+				var writeS = fs.createWriteStream(outputPath)
+				readS.pipe(writeS)
 
 			}
 		}

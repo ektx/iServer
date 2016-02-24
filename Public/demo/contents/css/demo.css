@@ -6,6 +6,7 @@
  */
 /* 选择时间的样式 */
 @import url('parts/reset.css');
+@import url('parts/reset.css');
 
 nav {
 	font-size: 0;

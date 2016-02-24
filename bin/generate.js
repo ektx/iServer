@@ -70,7 +70,8 @@ exports.generate = function(res, root, copyPath, _type) {
 	}
 
 	// 遍历模板
-	var changeModArr = getPartsList(root, changeList)
+	// var changeModArr = getPartsList(root, changeList)
+	var changeModArr = []
 
 	// 指定生成目录判断,创建
 	try {
@@ -201,14 +202,13 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 	try {
 		// 判断文件上否存在
 		var _f = fs.statSync(_url)
-
 		// 如果是文件
 		if (_f.isFile()) {
 			var _fpath = false;
 
 			// 模板转 HTML
 			if (path.extname(fileName) == '.ejs' || path.extname(fileName) == '.jade') {
-			console.log('changeModArr', changeModArr)
+			// console.log('changeModArr', changeModArr)
 				if (changeModArr.length > 0) {
 					
 
@@ -355,9 +355,10 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 		// 如果是样式，且不是压缩过的样式
 		case '.css':
 			if (path.basename(fileName, '.css').indexOf('.min') === -1) {
+				console.log('NOT MIN CSS : ' + fileName)
 				// 样式以下划线命名的将要被忽略
 				if (path.basename(fileName).substr(0, 1) !== '_') {
-					css.css(_url, _url);
+					// css.css(_url, _url);
 					css.css(_url, _curl);
 				}
 			} else {
@@ -457,7 +458,7 @@ function getPartsList (_path, listArr) {
 			isVersionFile = true;
 
 		} catch (err) {
-			console.log('Warning: Not have version!\n' + err)
+			console.log('Warning: Not have version files!\n' + err)
 		}
 
 		// 遍历文件，然后对文件进行属性进行对比
