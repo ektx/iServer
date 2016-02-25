@@ -28,6 +28,9 @@ function css(oldPath, outputPath) {
 			var RegImport = new RegExp(".+.css('|\")\\)", "gi");
 			var importCss = data.match(RegImport) || [];
 			console.log(importCss)
+
+			importCss = getCssArr(importCss)
+
 			// css name
 			var dirname = path.dirname(oldPath);
 
@@ -138,4 +141,22 @@ function minCss(cssname, outputPath, css) {
 		if (err) console.log(err);
 		console.log('OK!')
 	});
+}
+
+// 
+// @import url('parts/reset.css'); => parts/reset.css
+function getCssArr(arr) {
+	var newArr = [];
+
+	for (var i of arr) {
+		var end = i.length - 1;
+		for (; end >= 0; end--) {
+			if (i[end] === "'" || i[end] === '"') break;
+		}
+
+		i = i.slice(13, end);
+		newArr.push(i)
+	}
+
+	return newArr;
 }
