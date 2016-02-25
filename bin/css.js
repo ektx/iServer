@@ -27,7 +27,6 @@ function css(oldPath, outputPath) {
 			// var RegImport = new RegExp("((\\.|\\w)+\\/?)*.css(?=')", "gi");
 			var RegImport = new RegExp(".+.css('|\")\\)", "gi");
 			var importCss = data.match(RegImport) || [];
-			console.log(importCss)
 
 			importCss = getCssArr(importCss)
 
@@ -143,8 +142,9 @@ function minCss(cssname, outputPath, css) {
 	});
 }
 
-// 
-// @import url('parts/reset.css'); => parts/reset.css
+
+// 数组优化输出
+// ["@import url('parts/reset.css');"] => ["parts/reset.css"]
 function getCssArr(arr) {
 	var newArr = [];
 
