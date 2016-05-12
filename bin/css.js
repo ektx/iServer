@@ -6,23 +6,26 @@ var path = require('path');
 	@oldPath : 原始目录
 	@outputPath : 目标目录
 */
-exports.css = function(oldPath, outputPath) {
+function css(oldPath, outputPath) {
 
 	try {
 
-
 		var data = fs.readFileSync(oldPath, 'utf8');
-		// 输出路径
 		var cssname = path.basename(oldPath, '.css');
 		var outdirname = path.dirname(outputPath);
+		console.log(outdirname)
+		
+		// min 文件输出路径
+		var outMinFilePath = path.normalize(outdirname + '/' + cssname+'.min.css');
 
+		// 在当前目录下生成压缩文件
 		if (oldPath === outputPath) {
 
-			minCss(cssname, outdirname, data);
+			outMinFile(outMinFilePath, minCss(cssname, outdirname, data));
 
 		} else {
 
-			var RegImport = new RegExp("((\\.|\\w)+\\/?)*.css(?=')", "gi");
+			var RegImport = new RegExp("^@im[^;]+", "gi");
 			var importCss = data.match(RegImport) || [];
 			// css name
 			var dirname = path.dirname(oldPath);
@@ -66,9 +69,9 @@ exports.css = function(oldPath, outputPath) {
 									}
 								});
 
-								console.log('压缩文件：'+cssname)
+								console.log('压缩文件 CSS ：'+cssname)
 
-								minCss(cssname, outdirname, outpouCss)
+								outMinFile(outMinFilePath, minCss(cssname, outdirname, data));
 							}
 						})
 
@@ -79,12 +82,12 @@ exports.css = function(oldPath, outputPath) {
 			// 如果没有引用样式
 			// 直接输出，并压缩
 			else {
-				minCss(cssname, outdirname, data);
+				outMinFile(outMinFilePath, minCss(cssname, outdirname, data));
 
 				// 合成文件
 				fs.writeFile(outputPath, data, 'utf8', function(err) {
 					if (err) { 
-						console.log('!！')
+						console.log('!!')
 					} else {
 						console.log(':: '+ cssname);
 					}
@@ -107,8 +110,6 @@ exports.css = function(oldPath, outputPath) {
 	@css : 样式内容
 */
 function minCss(cssname, outputPath, css) {
-	var newdir = path.normalize(outputPath + '/' + cssname+'.min.css');
-
 	// 压缩css
 	// \t 去换行
 	// \s{2,} 去出现2次以上的空格
@@ -131,8 +132,23 @@ function minCss(cssname, outputPath, css) {
 
 	minOutputCss = minOutputCss.replace(/\s>\s/g, '>')
 	
-	fs.writeFile(newdir, minOutputCss, 'utf8', function(err){
+	return minOutputCss;
+
+};
+
+/*
+	输出 minCss 文件
+	@outPath 存放路径
+	@minCss  压缩的Css内容 
+*/
+function outMinFile(outPath, minCss) {
+	// 输出处理之后的样式 
+	fs.writeFile(outPath, minCss, 'utf8', function(err){
 		if (err) console.log(err);
 		console.log('OK!')
-	});
-}
+	});	
+};
+
+
+exports.css = css;
+
