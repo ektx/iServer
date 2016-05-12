@@ -1,5 +1,5 @@
 /**
- * Created by nodefx on 8/29/14.
+ * 视频音乐文件时时查看功能
  */
 
 module.exports = function (str, size) {
