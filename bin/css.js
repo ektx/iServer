@@ -6,10 +6,8 @@ var path = require('path');
 	@oldPath : 原始目录
 	@outputPath : 目标目录
 */
-exports.css = css;
-
 function css(oldPath, outputPath) {
-
+	console.log(oldPath, outputPath)
 	try {
 
 
@@ -25,7 +23,7 @@ function css(oldPath, outputPath) {
 		} else {
 
 			// var RegImport = new RegExp("((\\.|\\w)+\\/?)*.css(?=')", "gi");
-			var RegImport = new RegExp(".+.css('|\")\\)", "gi");
+			var RegImport = new RegExp("^@im[^;]+", "gi");
 			var importCss = data.match(RegImport) || [];
 
 			importCss = getCssArr(importCss)
@@ -160,3 +158,6 @@ function getCssArr(arr) {
 
 	return newArr;
 }
+
+
+exports.css = css;
