@@ -19,11 +19,12 @@ var ifiles = require('./bin/ifiles')
 var getIPs = require('./bin/getIPs')
 var comStr = require('./bin/commandStr')
 var _command = comStr.commandStr();
-var open   = require('./bin/open')
+var open   = require('./bin/open');
+var config = require('./config');
 
 // 默认设置
 var packageInfo = JSON.parse(fs.readFileSync(__dirname+'/package.json', 'utf8'));
-var version = packageInfo.name +' '+ packageInfo.version;
+var version = config.name +' '+ config.version;
 
 if (_command.v || _command.help) {
 	if (_command.v) {
@@ -35,7 +36,7 @@ if (_command.v || _command.help) {
 }
 
 // 默认端口设置
-var port = _command.port || packageInfo.config.port;
+var port = _command.port || config.port;
 
 var app = express()
 var root = __dirname;
@@ -98,12 +99,21 @@ app.post('*', function(req, res) {
 app.listen(port, function() {
 	console.log(('=================================\nWelcome to '+version+'\n=================================').rainbow)
 
-	if (_command.browser) {
+	// 生成缓存文件
+	try {
+		console.log('Have Cache')
+		fs.statSync(__dirname+'/.iServer-cache')
+	} catch(err) {
+		console.log('Mkdir Cache')
+		fs.mkdirSync('.iServer-cache')
+	}
 
+	if (_command.browser) {
 		openBrowser(_command.browser)
 	}
 
 	var zip = getIPs().IPv4;
+
 	for (var i in zip) {
 		console.log(zip[i] + ':' + port)
 	}
