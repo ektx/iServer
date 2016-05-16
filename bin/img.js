@@ -4,11 +4,25 @@ var args = process.argv.splice(2);
 var tinify = require('tinify');
 var config = require('../config').tinify;
 var myCount = config.compressionCount;
+var colors = require('colors');
 
 // tinify key
 // git it from https://tinypng.com/developers
 // tinify.key = "Your_API_Key";
 tinify.key = config.key;
+
+if (args.length == 0) {
+	console.log("请输入要压缩的图片文件或文件夹!\n")
+	console.log("node img.js [文件名] [保存文件名(非必填)]")
+	console.log("node img.js [文件夹] [保存文件夹(非必填)]")
+	return;
+}
+
+if (config.key == 'Your_API_Key') {
+	console.log('请确认你的 Tinify API Key');
+	console.log('请在 config.json 中设置!')
+	return;
+}
 
 if (args.length > 2){
 	console.log('请确认地址数!')
@@ -17,6 +31,7 @@ if (args.length > 2){
 
 	// 绝对路径
 	absoluteCompressPath = getAbsolutePath(compressionDirectory);
+
 	// 对压缩目录进行处理
 	try {
 		// 读取文件类型
@@ -57,25 +72,23 @@ if (args.length > 2){
 			if (args.length === 2) {
 				toSaveDirctory = args[1];
 
+				// 获取绝对路径
+				if ( !path.isAbsolute(toSaveDirctory) ) {
+					toSaveDirctory = path.join( path.dirname(absoluteCompressPath), toSaveDirctory)
+				}
+
 				try {
 					fs.statSync(toSaveDirctory);
 				} catch(err) {
-					console.log('为您生成存放压缩图片目录');
+					console.log('为您生成存放压缩图片目录: ' + toSaveDirctory);
 
 					mkdirs(toSaveDirctory);
 				}
 			};
 
-			// 保存的绝对路径
-			toSaveDirctory = getAbsolutePath(toSaveDirctory);
-
-console.log(toSaveDirctory)
-
 			try {
 				cache = require(path.join(toSaveDirctory,'tinify-cache'));
-				console.log('has Cache', cache)
 			} catch(err) {
-				console.log('no cache')
 			}			
 
 			// 查询文件列表
@@ -86,17 +99,17 @@ console.log(toSaveDirctory)
 					var _toSaveIMG = path.join(toSaveDirctory, files[i]);
 					var fileInfo = fs.statSync(_compressionIMG);
 
-					console.log(typeof cache[files[i]] )
-					console.log(typeof JSON.stringify(fileInfo.mtime) )
-					console.log(JSON.stringify(cache[files[i]]) ,JSON.stringify(fileInfo.mtime) )
-					console.log(cache[files[i]] == JSON.stringify(fileInfo.mtime) )
 					
 					if ( files[i] in cache &&  JSON.stringify(cache[files[i]]) == JSON.stringify(fileInfo.mtime) ) {
-						console.log(files[i],' 已经压缩过了！');
+						console.log(files[i].yellow);
 					} else {
 
 						if (files[i] !== 'tinify-cache') {
-							cache[files[i]] = fileInfo.mtime;
+
+							if ( isPNGorJPG(_compressionIMG) ) {
+								cache[files[i]] = fileInfo.mtime;
+							}
+
 							compressionIMG(_compressionIMG, _toSaveIMG);
 						}
 					}
@@ -147,7 +160,7 @@ function validate(size, callback) {
 function createCache(data) {
 
 	fs.writeFile(path.join(toSaveDirctory,'tinify-cache.json'), JSON.stringify(data), 'utf8', function() {
-		console.log('OK tinify Cache')
+		console.log('=== '+'非压缩文件'.red+' === '+'已经压缩文件'.yellow+' === '+'刚压缩文件'.green+' ===')
 	})
 }
 
@@ -184,18 +197,20 @@ function mkdirs(toURL) {
 
 function compressionIMG(compressionPath, toSavePath) {
 
-							console.log(compressionPath, toSavePath,isPNGorJPG(compressionPath))
 	if ( isPNGorJPG(compressionPath) ) {
 	
 		var source = tinify.fromFile(compressionPath);
 		source.toFile(toSavePath);
+		console.log( path.basename(compressionPath).green )
+	} else {
+		console.log( path.basename(compressionPath).red )
 	}
 
 }
 
 
 function getAbsolutePath(filePath) {
-	var absoluteCompressPath = '';
+	var absoluteCompressPath = filePath;
 
 	// 如果没有root时，则是相对路径
 	if (!path.parse(filePath).root) {
