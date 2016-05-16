@@ -3,6 +3,9 @@
 /Public/*
 /bin/config.json
 /node_modules
+/.iServer-cache
 
 !/Public/demo/
+
 *version.json
+*tinify-cache.json

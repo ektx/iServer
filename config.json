@@ -1,0 +1,12 @@
+{
+	"name": "iServer",
+	"version": "2.10.0",
+	"port": 8000,
+	"compression": {
+		"css": true,
+		"js": true,
+		"img": false
+	},
+	"tinify": {
+	}
+}
