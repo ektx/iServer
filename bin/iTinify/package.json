@@ -1,0 +1,22 @@
+{
+  "name": "itinify",
+  "version": "0.0.1",
+  "description": "基于 tinify API 图片压线功能",
+  "main": "iTinify.js",
+  "scripts": {
+  },
+  "keywords": [
+    "iServer",
+    "Nodejs",
+    "iojs",
+    "tinify",
+    "compression",
+    "img",
+    "图片压缩"
+  ],
+  "author": {
+    "name": "ektx",
+    "email": "530675800@qq.com"
+  },
+  "license": "ISC"
+}
