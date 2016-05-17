@@ -7,7 +7,7 @@ var myCount = config.compressionCount;
 var colors = require('colors');
 
 // tinify key
-// git it from https://tinypng.com/developers
+// get it from https://tinypng.com/developers
 // tinify.key = "Your_API_Key";
 tinify.key = config.key;
 
@@ -43,9 +43,10 @@ if (args.length > 2){
 			if (args.length === 2) {
 				toSaveDirctory = args[1];
 				// 保存的绝对路径
-				toSaveDirctory = getAbsolutePath(toSaveDirctory);
+				if ( !path.isAbsolute(toSaveDirctory) ) {
+					toSaveDirctory = path.join( path.dirname(absoluteCompressPath), toSaveDirctory)
+				};
 				
-				console.log(toSaveDirctory)
 			}
 
 			// 保存文件要是png或是jpg
@@ -53,6 +54,7 @@ if (args.length > 2){
 				console.log('智能保存格式为当前文件相同格式！');
 
 				toSaveDirctory = toSaveDirctory+path.extname(absoluteCompressPath)
+				console.log(toSaveDirctory)
 			}
 
 			validate(1, function() {
@@ -127,9 +129,11 @@ if (args.length > 2){
 }
 
 
-// validate key
-// @size 将要压缩文件数量
-// @callback 认证之后的操作
+/* 
+	validate key
+	@size 将要压缩文件数量
+	@callback 认证之后的操作
+*/
 function validate(size, callback) {
 	var compressionsThisMonth = 0;
 
@@ -156,13 +160,15 @@ function validate(size, callback) {
 
 }
 
-
+// 生成压缩缓存
+// 用来确认图片是否需要再次进行压缩，删除之后无法判断(慎删)
 function createCache(data) {
 
 	fs.writeFile(path.join(toSaveDirctory,'tinify-cache.json'), JSON.stringify(data), 'utf8', function() {
-		console.log('=== '+'非压缩文件'.red+' === '+'已经压缩文件'.yellow+' === '+'刚压缩文件'.green+' ===')
+		console.log('= 非压缩文件'.red+' = 已经压缩文件'.yellow+' = 刚压缩文件'.green)
 	})
 }
+
 
 function mkdirs(toURL) {
 
@@ -195,6 +201,11 @@ function mkdirs(toURL) {
 
 }
 
+/*
+	压缩图片
+	@compressionPath 压缩文件地址
+	@toSavePath 保存文件路径
+*/
 function compressionIMG(compressionPath, toSavePath) {
 
 	if ( isPNGorJPG(compressionPath) ) {
@@ -208,7 +219,10 @@ function compressionIMG(compressionPath, toSavePath) {
 
 }
 
-
+/*
+	获取文件的绝对路径
+	@filePath 要得到的文件路径 
+*/
 function getAbsolutePath(filePath) {
 	var absoluteCompressPath = filePath;
 
@@ -220,7 +234,10 @@ function getAbsolutePath(filePath) {
 	return absoluteCompressPath;
 }
 
-
+/*
+	是否为PNG or Jpg文件
+	@files: 文件路径
+*/
 function isPNGorJPG(files){
 	var extname = path.extname(files);
 	var result = false;
