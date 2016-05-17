@@ -1,12 +1,18 @@
+/*!
+ * tinify
+ * Copyright(c) 2016 ektx
+ */
+
 var fs = require('fs');
 var path = require('path');
 var args = process.argv.splice(2);
 var tinify = require('tinify');
 var colors = require('colors');
+var mk = require('../mkdirs/mkdirs');
 
 // tinify key
 // get it from https://tinypng.com/developers
-tinify.key = "Your_API_Key";
+tinify.key = your_key = "Your_API_Key";
 // 单月可以压缩图片总数
 var myCount = 500;
 
@@ -17,9 +23,8 @@ if (args.length == 0) {
 	return;
 }
 
-if (tinify.key == 'Your_API_Key') {
+if (your_key == 'Your_API_Key') {
 	console.log('请确认你的 Tinify API Key');
-	console.log('请在 config.json 中设置!')
 	return;
 }
 
@@ -83,7 +88,7 @@ if (args.length > 2){
 				} catch(err) {
 					console.log('为您生成存放压缩图片目录: ' + toSaveDirctory);
 
-					mkdirs(toSaveDirctory);
+					mk(toSaveDirctory);
 				}
 			};
 
@@ -168,37 +173,6 @@ function createCache(data) {
 	})
 }
 
-
-function mkdirs(toURL) {
-
-	try {
-		var isMS = fs.mkdirSync(toURL)
-
-		if (!isMS) {
-			if(delayPath.length == 0) {
-				console.log('文件夹生成完成!')
-				delaySend = readFile(root, copyPath, delaySend, changeModArr, cachingModObj)
-
-				return;
-			}
-
-			// 反向调用地址列表
-			// 然后删除最初的那个
-			var _toPath = (delayPath.reverse())[0]
-			delayPath.shift()
-			mkdirs(_toPath)
-		}
-	} catch(err) {
-		// 返回错误为无法生成时
-		if (err.code === 'ENOENT') {
-
-			delayPath.push(toURL);
-			var _path = path.dirname(toURL)
-			mkdirs(_path)
-		}
-	}
-
-}
 
 /*
 	压缩图片
