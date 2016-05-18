@@ -6,9 +6,5 @@
 		"css": true,
 		"js": true,
 		"img": false
-	},
-	"tinify": {
-		"key": "Your_API_Key",
-		"compressionCount": "50"
 	}
 }
