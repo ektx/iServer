@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 /*
 	iServer
 	-----------------------------------------------
@@ -39,9 +41,11 @@ if (_command.v || _command.help) {
 var port = _command.port || config.port;
 
 var app = express()
-var root = __dirname;
+var iserverRootPath = __dirname;
+// var iserverRootPath = process.cwd();
+console.log(process.cwd())
 
-app.set('views', root)
+app.set('views', iserverRootPath)
 app.set('view engine', 'ejs')
 
 app.get('/favicon.ico', function(req, res) {
@@ -61,7 +65,8 @@ app.get('*', function(req, res) {
 		console.log(req.method.bgGreen.white +' - ' +decodeURI(_path))
 	}
 
-	server.serverStatic(req, res, root, _path);
+	var usrRootPath = process.cwd();
+	server(req, res, usrRootPath, _path);
 })
 
 // 项目工作配置目录
