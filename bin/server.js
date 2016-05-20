@@ -11,16 +11,13 @@ var colors = require('colors')
 	文件服务主功能
 	---------------------------------------------
 */
-exports.serverStatic = function(req, res, root, reqPath, callback) {
+module.exports = function(req, res, serverRootPath, reqPath, callback) {
+	console.log(serverRootPath, reqPath, callback)
+
 	// 中文乱码转码
 	reqPath = decodeURI(reqPath);
 
-	if (reqPath.indexOf('/bin/') !== 0) {
-		reqPath = '/public'+reqPath;
-	}
-
-	// console.log('reqPath: '+reqPath);
-	var _path = path.join(root, reqPath);
+	var _path = path.join(serverRootPath, reqPath);
 
 	// 生成静态页面
 	if (/\/:[make|important]/.test(reqPath)) {
@@ -138,7 +135,7 @@ exports.serverStatic = function(req, res, root, reqPath, callback) {
 			} 
 			// 文件夹则显示内部的文件目录
 			else if(stats.isDirectory()) {
-				ifiles.showDirecotry(res, root, reqPath)
+				ifiles.showDirecotry(res, serverRootPath, reqPath)
 			}
 		})
 

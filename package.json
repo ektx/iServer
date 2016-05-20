@@ -1,6 +1,6 @@
 {
   "name": "iservers",
-  "version": "2.9.15",
+  "version": "3.0.0",
   "author": {
     "name": "ektx",
     "email": "530675800@qq.com"
@@ -18,8 +18,12 @@
     "server",
     "node.js",
     "jade",
+    "pug",
     "ejs"
   ],
+  "bin": {
+    "iserver": "epp.js" 
+  },
   "dependencies": {
     "colors": "^1.1.2",
     "ejs": "^2.3.4",
