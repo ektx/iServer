@@ -13,15 +13,14 @@ var http = require('http')
 var fs = require('fs')
 var url = require('url')
 var path = require('path')
-
 var colors = require('colors')
-
 var server = require('./bin/server')
 var ifiles = require('./bin/ifiles')
 var getIPs = require('./bin/getIPs')
 var comStr = require('./bin/commandStr')
 var _command = comStr.commandStr();
 var open   = require('./bin/open');
+var generate = require('./bin/generate')
 var config = require('./config');
 
 // 默认设置
@@ -38,12 +37,11 @@ if (_command.v || _command.help) {
 }
 
 // 默认端口设置
-var port = _command.port || config.port;
-
-var app = express()
-var iserverRootPath = __dirname;
-// var iserverRootPath = process.cwd();
-console.log(process.cwd())
+const port = _command.port || config.port;
+const _port = config._port;
+const app = express();
+const appServer = express();
+const iserverRootPath = __dirname;
 
 app.set('views', iserverRootPath)
 app.set('view engine', 'ejs')
@@ -52,6 +50,7 @@ app.get('/favicon.ico', function(req, res) {
 	res.end();
 	return
 });
+
 
 app.get('*', function(req, res) {
 	var _css = '/bin/css/layout.css';
@@ -66,8 +65,51 @@ app.get('*', function(req, res) {
 	}
 
 	var usrRootPath = process.cwd();
-	server(req, res, usrRootPath, _path);
+
+	// 生成静态页面
+	if (/\/:[make|important]/.test(_path)) {
+		let copyPath = '';
+		let originalPath = '';
+
+		if (!_path.replace('/:make','')) {
+			originalPath = usrRootPath;
+			copyPath =  path.join(usrRootPath, 'HTML')
+			console.log('root path', copyPath)
+		} else {
+			originalPath = path.join(usrRootPath, _path.replace(':make',''));
+			console.log('Not root Path:', copyPath)
+		}
+
+	// 	var _dir = path.dirname(_path)
+	// 	var _type = 'make';
+
+	// 	// 判断是否是覆盖生成请求
+	// 	if (/important\/*$/.test(reqPath)) {
+	// 		_type = 'important';
+	// 	}
+
+		console.log(originalPath, copyPath)
+
+		// var html = generate.generate(originalPath, copyPath, _type);
+
+		// var _html = ejs.render(fs.readFileSync(__dirname + '/make.ejs', 'utf8'), {MArr: html});
+
+		// res.send({_html})
+
+		return;
+	}
+
+
+	console.log('iserverRootPath: %s, usrRootPath: %s', iserverRootPath, usrRootPath)
+	
+	server(req, res, {serverRootPath:usrRootPath});
 })
+
+appServer.get('*', function(req, res) {
+	var _path = req.path;
+	let appServerRootPath = path.join(iserverRootPath, '/public/');
+	server(req, res, {serverRootPath: iserverRootPath});
+});
 
 // 项目工作配置目录
 var projectConfig = '/bin/config.json';
@@ -98,31 +140,33 @@ app.post('*', function(req, res) {
 
 	res.json(sendMes)
 
-})
+});
 
 
+// 主服务
 app.listen(port, function() {
-	console.log(('=================================\nWelcome to '+version+'\n=================================').rainbow)
-
-	// 生成缓存文件
-	try {
-		console.log('Have Cache')
-		fs.statSync(__dirname+'/.iServer-cache')
-	} catch(err) {
-		console.log('Mkdir Cache')
-		fs.mkdirSync('.iServer-cache')
-	}
 
 	if (_command.browser) {
 		openBrowser(_command.browser)
 	}
 
-	var zip = getIPs().IPv4;
+	let zIP = getIPs().IPv4;
+	let showInfo = 
+`=================================
+    Welcome to ${version}
+=================================\n`.rainbow;
 
-	for (var i in zip) {
-		console.log(zip[i] + ':' + port)
+	for (let i in zIP) {
+		showInfo += zIP[i] + ':' + port + '\n';
 	}
-})
+
+	console.log(showInfo);
+});
+
+// 服务帮助
+appServer.listen(_port, function() {
+	console.log('hahaha..我是服务文件')
+});
 
 /* 
 	获取JSON
