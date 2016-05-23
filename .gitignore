@@ -9,3 +9,4 @@
 
 *version.json
 *tinify-cache.json
+*.DS_store
