@@ -1,7 +1,8 @@
 {
 	"name": "iServer",
-	"version": "2.10.0",
+	"version": "3.0.0",
 	"port": 8000,
+	"_port": 7999,
 	"compression": {
 		"css": true,
 		"js": true,

@@ -11,37 +11,18 @@ var colors = require('colors')
 	文件服务主功能
 	---------------------------------------------
 */
-module.exports = function(req, res, serverRootPath, reqPath, callback) {
-	console.log(serverRootPath, reqPath, callback)
-
+module.exports = (req, res, options) => {
+	let reqPath = req.path;
+	let rootPath = options.serverRootPath;
+	// type 是用户服务还是根服务
+	let isUsr = options.isUsr;
 	// 中文乱码转码
 	reqPath = decodeURI(reqPath);
 
-	var _path = path.join(serverRootPath, reqPath);
-
-	// 生成静态页面
-	if (/\/:[make|important]/.test(reqPath)) {
-
-		var _dir = path.dirname(_path)
-		var _type = 'make';
-
-		// 判断是否是覆盖生成请求
-		if (/important\/*$/.test(reqPath)) {
-			_type = 'important';
-		}
-		var copyPath = _dir.replace(/public/i, 'html')
-
-		var html = generate.generate(res, _dir, copyPath, _type);
-
-		var _html = ejs.render(fs.readFileSync(__dirname + '/make.ejs', 'utf8'), {MArr: html});
-
-		res.send(_html)
-
-		return;
-	}
+	let fileAbsolutePath = path.join(rootPath, reqPath);
 
 	// 是否存在文件
-	var isStat = function(_path) {
+	let isStat = function(_path) {
 
 		// 文件路径参数集
 		// 用来收集建议信息
@@ -135,12 +116,12 @@ module.exports = function(req, res, serverRootPath, reqPath, callback) {
 			} 
 			// 文件夹则显示内部的文件目录
 			else if(stats.isDirectory()) {
-				ifiles.showDirecotry(res, serverRootPath, reqPath)
+				ifiles.showDirecotry(res, rootPath, reqPath)
 			}
 		})
 
 	}
 
-	isStat(_path)
+	isStat(fileAbsolutePath)
 
 }

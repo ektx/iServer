@@ -11,7 +11,9 @@ li {
 	list-style: none;
 	line-height: 22px;
 }
-
+h2 {
+	font-weight: 400
+}
 .osFileIco {
 	width: 16px;
 	height: 16px;

@@ -26,7 +26,7 @@ var js = require('./jsmin');
 var delaySend = [];
 var generateType = '';
 
-exports.generate = function(res, root, copyPath, _type) {
+exports.generate = function(originalPath, copyPath, _type) {
 	console.log('--------- GENERATE ---------')
 
 	copyPath = path.normalize(copyPath);
@@ -46,7 +46,7 @@ exports.generate = function(res, root, copyPath, _type) {
 			if (!isMS) {
 				if(delayPath.length == 0) {
 					console.log('文件夹生成完成!')
-					delaySend = readFile(root, copyPath, delaySend, changeModArr, cachingModObj)
+					delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
 
 					return;
 				}
@@ -70,13 +70,13 @@ exports.generate = function(res, root, copyPath, _type) {
 	}
 
 	// 遍历模板
-	// var changeModArr = getPartsList(root, changeList)
+	// var changeModArr = getPartsList(originalPath, changeList)
 	var changeModArr = []
 
 	// 指定生成目录判断,创建
 	try {
 		fs.statSync(copyPath);
-		delaySend = readFile(root, copyPath, delaySend, changeModArr, cachingModObj)
+		delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
 
 	} catch(err) {
 		console.log('not have dir', copyPath);
