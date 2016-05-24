@@ -20,7 +20,6 @@ var getIPs = require('./bin/getIPs')
 var comStr = require('./bin/commandStr')
 var _command = comStr.commandStr();
 var open   = require('./bin/open');
-var generate = require('./bin/generate')
 var config = require('./config');
 
 // 默认设置
@@ -66,43 +65,11 @@ app.get('*', function(req, res) {
 
 	var usrRootPath = process.cwd();
 
-	// 生成静态页面
-	if (/\/:[make|important]/.test(_path)) {
-		let copyPath = '';
-		let originalPath = '';
-
-		if (!_path.replace('/:make','')) {
-			originalPath = usrRootPath;
-			copyPath =  path.join(usrRootPath, 'HTML')
-			console.log('root path', copyPath)
-		} else {
-			originalPath = path.join(usrRootPath, _path.replace(':make',''));
-			console.log('Not root Path:', copyPath)
-		}
-
-	// 	var _dir = path.dirname(_path)
-	// 	var _type = 'make';
-
-	// 	// 判断是否是覆盖生成请求
-	// 	if (/important\/*$/.test(reqPath)) {
-	// 		_type = 'important';
-	// 	}
-
-		console.log(originalPath, copyPath)
-
-		// var html = generate.generate(originalPath, copyPath, _type);
-
-		// var _html = ejs.render(fs.readFileSync(__dirname + '/make.ejs', 'utf8'), {MArr: html});
-
-		// res.send({_html})
-
-		return;
+	if (_path == _css) {
+		res.redirect('http://localhost:'+_port+_css)
+	} else {
+		server(req, res, {serverRootPath:usrRootPath});
 	}
-
-
-	console.log('iserverRootPath: %s, usrRootPath: %s', iserverRootPath, usrRootPath)
-	
-	server(req, res, {serverRootPath:usrRootPath});
 })
 
 appServer.get('*', function(req, res) {
