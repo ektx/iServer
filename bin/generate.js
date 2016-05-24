@@ -26,8 +26,11 @@ var js = require('./jsmin');
 var delaySend = [];
 var generateType = '';
 
-exports.generate = function(originalPath, copyPath, _type) {
+module.exports = function generate (originalPath, copyPath, _type) {
 	console.log('--------- GENERATE ---------')
+	console.log('originalPath:', originalPath)
+	console.log('copyPath:', copyPath)
+	console.log('------- GENERATE End -------')
 
 	copyPath = path.normalize(copyPath);
 	// 清空数据防止缓存
@@ -70,7 +73,6 @@ exports.generate = function(originalPath, copyPath, _type) {
 	}
 
 	// 遍历模板
-	// var changeModArr = getPartsList(originalPath, changeList)
 	var changeModArr = []
 
 	// 指定生成目录判断,创建
@@ -79,9 +81,8 @@ exports.generate = function(originalPath, copyPath, _type) {
 		delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
 
 	} catch(err) {
-		console.log('not have dir', copyPath);
+		console.log('not have dir:', copyPath);
 		mkdirs(copyPath)
-
 	}
 
 	return delaySend
@@ -92,22 +93,19 @@ exports.generate = function(originalPath, copyPath, _type) {
 	读取文件夹下的文件
 	----------------------------------
 */
-function readFile(path, cPath, delaySend, changeModArr, cachingModObj) {
+function readFile(originalPath, cPath, delaySend, changeModArr, cachingModObj) {
+	var filesArr = fs.readdirSync(originalPath);
 
-	var filesArr = fs.readdirSync(path);
+	for (let i = 0, len = filesArr.length; i < len; i++) {
 
-	for (var i = 0, fileLen = filesArr.length; i < fileLen; i++) {
-		(function(i) {
+		const _src = path.join(originalPath, filesArr[i])
+		const _crc = path.join(cPath, filesArr[i])
 
-			// delaySend.push(filesArr[i])
-			var _src = path  + '/' + filesArr[i]
-			var _crc = cPath + '/' + filesArr[i]
-
+		if ( _src != cPath) {
 			checkFile(filesArr[i], _src, _crc, delaySend, changeModArr, cachingModObj)
-		})(i)
+		}
 	}
 
-	
 	return delaySend
 
 }
