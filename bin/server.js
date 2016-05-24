@@ -64,9 +64,16 @@ module.exports = (req, res, options) => {
 
 		// 生成建议路径
 		if (statsArr.length > 1) {
-			// 修改文件名
-			var extName = path.extname(_path);
-			_path = _path.replace(extName, statsArr[1]);
+			// 对Js或Css的迷你文件建议
+			if (statsArr[1] === 'USE_MIN') {
+				_path = _path.replace(/\.min/i, '');
+			}
+			// 对HTML的文件
+			else {
+				// 修改文件名
+				var extName = path.extname(_path);
+				_path = _path.replace(extName, statsArr[1]);
+			}
 			console.log('Suggest Path:'.white.bgYellow, _path)
 		}
 
@@ -106,6 +113,7 @@ module.exports = (req, res, options) => {
 					}
 				}
 
+				console.log(fileExtName.red)
 				switch (fileExtName) {
 					// 在请求的HTML不存在时
 					// 我们先去尝试请求 ejs 模板文件
@@ -114,7 +122,7 @@ module.exports = (req, res, options) => {
 					case '.html':
 
 						// 添加建议格式 ejs
-						var suggestExtName = '.ejs';
+						let suggestExtName = '.ejs';
 
 						// 参数大于1时，这时建议已经在处理过 ejs 的建议了
 						if (statsArr.length > 1 && statsArr[1] !== '.jade') {
@@ -123,6 +131,13 @@ module.exports = (req, res, options) => {
 
 						isStat(_path, suggestExtName, '.html');
 						return;
+
+					case '.js':
+					case '.css':
+						if (path.basename(_path, '.js').indexOf('.min') > -1 || path.basename(_path, '.css').indexOf('.min') > -1) {
+							isStat(_path, 'USE_MIN', '.js')
+							return;
+						}
 
 				}
 
