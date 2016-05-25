@@ -34,14 +34,14 @@ module.exports = function generate (originalPath, copyPath, _type) {
 
 	copyPath = path.normalize(copyPath);
 	// 清空数据防止缓存
-	var delayPath = []
+	let delayPath = []
 	, delaySend   = []
 	, changeList  = []
 	, cachingModObj = {}
 
 	generateType = _type;
 
-	var mkdirs = function(toURL) {
+	let mkdirs = function(toURL) {
 
 		try {
 			var isMS = fs.mkdirSync(toURL)
@@ -73,7 +73,7 @@ module.exports = function generate (originalPath, copyPath, _type) {
 	}
 
 	// 遍历模板
-	var changeModArr = []
+	changeModArr = getPartsList(originalPath);
 
 	// 指定生成目录判断,创建
 	try {
@@ -81,6 +81,7 @@ module.exports = function generate (originalPath, copyPath, _type) {
 		delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
 
 	} catch(err) {
+		console.log(err)
 		console.log('not have dir:', copyPath);
 		mkdirs(copyPath)
 	}
@@ -398,11 +399,11 @@ function createFolders(src, curl, delaySend, changeModArr, cachingModObj) {
 	当parts中的文件发生变化时，更新其所有相关有引用文件
 
 */
-function getPartsList (_path, listArr) {
-	var filesArr = fs.readdirSync(_path);
-	var result = [];
+function getPartsList (_path) {
+	let filesArr = fs.readdirSync(_path);
+	let result = [];
 	// 当前项目中所有 parts 文件夹
-	var partsDirArr = [];
+	let partsDirArr = [];
 	console.log('******* GET MODS *******')
 	console.log('Pro. Add. : ' + _path)
 
@@ -410,13 +411,13 @@ function getPartsList (_path, listArr) {
 		获取所有的 parts 目录
 		然后把parts的内部文件统一处理
 	*/ 
-	var forEachDir = function(_pathName) {
-		var dirFilses = fs.readdirSync(_pathName);
+	const forEachDir = function(_pathName) {
+		let dirFilses = fs.readdirSync(_pathName);
 
 		// 遍历文件夹中的文件
-		for (var i of dirFilses) {
-			var newPath = path.normalize(path.join(_pathName,i));
-			var fileStat = fs.statSync(newPath);
+		for (let i of dirFilses) {
+			let newPath = path.normalize(path.join(_pathName,i));
+			let fileStat = fs.statSync(newPath);
 
 			// 只查看文件夹
 			if (fileStat.isDirectory()) {
@@ -436,15 +437,15 @@ function getPartsList (_path, listArr) {
 
 
 	// 得到所有 parts 文件夹下的文件
-	var getPartsFile = function (dirPath) {
+	const getPartsFile = function (dirPath) {
 
-		var partsDirFiles = fs.readdirSync(dirPath);
+		let partsDirFiles = fs.readdirSync(dirPath);
 		// 是否有版本文件，默认为无
 		// 在没有时，所有的关联文件默认是会被更新到的
-		var isVersionFile = false;
-		var versionFile = {};
+		let isVersionFile = false;
+		let versionFile = {};
 		// 当前版本文件的路径
-		var versionPath = path.join(dirPath, 'version.json');
+		let versionPath = path.join(dirPath, 'version.json');
 		// console.log('V P :' + versionPath)
 
 		try {
@@ -461,9 +462,9 @@ function getPartsList (_path, listArr) {
 
 		// 遍历文件，然后对文件进行属性进行对比
 		// 以得到发生变化的文件信息
-		for (var filesname of partsDirFiles) {
-			var filePath = path.join(dirPath, filesname);
-			var fileStat = fs.statSync(filePath);
+		for (let filesname of partsDirFiles) {
+			let filePath = path.join(dirPath, filesname);
+			let fileStat = fs.statSync(filePath);
 
 
 			// 处理的文件不包含版本控制文件
@@ -476,7 +477,7 @@ function getPartsList (_path, listArr) {
 				// 当只是文件时
 				else if (fileStat.isFile()) {
 
-					var timeStr = +new Date(fileStat.mtime);
+					let timeStr = +new Date(fileStat.mtime);
 
 					// 如果没有版本控制文件在
 					if (!isVersionFile) {
@@ -511,11 +512,11 @@ function getPartsList (_path, listArr) {
 	forEachDir(_path)
 	// console.log('所有 Parts 文件夹: ', partsDirArr)
 
-	for (var i of partsDirArr) {
+	for (let i of partsDirArr) {
 		getPartsFile(i)
 	}
 
-	console.log('变动过的子模板有：\n' + result)
+	console.log('Have been change sub-template：\n' + result)
 	return result 
 }
 
