@@ -388,10 +388,6 @@ function getPartsList (_path, listArr) {
 	}
 
 
-
-
-
-
 	forEachDir(_path)
 	// console.log('所有 Parts 文件夹: ', partsDirArr)
 
