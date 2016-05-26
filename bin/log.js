@@ -23,7 +23,6 @@ function Log(obj) {
 		this.title.align = obj.title.align || 'center';
 		this.title.sign = obj.title.sign || '=';
 		this.title.decoration = obj.title.decoration || 'inset';
-
 	}
 
 
@@ -39,6 +38,11 @@ Log.prototype.output = function(type) {
 	let startPlaceholder = '';
 	let obj = this[type];
 	let titleLen = obj.str.length;
+	let sign = obj.sign;
+
+	if (sign.length > 1) {
+		sign = sign.substr(0, 1)
+	}
 
 	if (obj.decoration === 'above') {
 
@@ -52,10 +56,10 @@ Log.prototype.output = function(type) {
 			console.log(toRepeatCount)
 				startPlaceholder = endPlaceHolder = ' ';
 				if ( (this.len - titleLen - 2) % 2 == 1 ) {
-					endPlaceHolder += obj.sign;
+					endPlaceHolder += sign;
 				}
 
-				repeatStr = obj.sign.repeat(toRepeatCount)
+				repeatStr = sign.repeat(toRepeatCount)
 				console.log('s', repeatStr)
 			}
 		} else {
@@ -66,7 +70,7 @@ Log.prototype.output = function(type) {
 
 	// type inset
 	else {
-		repeatStr = obj.sign.repeat(this.len);
+		repeatStr = sign.repeat(this.len);
 
 		switch (obj.align) {
 			/*
@@ -83,8 +87,9 @@ Log.prototype.output = function(type) {
 			=====================
 			*/
 			case "center":
-				startPlaceholder = Math.floor((this.len - titleLen)/2)
-				startPlaceholder = ' '.repeat( startPlaceholder > 0 ? startPlaceholder : 0 );
+				// startPlaceholder = Math.floor((this.len - titleLen)/2)
+				// startPlaceholder = ' '.repeat( startPlaceholder > 0 ? startPlaceholder : 0 );
+				startPlaceholder = positionStr(obj.str, 'center', this.len)
 				break;
 
 			/*
@@ -123,10 +128,11 @@ Log.prototype.getHead = function() {
 }
 
 
-function positionStr(str, align, len) {
+function positionStr(str, align, len, sign) {
 	const strLen = str.length;
 	let html = '';
 	let _s = 0;
+	sign = sign || ' ';
 
 	switch (align) {
 		/*
@@ -171,12 +177,12 @@ function positionStr(str, align, len) {
 // 	len: 30
 // })
 let a = new Log({
-	len: 30,
+	len: 60,
 	title: {
 		str: 'iServer 3.0',
 		align: 'center',
 		decoration: 'inset',
-		sign: '*'
+		sign: '*-'
 	},
 	subTitle: {
 		str: "lalalala...lalalala.....",
