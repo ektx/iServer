@@ -101,7 +101,7 @@ exports.showDirecotry = (res, serverRootPath, reqPath) => {
 
 	fs.readdir(_filePath, function(err, files) {
 		var html = getHTML(files, _filePath)
-		res.writeHead(200, {'Content-Type': 'text/html;charset="utf8"'})
+		res.writeHead(200, resHeaders());
 
 		html += '<h5>共有 '+ files.length + ' 个文件!</h5>';
 		html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 3</a></p></html>';
@@ -169,7 +169,7 @@ exports.sendFile = function(req, res, filePath) {
 
 		res.writeHead(
 			200,
-			{'Content-Type': mime.lookup(path.basename(filePath)) + '; charset=UTF-8'}
+			resHeaders( mime.lookup(path.basename(filePath)) )
 		)
 		stream.pipe(res);
 	}
@@ -183,7 +183,7 @@ exports.sendFile = function(req, res, filePath) {
 */
 exports.sendError = function sendError(res, codeNo) {
 	// console.log(codeNo + ' Server Error!');
-	res.writeHead(codeNo, {'Content-Type': 'text/html; charset=UTF-8'});
+	res.writeHead(codeNo, resHeaders() );
 	res.write('<h3>'+codeNo+'!</h2>');
 	res.end()	
 }
@@ -214,4 +214,19 @@ function breadCrumbs(filePath) {
 
 	return html;
 
+}
+
+
+/*
+	响应头
+	---------------------------------------
+*/
+function resHeaders(type) {
+	type = type || 'text/html';
+
+	return {
+		'Content-Type': type+';charset="utf8"',
+		'x-xss-protection': '1; mode=block',
+		'Server': 'iServer 3.0 beta'
+	}
 }
