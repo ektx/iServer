@@ -10,6 +10,7 @@ function Log(obj) {
 	this.title = obj.title;
 	this.subTitle = obj.subTitle;
 	this.len = obj.len || 16;
+	this.list = obj.list;
 
 	if (!obj.title) {
 		this.title = {
@@ -28,7 +29,6 @@ function Log(obj) {
 
 	let logs = '';
 
-
 }
 
 Log.prototype.output = function(type) {
@@ -44,6 +44,9 @@ Log.prototype.output = function(type) {
 		sign = sign.substr(0, 1)
 	}
 
+	// -------------- title -------------
+	// - subtitle 
+	// 
 	if (obj.decoration === 'above') {
 
 
@@ -53,14 +56,13 @@ Log.prototype.output = function(type) {
 			let toRepeatCount = Math.floor( (this.len - titleLen -2) /2);
 
 			if (toRepeatCount > 0) {
-			console.log(toRepeatCount)
 				startPlaceholder = endPlaceHolder = ' ';
 				if ( (this.len - titleLen - 2) % 2 == 1 ) {
 					endPlaceHolder += sign;
 				}
 
-				repeatStr = sign.repeat(toRepeatCount)
-				console.log('s', repeatStr)
+				repeatStr = sign.repeat(toRepeatCount);
+				startPlaceholder += obj.str;
 			}
 		} else {
 
@@ -72,42 +74,14 @@ Log.prototype.output = function(type) {
 	else {
 		repeatStr = sign.repeat(this.len);
 
-		switch (obj.align) {
-			/*
-			=====================
-			title
-			=====================
-			*/
-			case "left":
-				break;
+		// 一级标题
+		startPlaceholder = positionStr(obj.str, obj.align, this.len)
 
-			/*
-			=====================
-			        title
-			=====================
-			*/
-			case "center":
-				// startPlaceholder = Math.floor((this.len - titleLen)/2)
-				// startPlaceholder = ' '.repeat( startPlaceholder > 0 ? startPlaceholder : 0 );
-				startPlaceholder = positionStr(obj.str, 'center', this.len)
-				break;
-
-			/*
-			====================
-			               title
-			====================
-			*/
-			case "right":
-				startPlaceholder = this.len - titleLen;
-				startPlaceholder = ' '.repeat( startPlaceholder > 0 ? startPlaceholder : 0 );
-
-		}
 		
 		endPlaceHolder += '\n';
 		startPlaceholder = '\n'+startPlaceholder;
 
 		if (type === 'title') {
-			console.log((!!this.subTitle))
 			if (!!this.subTitle) {
 				endPlaceHolder = '\n' + positionStr(this.subTitle.str, this.subTitle.align, this.len) + '\n';
 			}
@@ -115,7 +89,7 @@ Log.prototype.output = function(type) {
 
 	}
 
-	html += repeatStr + startPlaceholder + obj.str + endPlaceHolder +repeatStr;
+	html += repeatStr + startPlaceholder + endPlaceHolder +repeatStr;
 	
 
 	return html;
@@ -127,9 +101,72 @@ Log.prototype.getHead = function() {
 	return this.output('title')
 }
 
+Log.prototype.getBody = function() {
+	let html = '';
+	let align = this.list.align;
+
+	// 过滤 align
+	align = /^(left|center|right)$/.test(align) ? align : 'left';
+
+
+	if (this.list) {
+		let lsitWidth = 0;
+		// 标题
+		if (this.list.title) {
+			let titleStr  = '';
+			lsitWidth = this.len / this.list.title.length;
+
+			for (let val of this.list.title ) {
+				titleStr += positionStr(val, align, lsitWidth)
+			}
+
+			html += '\n'+titleStr+'\n';
+		}
+
+		// 内容
+		if (this.list.inner) {
+			let listHtml = '';
+
+			for (let l of this.list.inner) {
+				for (let index in l) {
+
+					// 只打印出标题的个数
+					if (index < this.list.title.length) {
+						let val = !l[index] ? '' : l[index];
+
+						// 文字过长隐藏
+						if (val.length > lsitWidth) {
+							val = val.substring(0, lsitWidth - 4) + '...';
+						}
+
+						listHtml += positionStr(val, align, lsitWidth);
+					}
+				}
+				listHtml += '\n';
+			}
+
+			html += listHtml;
+		}
+	}
+	else {
+		console.log('No List to Make!')
+	}
+
+	return html;
+}
+
+Log.prototype.init = function() {
+	let html = '';
+	html += this.getHead();
+	html += this.getBody();
+
+	console.log(html)
+}
+
+
 
 function positionStr(str, align, len, sign) {
-	const strLen = str.length;
+	const strLen = getStrLen(str);
 	let html = '';
 	let _s = 0;
 	sign = sign || ' ';
@@ -141,7 +178,8 @@ function positionStr(str, align, len, sign) {
 		=====================
 		*/
 		case "left":
-			html += str;
+			_s = Math.floor((len - strLen));
+			html += str + sign.repeat( _s > 0 ? _s : 0 );
 			break;
 
 		/*
@@ -151,7 +189,8 @@ function positionStr(str, align, len, sign) {
 		*/
 		case "center":
 			_s = Math.floor((len - strLen)/2);
-			html = ' '.repeat( _s > 0 ? _s : 0 ) + str;
+			let _r = sign.repeat( _s > 0 ? _s : 0 );
+			html = _r + str + _r;
 			break;
 
 		/*
@@ -167,21 +206,54 @@ function positionStr(str, align, len, sign) {
 	return html;
 }
 
+// 可以过滤出中文字符长度
+function getStrLen(str) {
+	return str.replace(/[^\x00-\xff]/g, '__').length;
+}
+
 // log test
-// let a = new Log({
-// 	title: {
-// 		str: "hello world",
-// 		align: "left",
-// 		decoration: "inset"
-// 	},
-// 	len: 30
-// })
 let a = new Log({
+	title: {
+		str: "hello world",
+		align: "left",
+		decoration: "inset"
+	},
+	len: 30
+})
+// a.init()
+
+
+a = new Log({
 	len: 60,
 	title: {
 		str: 'iServer 3.0',
 		align: 'center',
 		decoration: 'inset',
+		sign: '-'
+	},
+	subTitle: {
+		str: "lalalala...lalalala.....",
+		align: "center",
+	},
+	list: {
+		'inner': [ 
+			[ "name", "logs"  ],
+			[ "versionversionversionversion", "0.0.1", 'OK', 'xxxooo' ],
+			[ "version", , 'OK' ]
+		],
+		'title': ['标题', '内容', '备注'],
+		'align': 'left'
+	}
+})
+a.init()
+
+
+a = new Log({
+	len: 60,
+	title: {
+		str: 'iServer 3.0',
+		align: 'center',
+		decoration: 'above',
 		sign: '*-'
 	},
 	subTitle: {
@@ -189,11 +261,5 @@ let a = new Log({
 		align: "center",
 	}
 })
-// let a = new Log({
-// 	subTitle: "+++",
-// 	type: "above",
-// 	sign: "=",
-// 	len: 30
-// })
 
-console.log(a.getHead())
+// a.init()
