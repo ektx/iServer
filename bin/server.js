@@ -113,7 +113,6 @@ module.exports = (req, res, options) => {
 					}
 				}
 
-				console.log(fileExtName.red)
 				switch (fileExtName) {
 					// 在请求的HTML不存在时
 					// 我们先去尝试请求 ejs 模板文件
