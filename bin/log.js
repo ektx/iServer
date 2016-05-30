@@ -133,12 +133,7 @@ Log.prototype.getBody = function() {
 					// 只打印出标题的个数
 					if (index < this.list.title.length) {
 						let val = !l[index] ? '' : l[index];
-
-						// 文字过长隐藏
-						if (val.length > lsitWidth) {
-							val = val.substring(0, lsitWidth - 4) + '...';
-						}
-
+						
 						listHtml += positionStr(val, align, lsitWidth);
 					}
 				}
@@ -209,6 +204,16 @@ function positionStr(str, align, len, sign) {
 // 可以过滤出中文字符长度
 function getStrLen(str) {
 	return str.replace(/[^\x00-\xff]/g, '__').length;
+}
+
+// 文字溢出
+function textOverflow(str, len) {
+	// 文字过长隐藏
+	if (getStrLen(str.length) > lsitWidth) {
+		val = val.substring(0, lsitWidth - 4) + '...';
+	}
+
+	return str;
 }
 
 // log test
