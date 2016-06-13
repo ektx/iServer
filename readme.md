@@ -20,7 +20,11 @@ npm install -g iservers
 ## 启动服务
 ```sh
 # 进入你要作为服务根目录的文件夹
+# 启动服务
 iserver
+
+# 启动服务并在浏览器中打开
+iserver -b
 ```
 
 ## 卸装
