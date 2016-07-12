@@ -132,7 +132,7 @@ app.listen(port, function() {
 
 // 服务帮助
 appServer.listen(_port, function() {
-	console.log('hahaha..我是服务文件')
+	// console.log('hahaha..我是服务文件')
 });
 
 /* 
