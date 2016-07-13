@@ -165,19 +165,9 @@ function getJSONNote (dataPath) {
 */
 function openBrowser(browserName) {
 
-	var hostName = getIPs().IPv4;
-
 	if (typeof browserName == 'boolean') browserName = ''
 
-	for (var i in hostName) {
-		if (hostName[i] == '127.0.0.1') {
-			hostName.splice(i,1);
-		}
-	}
-
-	console.log(hostName)
-
-	var url = 'http://'+hostName[0]+':'+port;
+	var url = 'http://'+getIPs().IPv4.public+':'+port;
 
 	open(url, browserName)
 
