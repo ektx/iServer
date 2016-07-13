@@ -1,4 +1,4 @@
-# iServer 3.0.1 beta
+# iServer 3.0.4 beta
 ![iServer 2](/bin/favicon.png 'Server 3.0 Beta')  
 
 ## 功能说明:    
