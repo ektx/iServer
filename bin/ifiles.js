@@ -38,7 +38,7 @@ exports.mkdirs = function (res, _path) {
 */
 function getHTML(files, filePath) {
 	let title = '', body = [], aURL;
-	let zIP = getIPs().IPv4[0];
+	let zIP = getIPs().IPv4.public;
 	let httpUrl = 'http://' + zIP +':'+rootServerPoot;
 
 	title = path.basename(filePath);
