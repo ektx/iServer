@@ -81,7 +81,6 @@ module.exports = function generate (originalPath, copyPath, _type) {
 		delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
 
 	} catch(err) {
-		console.log(err)
 		console.log('not have dir:', copyPath);
 		mkdirs(copyPath)
 	}

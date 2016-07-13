@@ -1,4 +1,4 @@
-# iServer 3.0 beta
+# iServer 3.0.1 beta
 ![iServer 2](/bin/favicon.png 'Server 3.0 Beta')  
 
 ## 功能说明:    
@@ -25,6 +25,9 @@ iserver
 
 # 启动服务并在浏览器中打开
 iserver -b
+
+# 使 Ejs 或 Jade 生成HTML
+localhost:8000/your_project/:make
 ```
 
 ## 卸装

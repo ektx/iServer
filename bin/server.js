@@ -21,32 +21,28 @@ module.exports = (req, res, options) => {
 	// 生成静态页面
 	if (/\/:[make|important]/.test(reqPath)) {
 		let copyPath = '';
+		let reqURL = reqPath.replace('/:make','');
+		let originalPath = path.join(rootPath, reqURL )
 
 		// 如果是根目录，就在根目录下生成一个压缩发布文件夹
-		if (!reqPath.replace('/:make','')) {
-			copyPath =  path.join(rootPath, 'PublishHTML');
+		if (!reqURL) {
+			copyPath =  path.join(rootPath, 'HTML');
 		} 
 		// 如果不是根目录，就在同级目录下面生成一个发布文件夹
 		else {
-			originalPath = path.join(rootPath, reqPath.replace(':make',''));
+			copyPath = path.join(rootPath, reqURL + '_HTML');
 			console.log('Not root Path:', copyPath)
 		}
 
-	// 	var _dir = path.dirname(reqPath)
-		var _type = 'make';
+		let _type = 'make';
 
-	// 	// 判断是否是覆盖生成请求
-	// 	if (/important\/*$/.test(reqPath)) {
-	// 		_type = 'important';
-	// 	}
+		let dealwithFiles = generate(originalPath, copyPath, _type);
 
-		var html = generate(rootPath, copyPath, _type);
-		if (html.length == 0) {
-			html.push('您本次没有修改任何文件')
+		if (dealwithFiles.length == 0) {
+			dealwithFiles.push('您本次没有修改任何文件')
 		}
-		console.log(html)
 
-		var _html = ejs.render(fs.readFileSync(__dirname + '/make.ejs', 'utf8'), {MArr: html});
+		let _html = ejs.render(fs.readFileSync(__dirname + '/make.ejs', 'utf8'), {MArr: dealwithFiles});
 
 		res.send(_html)
 
