@@ -1,5 +1,5 @@
-# iServer 3.0.4 beta
-![iServer 2](/bin/favicon.png 'Server 3.0 Beta')  
+# iServer 4.0 beta
+![iServer 2](/bin/favicon.png 'Server 4.0 Beta')  
 
 ## 功能说明:    
 * Nodejs 文件服务器  
