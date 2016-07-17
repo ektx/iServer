@@ -19,7 +19,7 @@ var exec = require('child_process').exec
  * https://github.com/pwnall/node-open
  */
 
-module.exports = open;
+module.exports = openBrowser;
 
 function open(target, appName) {
     var opener;
@@ -59,4 +59,18 @@ function open(target, appName) {
 
 function escape(s) {
     return s.replace(/"/g, '\\\"');
+}
+
+
+/*
+    在浏览器中打开页面
+    --------------------------------------
+
+*/
+function openBrowser(url, browserName) {
+
+    if (typeof browserName == 'boolean') browserName = ''
+
+    open(url, browserName)
+
 }
