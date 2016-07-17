@@ -24,6 +24,9 @@ a {
 	text-decoration: none;
 	color: #333;
 }
+a:hover {
+	text-decoration: underline;
+}
 ul {
 	padding: 0;
 }
