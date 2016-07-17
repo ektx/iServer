@@ -38,8 +38,7 @@ if (_command.v || _command.help) {
 
 // 默认端口设置
 const app = express();
-const appServer = express();
-const iserverRootPath = __dirname;
+const io  = require('socket.io')(http);
 
 app.set('views', __dirname)
 app.set('view engine', 'ejs')
@@ -70,11 +69,6 @@ app.get('*', function(req, res) {
 
 })
 
-appServer.get('*', function(req, res) {
-	var _path = req.path;
-	let appServerRootPath = path.join(__dirname, '/public/');
-	server(req, res, {serverRootPath: __dirname});
-});
 
 
 // app.post('*', function(req, res) {
@@ -123,10 +117,23 @@ app.listen(iservers.port, function() {
 	console.log(showInfo);
 });
 
-// 服务帮助
-// appServer.listen(_port, function() {
-// 	// console.log('hahaha..我是服务文件')
-// });
+
+if (iservers.type === 'TOOL') {
+	
+	const appServer = express();
+
+	appServer.get('*', function(req, res) {
+		var _path = req.path;
+		let appServerRootPath = path.join(__dirname, '/public/');
+		server(req, res, {serverRootPath: __dirname});
+	});
+
+	// 服务帮助
+	appServer.listen(iservers._port, function() {
+		console.log('辅助服务器')
+	});
+	
+}
 
 
 
