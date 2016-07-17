@@ -1,6 +1,7 @@
 {
 	"name": "iServer",
-	"version": "3.0.4",
+	"version": "4.0.0",
+	"type": "server",
 	"port": 8000,
 	"_port": 7999,
 	"compression": {
