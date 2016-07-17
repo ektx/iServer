@@ -1,61 +1,132 @@
-﻿/*
-	app Dev所用的Node服务器
-	v 0.3.0
-	---------------------------------------------------
-	1.支持显示服务IP，方便使用
-	zwl	 <myos.me>  2015-4-29
+#! /usr/bin/env node
+
+/*
+	iServers
+	-----------------------------------------------
+
 */
 
-var http = require('http');
-var url = require('url');
-var path = require('path');
-var fs = require('fs');
-var os = require('os');
+'use strict';
 
-var ifiles = require('./bin/ifiles')
+const express = require('express')
+const http    = require('http')
+const fs      = require('fs')
+const url     = require('url')
+const path    = require('path')
 
-// 服务器网络信息
-var ifaces = os.networkInterfaces();
-var addresses = [];
+const colors  = require('colors')
 
-for (var i in ifaces) {
-	for (var ii in ifaces[i]) {
-		var address = ifaces[i][ii];
-		if (address.family === 'IPv4') {
-			addresses.push(address.address);
-		}
+const server  = require('./bin/server')
+const ifiles  = require('./bin/ifiles')
+const getIPs  = require('./bin/getIPs')
+const comStr  = require('./bin/commandStr')
+const _command = comStr.commandStr();
+const open    = require('./bin/open');
+
+// 系统配置
+const iservers = require('./config');
+
+
+if (_command.v || _command.help) {
+	if (_command.v) {
+		console.log(iservers.version);
+	} else {
+		console.log(comStr.printHelp())
 	}
+	return
+}
 
-};
+// 默认端口设置
+const app = express();
+const appServer = express();
+const iserverRootPath = __dirname;
 
+app.set('views', __dirname)
+app.set('view engine', 'ejs')
 
-var root = __dirname;
-var fileLocation;
-
-http.createServer(function(req, res) {
-	var pathname = decodeURI(url.parse(req.url).pathname);
-	// 对url转译
-
-	console.log(req.method + ' ' + pathname)
-
-	if (path.extname(pathname) == '.ejs') {
-		res.end()
-		return;
-	}
-
-	ifiles.serverStatic(req, res, pathname, __dirname)
-
-}).listen(8888, function() {
-	console.log('====================================');
-	console.log('Welcome to Dev');
-	console.log('====================================');
-	console.log('本地请访问: localhost:8888 \n         或 '+ addresses[1]+':8888');
-	console.log('内网请访问: '+ addresses[0]+':8888');
-
+app.get('/favicon.ico', function(req, res) {
+	res.end();
+	return
 });
 
-process.stdin.resume();
-process.on('SIGINT', function() {
-	console.log('Bye!')
-	process.exit(0)
+
+app.get('*', function(req, res) {
+
+	let filterReqArr = [
+		'/bin/css/layout.css',
+		'/bin/favicon.png'
+	]
+
+	let _path = req.path;
+
+	// 过滤以上文件请求提示
+	if ( filterReqArr.indexOf(_path) < 0 ) {
+		console.log(req.method.bgGreen.white +' - ' +decodeURI(_path))
+	}
+
+	let usrRootPath = process.cwd();
+
+	server(req, res, {serverRootPath: usrRootPath});
+
 })
+
+appServer.get('*', function(req, res) {
+	var _path = req.path;
+	let appServerRootPath = path.join(__dirname, '/public/');
+	server(req, res, {serverRootPath: __dirname});
+});
+
+
+// app.post('*', function(req, res) {
+// 	var _path = req.path;
+
+// 	console.log(req.method.bgBlue.white +' - ' +decodeURI(_path))
+
+// 	// 项目请求目录
+// 	var _PRO_PATH = _path.match(/\/.*(?=\/)/)[0].substr(1);
+// 	// 获取主配置文件
+// 	var _PRO_CON  = getJSONNote(__dirname + projectConfig);
+
+
+// 	configInfo = getJSONNote(__dirname + '/public/'+_PRO_CON[_PRO_PATH]+'/Dev/Data/config.json');
+
+// 	var sendMes = {
+// 		"form": "iServer",
+// 		"status": true
+// 	}
+
+// 	res.json(sendMes)
+
+// });
+
+
+// 主服务
+app.listen(iservers.port, function() {
+
+	if (_command.browser) {
+    	
+    	let openURL = 'http://'+getIPs().IPv4.public + ':' + iservers.port;
+
+		open(openURL, _command.browser)
+	}
+
+	let zIP = getIPs().IPv4;
+	let showInfo = 
+`=================================
+    Welcome to ${iservers.version}
+=================================\n`.rainbow;
+
+	for (let i in zIP) {
+		showInfo += zIP[i] + ':' + iservers.port + '\n';
+	}
+
+	console.log(showInfo);
+});
+
+// 服务帮助
+// appServer.listen(_port, function() {
+// 	// console.log('hahaha..我是服务文件')
+// });
+
+
+
