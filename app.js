@@ -15,6 +15,11 @@ const url     = require('url')
 const path    = require('path')
 
 const colors  = require('colors')
+// 压缩功能
+const pack  = require('tar-pack').pack;
+// 解压功能
+const unpack = require('tar-pack').unpack;
+const mongoose = require('mongoose');
 
 const server  = require('./bin/server')
 const ifiles  = require('./bin/ifiles')
@@ -59,7 +64,7 @@ app.get('*', function(req, res) {
 	let _path = req.path;
 
 	// 过滤以上文件请求提示
-	if ( filterReqArr.indexOf(_path) < 0 ) {
+	if ( !filterReqArr.includes(_path) ) {
 		console.log(req.method.bgGreen.white +' - ' +decodeURI(_path))
 	}
 
@@ -94,6 +99,64 @@ app.get('*', function(req, res) {
 // });
 
 
+
+if (iservers.type === 'TOOL') {
+	
+	const appServer = express();
+
+	appServer.get('*', function(req, res) {
+		var _path = req.path;
+		let appServerRootPath = path.join(__dirname, '/public/');
+		server(req, res, {serverRootPath: __dirname});
+	});
+
+	// 服务帮助
+	appServer.listen(iservers._port, function() {
+		console.log('辅助服务器')
+	});
+	
+} 
+else if (iservers.type === 'SERVER') {
+
+	console.log('++++', process.cwd() , __dirname);
+
+	let write = fs.createWriteStream;
+	let read  = fs.createReadStream;
+	let packPath = process.cwd() + '/package.tar.gz';
+
+	// 把根目录文件中的 bin 打包,并添加到当前作为服务器目录中
+	pack(__dirname+'/bin')
+	.pipe(write( packPath ))
+	.on('error', function(err) {
+		console.log(err.stack)
+	})
+	.on('close', function() {
+		console.log('DONE');
+
+		// 解压打包过来的文件
+		read( packPath ).pipe( unpack(process.cwd() + '/bin/', (err) => {
+			if (err) console.log(err.stack)
+			else {
+				console.log('Unpack Done!');
+
+				// 删除压缩包
+				fs.unlink( packPath )
+			}
+		}) )
+	});
+
+	mongoose.connect('mongodb://localhost/iservers');
+	let db = mongoose.connection;
+	db.on('error', ()=> {
+		console.log('Mongodb not connection!')
+	});
+	db.once('open', () => {
+		console.log('Mongodb OK!')
+	})
+}
+
+
+
 // 主服务
 app.listen(iservers.port, function() {
 
@@ -115,25 +178,11 @@ app.listen(iservers.port, function() {
 	}
 
 	console.log(showInfo);
+}).on('error', (err) => {
+	if (err.code === 'EADDRINUSE') {
+		console.log(iservers.port+ '端口已经被占位!请更换其它端口!')
+	}
 });
-
-
-if (iservers.type === 'TOOL') {
-	
-	const appServer = express();
-
-	appServer.get('*', function(req, res) {
-		var _path = req.path;
-		let appServerRootPath = path.join(__dirname, '/public/');
-		server(req, res, {serverRootPath: __dirname});
-	});
-
-	// 服务帮助
-	appServer.listen(iservers._port, function() {
-		console.log('辅助服务器')
-	});
-	
-}
 
 
 
