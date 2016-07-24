@@ -1,11 +1,10 @@
 
-const fs = require('fs');
-const path = require('path');
+var fs = require('fs');
+var path = require('path');
+var mime = require('mime');
+var getIPs = require('./getIPs');
+var rootServerPoot = require('../config')._port;
 
-const ejs  = require('ejs');
-const mime = require('mime');
-const getIPs = require('./getIPs');
-const rootServerPoot = require('../config')._port;
 
 // 智能生成文件夹
 // 如果指定的文件夹的父级也不存在的话,则同时生成
@@ -99,26 +98,18 @@ function getHTML(files, filePath) {
 	@reqPath: 请求路径
 */
 exports.showDirecotry = (res, serverRootPath, reqPath) => {
-	// var html = '';
-	let _filePath = path.join(serverRootPath, reqPath)
+	var html = '';
+	var _filePath = path.join(serverRootPath, reqPath)
 
-	// fs.readdir(_filePath, function(err, files) {
-	// 	var html = getHTML(files, _filePath)
-	// 	res.writeHead(200, resHeaders());
+	fs.readdir(_filePath, function(err, files) {
+		var html = getHTML(files, _filePath)
+		res.writeHead(200, resHeaders());
 
-	// 	html += '<h5>共有 '+ files.length + ' 个文件!</h5>';
-	// 	html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 3</a></p></html>';
-	// 	res.write(html)
-	// 	res.end()
-	// })
-	console.log('ejs: ' + _filePath);
-
-	let ejsStr = fs.readFileSync(_filePath + 'bin/template/demo.ejs', 'utf8');
-
-	res.write( ejsStr )
-	res.end()
-
-
+		html += '<h5>共有 '+ files.length + ' 个文件!</h5>';
+		html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 3</a></p></html>';
+		res.write(html)
+		res.end()
+	})
 }
 
 

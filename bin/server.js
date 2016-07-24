@@ -160,6 +160,7 @@ module.exports = (req, res, options) => {
 			} 
 			// 文件夹则显示内部的文件目录
 			else if(stats.isDirectory()) {
+				console.log('to show isDirectory')
 				ifiles.showDirecotry(res, rootPath, reqPath)
 			}
 		})
