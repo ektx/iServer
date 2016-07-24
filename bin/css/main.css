@@ -1,0 +1,224 @@
+@charset "utf-8";
+
+body, div, p,
+ul, li, ol,
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	padding: 0
+}
+body {
+	font: 16px "Microsoft Yahei","Hiragino Sans GB","Helvetica Neue",sans-serif,"SimHei",Arial;
+}
+li {
+	list-style: none;
+	line-height: 22px;
+}
+h2 {
+	font-weight: 400
+}
+.osFileIco {
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+}
+a {
+	text-decoration: none;
+}
+
+ul {
+	padding: 0;
+}
+
+.os-header {
+	height: 60px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 0 20px;
+	background-color: rgba(255, 255, 255, .4);
+	-webkit-backdrop-filter: blur(10px) ;
+	backdrop-filter: blur(10px) ;
+	z-index: 1000;
+}
+.os-header h1 {
+	display: inline-block;
+	font-weight: 100;
+	font-size: 26px;
+	line-height: 60px;
+}
+
+.usr-hd-info-mod {
+	float: right;
+	margin: 18px 0;
+}
+.project-set-mod {
+	display: block;
+	height: 24px;
+	float: left;
+	position: relative;
+}
+.project-set-mod a {
+	display: block;
+}
+
+.usr-hd-list {
+	height: auto;
+	bottom: 0;
+}
+.usr-hd-list ul {
+	display: none;
+	position: absolute;
+	right: 10px;
+	top: 100%;
+	width: 120px;
+	padding: 10px 0;
+	border-radius: 3px;
+	border: 1px solid #eee;
+	overflow: hidden;
+	box-shadow: 0px 3px 10px rgba(0, 0, 0, .1);
+	background-color: #fff;
+
+}
+.usr-hd-list a {
+	display: block;
+	font-size: 14px;
+	padding: 3px 10px;
+	color: #333;
+}
+.usr-hd-list a:hover {
+	background-color: #eee;
+}
+
+.add-project-set {
+	padding: 0 10px;
+}
+.add-project-set:after {
+	content: '';
+	display: inline-block;
+	vertical-align: middle;
+	border: 3px solid transparent;
+	border-top-color: #333;
+}
+
+.hd-usr-ico {
+	display: inline-block;
+	width: 24px;
+	height: 24px;	
+	border-radius: 3px;
+	overflow: hidden;
+}
+.hd-usr-ico img {
+	width: 100%;
+	height: 100%;
+}
+.hd-usr-name {
+	color: #333;
+	vertical-align: top;
+	margin-left: 3px;
+	font-size: 14px;
+}
+
+
+.main-body {
+	margin-top: 60px;
+}
+.main-header {
+	min-height: 63px;
+	background-color: #f5f5f5;
+}
+
+.tab-mod {
+	float: left;
+	width: 800px;
+}
+.tab-title-box {
+	padding: 0 10px;
+	overflow: hidden;
+	border-bottom: 1px solid #eee;
+}
+.tab-title-box li {
+	display: block;
+	float: left;
+	font-size: 16px;
+	color: #777;
+	font-weight: 100;
+	padding: 10px;
+	cursor: pointer;
+	border-bottom: 2px solid transparent
+}
+.tab-title-box li.current {
+	color: #39f;
+	border-color: #39f;
+}
+
+.project-list-mod li {
+	width: 100%;
+	border-bottom: 1px solid #eee;
+	padding: 10px 0;
+}
+.project-list-mod h3 {
+	font-size: 18px;
+	color: #39f;
+	font-weight: 100;
+	margin: 0 0 5px 0;
+}
+.project-list-mod li p {
+	font-size: 14px;
+	color: #777;
+}
+
+/* aside */
+.aside-box {
+	padding: 10px 30px;
+	float: left;
+}
+.aside-usr-ico {
+	width: 260px;
+	height: 260px;
+	background-color: #f5f5f5;
+	border-radius: 5px;
+	overflow: hidden;
+}
+.aside-usr-ico img {
+	width: 100%;
+}
+.aside-usr-name {
+	font-size: 30px;
+	font-weight: 100;
+	line-height: 46px;
+}
+
+.asider-my-teams h3 {
+	line-height: 32px;
+	font-size: 16px;
+}
+.asider-my-teams ul {
+	font-size: 0;
+}
+.asider-my-teams a {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	overflow: hidden;
+	margin-right: 5px;
+}
+.asider-my-teams a img {
+	width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
