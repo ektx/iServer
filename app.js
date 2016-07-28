@@ -8,12 +8,13 @@
 
 'use strict';
 
-const express = require('express')
 const http    = require('http')
 const fs      = require('fs')
 const url     = require('url')
 const path    = require('path')
-
+const express = require('express')
+const session = require('express-session');
+const bodyParser = require('body-parser');
 const colors  = require('colors')
 // 压缩功能
 const pack  = require('tar-pack').pack;
@@ -21,12 +22,12 @@ const pack  = require('tar-pack').pack;
 const unpack = require('tar-pack').unpack;
 const mongoose = require('mongoose');
 
-const server  = require('./bin/server')
 const ifiles  = require('./bin/ifiles')
 const getIPs  = require('./bin/getIPs')
 const comStr  = require('./bin/commandStr')
 const _command = comStr.commandStr();
 const open    = require('./bin/open');
+const rotues  = require('./bin/rotues');
 
 // 系统配置
 const iservers = require('./config');
@@ -48,56 +49,25 @@ const io  = require('socket.io')(http);
 app.set('views', __dirname)
 app.set('view engine', 'ejs')
 
+app.use(session({
+	secret: 'hello world!',
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		maxAge: 60000
+	}
+}));
+app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
+
+
 app.get('/favicon.ico', function(req, res) {
 	res.end();
 	return
 });
 
 
-app.get('*', function(req, res) {
-
-	let filterReqArr = [
-		'/bin/css/layout.css',
-		'/bin/favicon.png'
-	]
-
-	let _path = req.path;
-
-	// 过滤以上文件请求提示
-	if ( !filterReqArr.includes(_path) ) {
-		console.log(req.method.bgGreen.white +' - ' +decodeURI(_path))
-	}
-
-	let usrRootPath = process.cwd();
-
-	server(req, res, {serverRootPath: usrRootPath});
-
-})
-
-
-
-// app.post('*', function(req, res) {
-// 	var _path = req.path;
-
-// 	console.log(req.method.bgBlue.white +' - ' +decodeURI(_path))
-
-// 	// 项目请求目录
-// 	var _PRO_PATH = _path.match(/\/.*(?=\/)/)[0].substr(1);
-// 	// 获取主配置文件
-// 	var _PRO_CON  = getJSONNote(__dirname + projectConfig);
-
-
-// 	configInfo = getJSONNote(__dirname + '/public/'+_PRO_CON[_PRO_PATH]+'/Dev/Data/config.json');
-
-// 	var sendMes = {
-// 		"form": "iServer",
-// 		"status": true
-// 	}
-
-// 	res.json(sendMes)
-
-// });
-
+// 使用路由
+rotues(app);
 
 
 if (iservers.type === 'TOOL') {
@@ -125,7 +95,7 @@ else if (iservers.type === 'SERVER') {
 	let packPath = process.cwd() + '/package.tar.gz';
 
 	// 把根目录文件中的 bin 打包,并添加到当前作为服务器目录中
-	pack(__dirname+'/bin')
+	pack(__dirname+'/server')
 	.pipe(write( packPath ))
 	.on('error', function(err) {
 		console.log(err.stack)
@@ -134,7 +104,7 @@ else if (iservers.type === 'SERVER') {
 		console.log('DONE');
 
 		// 解压打包过来的文件
-		read( packPath ).pipe( unpack(process.cwd() + '/bin/', (err) => {
+		read( packPath ).pipe( unpack(process.cwd() + '/server/', (err) => {
 			if (err) console.log(err.stack)
 			else {
 				console.log('Unpack Done!');
@@ -145,7 +115,7 @@ else if (iservers.type === 'SERVER') {
 		}) )
 	});
 
-	mongoose.connect('mongodb://localhost/iservers');
+	mongoose.connect('mongodb://localhost/iservsers');
 	let db = mongoose.connection;
 	db.on('error', ()=> {
 		console.log('Mongodb not connection!')

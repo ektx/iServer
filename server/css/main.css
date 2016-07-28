@@ -7,7 +7,7 @@ h1, h2, h3, h4, h5, h6 {
 	padding: 0
 }
 body {
-	font: 16px "Microsoft Yahei","Hiragino Sans GB","Helvetica Neue",sans-serif,"SimHei",Arial;
+	font-family: "Hiragino Sans GB","Helvetica Neue",sans-serif,"Microsoft Yahei","SimHei",Arial; /* 1 */
 }
 li {
 	list-style: none;
@@ -207,12 +207,102 @@ ul {
 	width: 100%;
 }
 
+/*
+	登录页面
+	------------------------------------
+*/
+.login-body {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	/*background: url('../img/login/NatGeo.jpg') no-repeat;*/
+	/*background-size: cover;*/
+	background-color: #333;
+}
+.login-mod {
+	width: 360px;
+	height: auto;
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	margin: -60px -180px;
 
+}
+.login-mod h1 {
+	font-size: 36px;
+	color: #191919;
+	text-align: center;
+	font-weight: 100;
+}
+.error-info {
+	opacity: 0;
+	visibility: hidden;
+	font-size: 14px;
+	color: #ff4500;
+	text-align: center;
+	margin: 5px 0 10px;
+}
+.login-mod form {
+	display: block;
+	background-color: #272727;
+	border-radius: 5px;
+	position: relative;
+	z-index: 1;
+	overflow: hidden;
+	border: 1px solid #272727;
+}
+.login-mod form.error {
+	border-color: #ff4500;
+}
+.login-mod input {
+	width: 100%;
+	box-sizing: border-box;
+	color: #f5f5f5;
+	font-size: 16px;
+	padding: 10px;
+	border: none;
+	outline: none;
+	background-color: transparent;
+}
+.login-usr-name {
+	border-bottom: 1px solid #333;
+}
+.login-usr-pwd input {
+	padding-right: 38px;
+}
+.login-btn {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 38px;
+	height: 38px;
+	border: none;
+	background-color: transparent;
+}
+.login-btn[disabled="disabled"] path {
+	fill: #666;
+}
+.login-btn path {
+	fill: #f5f5f5;
+}
 
-
-
-
-
+.login-help {
+	margin-top: 8px;
+}
+.login-help a {
+	font-size: 14px;
+	color: #666;
+}
+.login-help a:last-child {
+	float: right;
+}
+.login-help a:hover {
+	color: #eee;
+	transition: color .3s ease;
+}
 
 
 
