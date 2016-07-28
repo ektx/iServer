@@ -99,24 +99,24 @@ function getHTML(files, filePath) {
 	@reqPath: 请求路径
 */
 exports.showDirecotry = (res, serverRootPath, reqPath) => {
-	// var html = '';
+	var html = '';
 	let _filePath = path.join(serverRootPath, reqPath)
 
-	// fs.readdir(_filePath, function(err, files) {
-	// 	var html = getHTML(files, _filePath)
-	// 	res.writeHead(200, resHeaders());
+	fs.readdir(_filePath, function(err, files) {
+		var html = getHTML(files, _filePath)
+		res.writeHead(200, resHeaders());
 
-	// 	html += '<h5>共有 '+ files.length + ' 个文件!</h5>';
-	// 	html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 3</a></p></html>';
-	// 	res.write(html)
-	// 	res.end()
-	// })
-	console.log('ejs: ' + _filePath);
+		html += '<h5>共有 '+ files.length + ' 个文件!</h5>';
+		html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 3</a></p></html>';
+		res.write(html)
+		res.end()
+	})
+	// console.log('ejs: ' + _filePath);
 
-	let ejsStr = fs.readFileSync(_filePath + 'bin/template/demo.ejs', 'utf8');
+	// let ejsStr = fs.readFileSync(_filePath + 'bin/template/demo.ejs', 'utf8');
 
-	res.write( ejsStr )
-	res.end()
+	// res.write( ejs.render(ejsStr) )
+	// res.end()
 
 
 }

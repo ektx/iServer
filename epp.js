@@ -8,11 +8,11 @@
 
 'use strict';
 
-var express = require('express')
 var http = require('http')
 var fs = require('fs')
 var url = require('url')
 var path = require('path')
+var express = require('express')
 var colors = require('colors')
 var server = require('./bin/server')
 var ifiles = require('./bin/ifiles')
