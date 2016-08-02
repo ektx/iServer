@@ -17,19 +17,23 @@
 				</div>
 			</li>
 			<li class="project-set-mod">
-				<a  href="#">
+			<% if (usr) { %>
+
+				<a >
 					<span class="hd-usr-ico">
-						<img src="img/usrDefaultIco.jpg" alt="Kings">
+						<img src="<%= usr.ico %>" alt="<%= usr.usr %>">
 					</span>
-					<span class="hd-usr-name">Kings</span>
+					<span class="hd-usr-name"><%= usr.usr %></span>
 				</a>
 
 				<div class="usr-hd-list">
 					<ul>
 						<a href="">修改密码</a>
-						<a href="">退出</a>
+						<a href="/loginOut">退出</a>
 					</ul>
 				</div>
+
+			<% } %>
 			</li>
 		</ul>
 	</header>

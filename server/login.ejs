@@ -13,12 +13,12 @@
 		<div class="login-mod">
 			<h1>iServer</h1>
 			<p class="error-info">Error!</p>
-			<form method="post" action="/loginweb">
+			<form method="post" action="/loginIn">
 				<div class="login-usr-name">
-					<input type="text" name="usr" placeholder="帐号">
+					<input type="text" name="usr" placeholder="帐号" autofocus="" value="kings">
 				</div>
 				<div class="login-usr-pwd">
-					<input type="password" name="passwd" placeholder="密码">
+					<input type="password" name="passwd" placeholder="密码" value="1234">
 				</div>
 				<button class="login-btn" type="submit">
 					<svg width="16" height="16" viewBox="0 0 24 24">
@@ -28,13 +28,14 @@
 			</form>
 			<p class="login-help">
 				<a href="#">忘记密码</a>
-				<a href="#">申请帐号</a>
+				<a href="">申请帐号</a>
 			</p>
 		</div>
 		
 			
 	</section>
 
-	
+	<script src="js/jquery-3.1.0.min.js"></script>
+	<script src="js/login.js"></script>
 </body>
 </html>

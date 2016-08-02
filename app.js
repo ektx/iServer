@@ -46,7 +46,7 @@ if (_command.v || _command.help) {
 const app = express();
 const io  = require('socket.io')(http);
 
-app.set('views', __dirname)
+app.set('views', __dirname + '/server')
 app.set('view engine', 'ejs')
 
 app.use(session({
@@ -59,61 +59,14 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
-
-app.get('/favicon.ico', function(req, res) {
-	res.end();
-	return
-});
-
-
 // 使用路由
 rotues(app);
 
 
-if (iservers.type === 'TOOL') {
-	
-	const appServer = express();
+if (iservers.type === 'SERVER') {
 
-	appServer.get('*', function(req, res) {
-		var _path = req.path;
-		let appServerRootPath = path.join(__dirname, '/public/');
-		server(req, res, {serverRootPath: __dirname});
-	});
-
-	// 服务帮助
-	appServer.listen(iservers._port, function() {
-		console.log('辅助服务器')
-	});
-	
-} 
-else if (iservers.type === 'SERVER') {
-
-	console.log('++++', process.cwd() , __dirname);
-
-	let write = fs.createWriteStream;
-	let read  = fs.createReadStream;
-	let packPath = process.cwd() + '/package.tar.gz';
-
-	// 把根目录文件中的 bin 打包,并添加到当前作为服务器目录中
-	pack(__dirname+'/server')
-	.pipe(write( packPath ))
-	.on('error', function(err) {
-		console.log(err.stack)
-	})
-	.on('close', function() {
-		console.log('DONE');
-
-		// 解压打包过来的文件
-		read( packPath ).pipe( unpack(process.cwd() + '/server/', (err) => {
-			if (err) console.log(err.stack)
-			else {
-				console.log('Unpack Done!');
-
-				// 删除压缩包
-				fs.unlink( packPath )
-			}
-		}) )
-	});
+	console.log('服务器根目录:', process.cwd() );
+	console.log('服务启动目录:', __dirname);
 
 	mongoose.connect('mongodb://localhost/iservsers');
 	let db = mongoose.connection;
