@@ -8,13 +8,13 @@
 </head>
 <body>
 	
-	<%- include('parts/header') %>
+	<%- include('parts/header', {usr: usrInfo}) %>
 
 	<section class="main-body">
 
 		<section class="content">
 			
-			<%- include('parts/aside') %>
+			<%- include('parts/aside', {usr: usrInfo}) %>
 			<%- include('parts/tab') %>
 
 
@@ -23,6 +23,8 @@
 			
 	</section>
 
+	<script src="js/jquery-3.1.0.min.js"></script>
+	<script src="js/usrCenter.js"></script>
 	
 </body>
 </html>

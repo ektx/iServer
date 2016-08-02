@@ -1,10 +1,12 @@
 			<aside class="aside-box">
 
 				<div class="aside-usr-info">
+					<% if (usr) { %>
 					<div class="aside-usr-ico">
-						<img src="img/usrDefaultIco.jpg" alt="Kings">
+						<img src="<%= usr.ico %>" alt="<%= usr.usr %>">
 					</div>
-					<div class="aside-usr-name">KinGS</div>
+					<div class="aside-usr-name"><%= usr.usr %></div>
+					<% } %>
 				</div>
 
 				<div class="asider-my-teams">

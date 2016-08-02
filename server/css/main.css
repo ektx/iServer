@@ -72,13 +72,27 @@ ul {
 	right: 10px;
 	top: 100%;
 	width: 120px;
+	margin-top: 15px;
 	padding: 10px 0;
 	border-radius: 3px;
 	border: 1px solid #eee;
-	overflow: hidden;
-	box-shadow: 0px 3px 10px rgba(0, 0, 0, .1);
+	box-shadow: 0px 1px 4px rgba(0, 0, 0, .05);
 	background-color: #fff;
 
+}
+.usr-hd-list ul:before,
+.usr-hd-list ul:after {
+	display: block;
+	content: '';
+	position: absolute;
+	top: -16px;
+	right: 10px;
+	border: 8px solid transparent;
+	border-bottom-color: #eee;
+}
+.usr-hd-list ul:after {
+	top: -15px;
+	border-bottom-color: #fff;
 }
 .usr-hd-list a {
 	display: block;
@@ -241,9 +255,13 @@ ul {
 	opacity: 0;
 	visibility: hidden;
 	font-size: 14px;
-	color: #ff4500;
+	color: #fff;
 	text-align: center;
 	margin: 5px 0 10px;
+}
+.error-info.show {
+	opacity: 1;
+	visibility: visible;
 }
 .login-mod form {
 	display: block;
