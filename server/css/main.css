@@ -7,7 +7,7 @@ h1, h2, h3, h4, h5, h6 {
 	padding: 0
 }
 body {
-	font-family: "Hiragino Sans GB","Helvetica Neue",sans-serif,"Microsoft Yahei","SimHei",Arial; /* 1 */
+	font-family: "Microsoft Yahei","SimHei","Hiragino Sans GB","Helvetica Neue",sans-serif,Arial;
 }
 li {
 	list-style: none;
@@ -60,6 +60,7 @@ ul {
 }
 .project-set-mod a {
 	display: block;
+	cursor: pointer;
 }
 
 .usr-hd-list {
@@ -69,11 +70,11 @@ ul {
 .usr-hd-list ul {
 	display: none;
 	position: absolute;
-	right: 10px;
+	right: 0;
 	top: 100%;
 	width: 120px;
 	margin-top: 15px;
-	padding: 10px 0;
+	padding: 8px 0;
 	border-radius: 3px;
 	border: 1px solid #eee;
 	box-shadow: 0px 1px 4px rgba(0, 0, 0, .05);
@@ -116,15 +117,19 @@ ul {
 }
 
 .hd-usr-ico {
+	float: left;
 	display: inline-block;
+	display: -webkit-box;
+	display: -moz-box;
 	width: 24px;
 	height: 24px;	
 	border-radius: 3px;
 	overflow: hidden;
+	-webkit-box-align: center;
+	-moz-box-align: center;
 }
 .hd-usr-ico img {
 	width: 100%;
-	height: 100%;
 }
 .hd-usr-name {
 	color: #333;
@@ -188,11 +193,15 @@ ul {
 	float: left;
 }
 .aside-usr-ico {
+	display: -webkit-box;
+	display: -moz-box;
 	width: 260px;
 	height: 260px;
 	background-color: #f5f5f5;
 	border-radius: 5px;
 	overflow: hidden;
+	-webkit-box-align: center;
+	-moz-box-align: center;
 }
 .aside-usr-ico img {
 	width: 100%;

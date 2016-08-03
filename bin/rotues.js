@@ -112,8 +112,10 @@ module.exports = (app) => {
 	app.get('*', (req, res) => {
 		console.log('%s - %s', req.method.bgGreen.white, decodeURI(req.url) );
 
-		if (checkLoginForStatic(req, res) )
-			server(req, res, {serverRootPath: __dirname.replace('/bin', '/server') });
+		if (checkLoginForStatic(req, res) ) {
+			console.log('>>', __dirname.replace('bin', 'server'))
+			server(req, res, {serverRootPath: __dirname.replace('bin', 'server') });
+		}
 	});
 
 
@@ -130,7 +132,7 @@ function checkLoginForStatic(req, res) {
 	// 往回登录页面
 	if ( !req.session.usr) {
 		if (req.headers.referer && url.parse(req.headers.referer).host === req.headers.host) {
-			console.log('Welcome :' , !req.session.usr )
+			console.log('Welcome :' , req.session.usr )
 		} else {
 			res.redirect('/');
 			result = false;
