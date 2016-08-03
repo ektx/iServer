@@ -1,0 +1,1 @@
+db.usrs.insert({'name':'admin', 'pwd':'1111','ico':'img/apple.gif'})
