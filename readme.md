@@ -35,6 +35,8 @@ localhost:8000/your_project/:make
 npm uninstall -g iservers
 ```
 
+## License
+MIT
 
 ## 相关资料  
 查看 [node.js](https://nodejs.org/)  
