@@ -17,19 +17,42 @@ module.exports = (app) => {
 
 
 	app.get('/', (req, res, next) => {
-		res.render('login')
+		// 默认访问根目录时,如果用户登录过则进入用户中心
+		if (req.session.usr) {
+			res.redirect('/'+req.session.usr)
+		} 
+		// 没有登录过则是进入登录页面
+		else {
+			res.render('login')
+		}
 	});
 
-	app.get('/demo', (req, res)=> {
 
-		checkLoginForURL(req, res, () => {
-			res.render('demo', {
-				usrInfo: {
-					usr: req.session.usr,
-					ico: req.session.ico
-				}
-			})
+	app.get('/loginOut', (req, res) => {
+		req.session.destroy((err)=>{
+			if (err) throw err;
+			res.redirect('/')
 		})
+	})
+
+
+	app.get(/\/\w+/, (req, res, next)=> {
+
+		// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
+		if (req.url.split('/').length === 2) {
+			// 先判断用户在不在了
+			// checkLoginForURL(req, res, () => {
+				res.render('demo', {
+					usrInfo: {
+						usr: req.session.usr,
+						ico: req.session.ico
+					}
+				})
+			// })
+			
+		} else {
+			next()
+		}
 	})
 
 	// test session
@@ -39,7 +62,7 @@ module.exports = (app) => {
 		if (sess.views) {
 			sess.views++
 
-			res.setHeader('Content-Type', 'text/html; charset="utf-8" ')
+			res.setHeader('Content-Type', 'text/html; charset=utf-8')
 			res.write('<p>Views: ' + sess.views + '</p>');
 			res.write('<p>Exprirs in: ' + (sess.cookie.maxAge / 1000)+ 's</p>')
 			res.end()
@@ -83,7 +106,7 @@ module.exports = (app) => {
 
 					sendMsg = {
 						"success": true,
-						"msg": '/demo'
+						"msg": '/'+req.session.usr
 					}
 
 					res.json(sendMsg)
@@ -100,17 +123,10 @@ module.exports = (app) => {
 	})
 
 
-	app.get('/loginOut', (req, res) => {
-		req.session.destroy((err)=>{
-			if (err) throw err;
-			res.redirect('/')
-		})
-	})
-
-
-
 	app.get('*', (req, res) => {
 		console.log('%s - %s', req.method.bgGreen.white, decodeURI(req.url) );
+
+
 
 		if (checkLoginForStatic(req, res) ) {
 			console.log('>>', __dirname.replace('bin', 'server'))

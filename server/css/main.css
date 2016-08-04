@@ -62,6 +62,9 @@ ul {
 	display: block;
 	cursor: pointer;
 }
+.signUp {
+	margin-left: 15px;
+}
 
 .usr-hd-list {
 	height: auto;
