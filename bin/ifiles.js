@@ -39,6 +39,7 @@ exports.mkdirs = function (res, _path) {
 	@filePath 文件夹路径
 */
 function getHTML(files, filePath) {
+	// console.log('>>>', req, res)
 	let title = '', body = [], aURL;
 	let zIP = getIPs().IPv4.public;
 	let httpUrl = 'http://' + zIP +':'+rootServerPoot;
@@ -50,8 +51,8 @@ function getHTML(files, filePath) {
 	body.push('<!doctype html>')
 	body.push('<html><head><meta charset="utf-8">')
 	body.push('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">')
-	body.push('<link rel="stylesheet" type="text/css" href="'+httpUrl+'/bin/css/layout.css">')
-	body.push('<link rel="icon" type="image/x-icon" href="/bin/favicon.png">')
+	body.push('<link rel="stylesheet" type="text/css" href="/server/css/layout.css">')
+	body.push('<link rel="icon" type="image/x-icon" href="/server/favicon.png">')
 	body.push('<title>'+title+'</title>')
 	body.push('</head><body class="server-body">')
 	body.push('<h3>'+title+'</h3>')
@@ -94,11 +95,12 @@ function getHTML(files, filePath) {
 /*
 	showDirecotry
 	---------------------------------------------------
+	@req: 请求
 	@res: 响应
 	@serverRootPath: 根目录
 	@reqPath: 请求路径
 */
-exports.showDirecotry = (res, serverRootPath, reqPath) => {
+exports.showDirecotry = (req, res, serverRootPath, reqPath) => {
 	var html = '';
 	let _filePath = path.join(serverRootPath, reqPath)
 
@@ -111,13 +113,6 @@ exports.showDirecotry = (res, serverRootPath, reqPath) => {
 		res.write(html)
 		res.end()
 	})
-	// console.log('ejs: ' + _filePath);
-
-	// let ejsStr = fs.readFileSync(_filePath + 'bin/template/demo.ejs', 'utf8');
-
-	// res.write( ejs.render(ejsStr) )
-	// res.end()
-
 
 }
 
