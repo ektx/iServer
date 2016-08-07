@@ -69,6 +69,8 @@ if (iservers.type === 'SERVER') {
 	console.log('服务启动目录:', __dirname);
 
 	mongoose.connect('mongodb://localhost/iservsers');
+	mongoose.set('debug', true)
+	
 	let db = mongoose.connection;
 	db.on('error', ()=> {
 		console.log('Mongodb not connection!')

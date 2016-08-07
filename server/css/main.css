@@ -334,7 +334,48 @@ ul {
 	transition: color .3s ease;
 }
 
+/* 挺拽上传 */
+.drag-files-enetr {
+}
 
+.drop-box {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(255, 255, 255, .8);
+	z-index: 1000;
+	visibility: hidden;
+	opacity: 0;
+	color: #333;
+	font-size: 24px;
+	text-align: center;
+	transition: opacity .3s ease, visibility .3s ease;
+}
+.drag-files-enetr .drop-box {
+	opacity: 1;
+	visibility: visible;
+}
+.drop-files-help {
+	width: 100%;
+	max-width: 200px;
+	position: absolute;
+	top: 45%;
+	left: 50%;
+	margin: -100px;
+	z-index: 1001;
+}
+.drop-files-help svg {
+	display: block;
+	width: 100%;
+	max-width: 200px;
+	height: auto;
+	margin: 0 auto;
+}
+.drop-files-help path {
+	fill: #333;
+}
 
 
 
