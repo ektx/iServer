@@ -7,34 +7,12 @@
 
 				<div class="project-list-box">
 					<ul class="project-list-mod">
+					<% pro.project.forEach( function(val) { %>
 						<li>
-							<h3>iServer</h3>
+							<h3><%= val.name %></h3>
 							<p>Nodejs server</p>
 						</li>
-						<li>
-							<h3>iServer</h3>
-							<p>Nodejs server</p>
-						</li>
-						<li>
-							<h3>iServer</h3>
-							<p>Nodejs server</p>
-						</li>
-						<li>
-							<h3>iServer</h3>
-							<p>Nodejs server</p>
-						</li>
-						<li>
-							<h3>iServer</h3>
-							<p>Nodejs server</p>
-						</li>
-						<li>
-							<h3>iServer</h3>
-							<p>Nodejs server</p>
-						</li>
-						<li>
-							<h3>iServer</h3>
-							<p>Nodejs server</p>
-						</li>
+					<% }) %>
 					</ul>
 				</div>
 			</section>
