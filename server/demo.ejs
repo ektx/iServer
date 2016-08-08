@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title><%= askUsr.name%> - iServer</title>
 
 	<link rel="stylesheet" href="server/css/main.css">
 </head>
@@ -16,7 +16,7 @@
 		<section class="content">
 			
 			<%- include('parts/aside', {usr: askUsr}) %>
-			<%- include('parts/tab') %>
+			<%- include('parts/tab', {pro: project}) %>
 
 		</section>
 
