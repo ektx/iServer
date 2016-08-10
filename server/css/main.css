@@ -174,7 +174,8 @@ ul {
 	border-color: #39f;
 }
 
-.project-list-mod li {
+.project-list-mod a {
+	display: block;
 	width: 100%;
 	border-bottom: 1px solid #eee;
 	padding: 10px 0;
@@ -185,7 +186,7 @@ ul {
 	font-weight: 100;
 	margin: 0 0 5px 0;
 }
-.project-list-mod li p {
+.project-list-mod a p {
 	font-size: 14px;
 	color: #777;
 }
@@ -365,6 +366,7 @@ ul {
 	left: 50%;
 	margin: -100px;
 	z-index: 1001;
+	pointer-events: none;
 }
 .drop-files-help svg {
 	display: block;
@@ -377,8 +379,15 @@ ul {
 	fill: #333;
 }
 
-
-
+/* svg lock */
+.svg-lock {
+	width: 16px;
+	display: inline-block;
+	stroke: #666;
+	stroke-width: 5;
+	stroke-linecap: round;
+	fill: none;
+}
 
 
 

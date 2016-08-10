@@ -61,7 +61,15 @@ exports.session = (req, res) => {
 exports.usrHome = (req, res, next)=> {
 
 	console.log(':: Your asking ', req.params.usr );
+	console.log(req.headers.host)
+	console.log(req.url)
 	let fields = {_id:0, project: 1};
+
+	// 处理请求如: http://10.37.129.2:8000/kings/ 时,因最后有/导致样式js
+	// 无法加载BUG
+	if (req.url.endsWith('/')) {
+		res.redirect('/'+req.params.usr)
+	}
 
 	if (req.params.usr !== req.session.usr) {
 		fields.project = {
@@ -99,6 +107,7 @@ exports.usrHome = (req, res, next)=> {
 							usr: req.session.usr,
 							ico: req.session.ico
 						},
+						host: 'http://'+ req.headers.host,
 						askUsr: usrData,
 						project: proData
 					});
