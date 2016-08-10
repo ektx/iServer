@@ -163,7 +163,7 @@ module.exports = (req, res, options) => {
 				console.log('To show isDirectory', rootPath, reqPath)
 
 				if ( !reqPath.endsWith('/') ) {
-					reqPath += '/'
+					reqPath += '/';
 				}
 				ifiles.showDirecotry(req, res, rootPath, reqPath)
 			}
