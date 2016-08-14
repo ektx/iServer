@@ -2,11 +2,14 @@
 
 body, div, p,
 ul, li, ol,
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6,
+form, dl, dt, dd {
 	margin: 0;
 	padding: 0
 }
 body {
+	-webkit-font-smoothing: subpixel-antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	font-family: "Microsoft Yahei","SimHei","Hiragino Sans GB","Helvetica Neue",sans-serif,Arial;
 }
 li {
@@ -46,6 +49,9 @@ ul {
 	font-weight: 100;
 	font-size: 26px;
 	line-height: 60px;
+}
+.os-header h1 a {
+	color: #333;
 }
 
 .usr-hd-info-mod {
@@ -389,6 +395,11 @@ ul {
 	fill: none;
 }
 
-
+/* clear float */
+.cf:after {
+	display: block;
+	content: '';
+	clear: both;
+}
 
 

@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh">
-<head>
-	<meta charset="UTF-8">
-	<title><%= askUsr.name%> - iServer</title>
-
-	<link rel="stylesheet" href="server/css/main.css">
-</head>
+	<%- include('parts/head', {host: host, title: askUsr.name, css: []}) %>
 <body>
 	
 	<%- include('parts/header', {usr: usrInfo}) %>
@@ -15,8 +10,8 @@
 
 		<section class="content">
 			
-			<%- include('parts/aside', {usr: askUsr}) %>
-			<%- include('parts/tab', {pro: project, usr: askUsr.name}) %>
+			<%- include('parts/aside', {host: host, usr: askUsr}) %>
+			<%- include('parts/tab', {pro: project, usr: askUsr.usr}) %>
 
 		</section>
 
@@ -29,8 +24,9 @@
 			
 	</section>
 
-	<script src="server/js/jquery-3.1.0.min.js"></script>
-	<script src="server/js/usrCenter.js"></script>
+	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
+	<script src="<%= host %>/server/js/main.js"></script>
+	<script src="<%= host %>/server/js/usrCenter.js"></script>
 	
 </body>
 </html>

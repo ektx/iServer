@@ -1,5 +1,9 @@
 	<header class="os-header">
+		<% if (typeof title === 'undefined') { %>
 		<h1>iServers</h1>
+		<% } else { %>
+		<h1> <a href="../<%= usr.act %>"><%= title %></a></h1>
+		<% } %>
 
 		<ul class="usr-hd-info-mod">
 			<% if (usr.usr) { %>
@@ -21,14 +25,14 @@
 
 				<a >
 					<span class="hd-usr-ico">
-						<img src="<%= usr.ico %>" alt="<%= usr.usr %>">
+						<img src="<%= host %>/<%= usr.ico %>" alt="<%= usr.usr %>">
 					</span>
 					<span class="hd-usr-name"><%= usr.usr %></span>
 				</a>
 
 				<div class="usr-hd-list">
 					<ul>
-						<a href="">修改密码</a>
+						<a href="/set/profile">个人中心</a>
 						<a href="/loginOut">退出</a>
 					</ul>
 				</div>

@@ -1,6 +1,9 @@
 // 路径对应请求
+const fs = require('fs');
 const url = require('url');
+const path = require('path');
 const colors  = require('colors');
+const multer = require('multer');
 const server  = require('./server');
 const Schemas = require('./schemas');
 
@@ -8,8 +11,8 @@ const Schemas = require('./schemas');
 // 访问 / [get]
 exports.root = (req, res) => {
 	// 默认访问根目录时,如果用户登录过则进入用户中心
-	if (req.session.usr) {
-		res.redirect('/'+req.session.usr)
+	if (req.session.act) {
+		res.redirect('/'+req.session.act)
 	} 
 	// 没有登录过则是进入登录页面
 	else {
@@ -19,7 +22,7 @@ exports.root = (req, res) => {
 
 // 所有get * 请求
 exports.getAll = (req, res) => {
-	console.log('%s - %s', req.method.bgGreen.white, decodeURI(req.url) );
+	console.log('%s * %s', req.method.bgGreen.white, decodeURI(req.url) );
 
 	server(req, res, {serverRootPath: process.cwd() });
 };
@@ -65,13 +68,7 @@ exports.usrHome = (req, res, next)=> {
 	console.log(req.url)
 	let fields = {_id:0, project: 1};
 
-	// 处理请求如: http://10.37.129.2:8000/kings/ 时,因最后有/导致样式js
-	// 无法加载BUG
-	if (req.url.endsWith('/')) {
-		res.redirect('/'+req.params.usr)
-	}
-
-	if (req.params.usr !== req.session.usr) {
+	if (req.params.usr !== req.session.act) {
 		fields.project = {
 			$elemMatch: {private: false}
 		};
@@ -80,11 +77,15 @@ exports.usrHome = (req, res, next)=> {
 	// 查看是否有此用户信息
 	let findAskUsr = new Promise((resolve, reject) => {
 		Schemas.usrs_m.findOne(
-			{'name': req.params.usr}, 
+			{'account': req.params.usr}, 
 			{_id:0, pwd:0}, 
 			(err, data)=> {
 				if (data) {
-					resolve(data)
+					resolve({
+						usr: data.account,
+						pic: data.ico
+					})
+					console.log(data)
 				} else {
 					reject('404')
 				}
@@ -97,10 +98,13 @@ exports.usrHome = (req, res, next)=> {
 		(usrData)=> {
 			Schemas.myproject_m.findOne(
 				{usr : req.params.usr}, 
-				fields, (err, data)=> {
+				fields, 
+				(err, data)=> {
 					let proData = null;
 
 					if (data) proData = data;
+
+					console.log(data)
 						
 					res.render('demo', {
 						usrInfo: { 
@@ -136,6 +140,7 @@ exports.usrProject = (req, res, next)=> {
 		// checkLoginForURL(req, res, () => {
 			res.render('demo', {
 				usrInfo: {
+					act: req.session.act,
 					usr: req.session.usr,
 					ico: req.session.ico
 				}
@@ -146,6 +151,115 @@ exports.usrProject = (req, res, next)=> {
 		next()
 	}
 };
+
+
+// 设置个人信息
+exports.setProfile = (req, res) => {
+	
+	debugLog(req, res);
+
+	checkLoginForURL(req, res, ()=> {
+		Schemas.usrs_m.findOne(
+			{account: req.session.act},
+			(err, data)=> {
+				if (err) {
+					res.json({
+						"success": false,
+						"msg": "服务器错误"
+					})
+					return;
+				}
+
+				console.log(data)
+
+				res.render('profile', {
+					usrInfo: {
+						act: data.account,
+						usr: data.name,
+						email: data.email,
+						ico: data.ico
+					},
+					host: 'http://'+ req.headers.host,
+					askUsr: false
+				})
+				
+			}
+		) // End Schemas
+	})
+}
+
+exports.PSetProfile = (req, res)=> {
+	console.log('%s + %s', req.method.bgBlue.white, decodeURI(req.url) )
+
+
+	if (req.session.act) {	
+		let saveDir = path.join(process.cwd(), req.session.act, '__USER/');
+		let storage = multer.diskStorage({
+			destination: (req, file, cb)=> {
+				cb(null, saveDir)
+			},
+			filename: (req, file, cb)=> {
+				saveDir = path.join(req.session.act, '__USER', file.originalname);
+				cb(null, file.originalname)
+			}
+		})
+
+		let upload = multer({storage: storage}).single('ico');
+
+		
+		upload(req, res, function (err) {
+			if (err) {
+			  console.log(err)
+			  return
+			}
+
+			let updateUsr = {
+				name: req.body.name,
+				email: req.body.email
+			}
+			req.session.usr = req.body.name;
+
+			// 存在新头像就更新头像
+			if (!req.body.ico && req.body.ico === undefined) {
+				// 删除老的头像
+				if (req.session.ico !== 'server/img/kings.png') {
+					fs.unlink( path.join(process.cwd(), req.session.ico) )
+				}
+
+				updateUsr.ico = saveDir;
+				req.session.ico = saveDir;
+				console.log(req.session)
+			}
+
+			Schemas.usrs_m.update(
+				{account: req.session.act},
+				{$set: updateUsr},
+				(err, raw)=> {
+					if (err) throw err;
+					setTimeout(function() {
+
+						res.send({
+							"success": true
+						})
+					}, 10000)
+				}
+			)
+			console.log(req.file)
+			console.log(saveDir)
+			console.log(req.body)
+			// Everything went fine
+		})
+	} else {
+
+		res.json({
+			"success": false,
+			"msg": {
+				"info": "登录过期!",
+				"href": "/#referer=set/profile"
+			}
+		})
+	}
+}
 
 /*
 	登录页面功能
@@ -166,7 +280,7 @@ exports.loginIn = (req, res) => {
 
 	let sendMsg = {};
 
-	Schemas.usrs_m.find({'name': req.body.user}, (err, character) => {
+	Schemas.usrs_m.find({account: req.body.user}, (err, character) => {
 
 		if ( character.length == 0 ) {
 			sendMsg = {
@@ -180,13 +294,10 @@ exports.loginIn = (req, res) => {
 			console.log(character[0])
 			if ( character[0].pwd === req.body.passwd ) {
 
-				console.log(character[0].name)
-				console.log(character[0].pwd)
-				console.log(character[0].ico)
-
-			
+				console.log(character)
 
 				// 保存 session 信息
+				req.session.act = character[0].account;
 				req.session.usr = character[0].name;
 				// req.session.pwd = req.body.passwd;
 				req.session.ico = character[0].ico;
@@ -195,7 +306,7 @@ exports.loginIn = (req, res) => {
 
 				sendMsg = {
 					"success": true,
-					"msg": '/'+req.session.usr
+					"msg": '/'
 				}
 
 				res.json(sendMsg)
@@ -214,7 +325,6 @@ exports.loginIn = (req, res) => {
 
 
 
-
 /*
 	checkLoginForURL
 	---------------------------------------
@@ -222,8 +332,10 @@ exports.loginIn = (req, res) => {
 	往回登录页面
 */
 function checkLoginForURL(req, res, callback) {
-	if ( !req.session.usr ) {
-		res.redirect('/');
+	let url = req.url;
+
+	if ( !req.session.act ) {
+		res.redirect(url ? '/#referer='+url : '/');
 		result = false;
 	} else {
 		callback()
@@ -231,7 +343,15 @@ function checkLoginForURL(req, res, callback) {
 }
 
 
+function debugLog (req, res) {
+	console.log('-------------------------------------')
+	if (req.method === 'GET') {
+		console.log('%s > %s', req.method.bgGreen.white, decodeURI(req.url) );
+	} else if (req.method === 'POST') {
+		console.log('%s - %s', req.method.bgBlue.white, decodeURI(req.url) )
+	}
 
+}
 
 
 
