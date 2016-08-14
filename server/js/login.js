@@ -26,7 +26,11 @@ $(function() {
 				if (!data.success) {
 					$('.error-info').addClass('show').text(data.msg)
 				} else {
-					location.href = data.msg
+					if (location.hash && location.hash.length > 9) {
+						location.href = location.hash.substr(9)
+					} else {
+						location.href = data.msg
+					}
 				}
 			})
 			.fail(function(err){

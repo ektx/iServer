@@ -1,0 +1,9 @@
+<head>
+	<meta charset="UTF-8">
+	<title><%= title %> - iServer</title>
+	<link rel="stylesheet" href="<%= host %>/server/css/main.css">
+
+	<% css.forEach(function(val){ %>
+	<link rel="stylesheet" href="<%= host + val %>">
+	<% }) %>
+</head>

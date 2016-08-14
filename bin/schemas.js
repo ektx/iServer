@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 /*
 	用户信息
 	======================================
+	@account: 帐号(不可修改)
 	@name: 用户名
 	@pwd: 密码
 	@ico: 头像
@@ -11,8 +12,10 @@ const Schema = mongoose.Schema;
 	文档: usrs
 */
 const _usrs = new Schema({
+	account: String,
 	name   : String,
 	pwd	   : String,
+	email  : String,
 	ico	   : String
 }, {collection: 'usrs', versionKey: false});
 
