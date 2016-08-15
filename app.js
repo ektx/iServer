@@ -59,8 +59,6 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
-// 使用路由
-rotues(app);
 
 
 if (iservers.type === 'SERVER') {
@@ -76,10 +74,13 @@ if (iservers.type === 'SERVER') {
 		console.log('Mongodb not connection!')
 	});
 	db.once('open', () => {
-		console.log('Mongodb OK!')
+		console.log('Mongodb OK!');
 	})
+	
 }
 
+// 使用路由
+rotues(app, iservers.type);
 
 
 // 主服务

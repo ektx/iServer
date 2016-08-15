@@ -11,47 +11,35 @@
 		<section class="content">
 
 			<ul class="setting-tag">
-				<li class="current">
+				<li>
 					<a href="/set/profile">个人信息</a>
 				</li>
-				<li><a href="/set/passwd">密码修改</a></li>
+				<li class="current"><a href="/set/passwd">密码修改</a></li>
 			</ul>
 			
-			<form id="profile" class="upload-form" method="post" enctype="multipart/form-data">
+			<form id="passwd" class="upload-form" method="post" enctype="multipart/form-data">
+
 				<dl>
-					<dt>头像</dt>
-					<dd class="cf">
-						<div class="set-usr-ico">
-							<img src="<%= host %>/<%= usrInfo.ico %>">
-						</div>
-						<div class="usr-ico-upload-box">
-							<button class="btn middle-btn usr-upload-btn">
-								<input type="file" accept="image/*" name="usrIco">
-								<span>上传头像</span>
-							</button>
-						</div>
+					<dt>旧密码</dt>
+					<dd>
+						<input type="password" name="oldpwd" autofocus="">
+						<span class="err-info"></span>
 					</dd>
 				</dl>
 
 				<dl>
-					<dt>帐号</dt>
+					<dt>新密码</dt>
 					<dd>
-						<input type="text" name="act" value="<%= usrInfo.act %>" disabled>
+						<input type="password" name="newpwd" value="">
+						<span class="err-info"></span>
 					</dd>
 				</dl>
 
 				<dl>
-					<dt>名称</dt>
+					<dt>确认新密码</dt>
 					<dd>
-						<input type="text" name="name" value="<%= usrInfo.usr %>" placeholder="用户名称">
-						<span class="err-info">用户名不能为空!</span>
-					</dd>
-				</dl>
-
-				<dl>
-					<dt>邮箱</dt>
-					<dd>
-						<input type="email" name="email" value="<%= usrInfo.email %>">
+						<input type="password" name="newpwd2" value="">
+						<span class="err-info"></span>
 					</dd>
 				</dl>
 
