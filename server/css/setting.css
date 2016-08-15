@@ -55,7 +55,8 @@
 }
 
 input[type="text"],
-input[type="email"] {
+input[type="email"],
+input[type="password"] {
 	width: 280px;
 	font-size: 16px;
 	line-height: 32px;
@@ -75,6 +76,21 @@ input.err {
 input:disabled {
 	color: #666;
 	background-color: #fff;
+}
+.err-info {
+	opacity: 0;
+	visibility: hidden;
+	color: #FF5722;
+	font-size: 14px;
+}
+.err-info a {
+	margin: 0 5px;
+	color: #FF5722;
+	border-bottom: 1px solid;
+}
+.err + .err-info {
+	opacity: 1;
+	visibility: visible;
 }
 
 .btn {

@@ -126,7 +126,7 @@ exports.usrHome = (req, res, next)=> {
 };
 
 
-// 访问用户
+// 访问用户项目
 exports.usrProject = (req, res, next)=> {
 
 	console.log(':: Your asking User:', req.params.usr )
@@ -188,6 +188,14 @@ exports.setProfile = (req, res) => {
 	})
 }
 
+/*
+	更新个人信息
+	--------------------------
+	[POST]
+	1.更新头像
+	2.更新呢称
+	3.更新邮箱
+*/
 exports.PSetProfile = (req, res)=> {
 	console.log('%s + %s', req.method.bgBlue.white, decodeURI(req.url) )
 
@@ -244,10 +252,6 @@ exports.PSetProfile = (req, res)=> {
 					}, 10000)
 				}
 			)
-			console.log(req.file)
-			console.log(saveDir)
-			console.log(req.body)
-			// Everything went fine
 		})
 	} else {
 
@@ -259,6 +263,96 @@ exports.PSetProfile = (req, res)=> {
 			}
 		})
 	}
+}
+
+
+/*
+	访问密码修改页面
+	--------------------------------------
+*/
+exports.getPasswdPage = (req, res)=> {
+	debugLog(req, res);
+
+	checkLoginForURL(req, res, ()=> {
+		res.render('passwd', {
+			usrInfo: { 
+				act: req.session.act,
+				usr: req.session.usr,
+				ico: req.session.ico
+			},
+			host: 'http://'+ req.headers.host,
+			askUsr: false
+		});
+	})	
+}
+
+
+/*
+	修改密码时,验证旧密码是否正确
+	----------------------------------------
+*/
+exports.checkPwd = (req, res)=> {
+	debugLog(req, res);
+
+	if (req.session.act) {
+
+		Schemas.usrs_m.findOne({account: req.session.act, pwd: req.body.pwd}, (err, data)=> {
+
+			if (err) throw err;
+
+			if (!data) {
+				res.send({
+					"success": false,
+					"msg": {
+						txt: "密码错误!"
+					}
+				})
+			}
+		})
+
+	} else {
+		res.send({
+			"success": false,
+			"msg": {
+				txt: "登录过期",
+				href: "/#referer=set/passwd"
+			}
+		})
+	}
+}
+
+
+/*
+	更新密码
+	-------------------------------------
+*/
+exports.updatePwd = (req, res)=> {
+	debugLog(req, res);
+
+	checkLoginForURL(req, res, ()=> {
+		Schemas.usrs_m.update(
+			{account: req.session.act},
+			{$set: {pwd: req.body.pwd}},
+			(err, data)=> {
+				if (err) {
+					res.send({
+						"success": false,
+						"msg": "保存出错!"
+					});
+					return;
+				}
+
+				console.log(data);
+				setTimeout(function(){
+					res.send({
+						"success": true,
+						"msg": "完成!"
+					})
+
+				}, 5000)
+			}
+		) // End Schemas
+	})
 }
 
 /*
