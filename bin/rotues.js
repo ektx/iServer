@@ -5,10 +5,10 @@ const rotuesPath = require('./rotuesPath');
 
 module.exports = (app, type) => {
 
-	app.get('/favicon.ico', function(req, res) {
-		res.end();
-		return
-	});
+	// app.get('/favicon.ico', function(req, res) {
+	// 	res.end();
+	// 	return
+	// });
 
 	if (type == "SERVER") {
 		app.get('/', rotuesPath.root)

@@ -37,7 +37,9 @@ exports.server = (req, res) => {
 
 // 所有 post * 请求
 exports.postAll = (req, res) => {
-	console.log('%s - %s', req.method.bgBlue.white, decodeURI(req.url) )
+	console.log('%s - %s', req.method.bgBlue.white, decodeURI(req.url) );
+
+	server(req, res, {serverRootPath: process.cwd() });
 
 };
 
