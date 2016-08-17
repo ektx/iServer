@@ -49,25 +49,26 @@ const io  = require('socket.io')(http);
 app.set('views', __dirname + '/server')
 app.set('view engine', 'ejs')
 
-app.use(session({
-	secret: 'hello world!',
-	resave: false,
-	saveUninitialized: true,
-	cookie: {
-		maxAge: 60* 1000 * 30
-	}
-}));
-app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
-
-
 
 if (iservers.type === 'SERVER') {
 
 	console.log('服务器根目录:', process.cwd() );
 	console.log('服务启动目录:', __dirname);
 
+	app.use(session({
+		secret: 'hello world!',
+		resave: false,
+		saveUninitialized: true,
+		cookie: {
+			maxAge: 60* 1000 * 30
+		}
+	}));
+
+	app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
+
+
 	mongoose.connect('mongodb://localhost/iservsers');
-	mongoose.set('debug', true)
+	mongoose.set('debug', true);
 	
 	let db = mongoose.connection;
 	db.on('error', ()=> {
