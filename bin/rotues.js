@@ -14,6 +14,7 @@ module.exports = (app, type) => {
 		app.get('/', rotuesPath.root)
 		app.get('/loginOut', rotuesPath.loginOut)
 		app.get('/session', rotuesPath.session)
+		app.get('/addproject', rotuesPath.addProject)
 		app.get('/set/profile', rotuesPath.setProfile)
 		app.get('/set/passwd', rotuesPath.getPasswdPage)
 	}
@@ -26,6 +27,7 @@ module.exports = (app, type) => {
 	
 		app.post('/loginIn', rotuesPath.loginIn)
 		app.post('/checkPwd', rotuesPath.checkPwd)
+		app.post('/addproject', rotuesPath.addProject_p)
 		app.post('/set/passwd', rotuesPath.updatePwd)
 		app.post('/set/profile', rotuesPath.PSetProfile)
 	}

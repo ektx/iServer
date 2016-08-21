@@ -106,10 +106,6 @@ $(function() {
 		var _new2 = $('[name="newpwd2"]');
 		var _subtn = $('[type="submit"]');
 
-		var setErr = function(ele, info) {
-			ele.addClass('err').focus().next().text(info);
-		}
-
 		if ( $('.err').length > 0 ) {
 			$('.err:first').focus();
 			return;
@@ -155,5 +151,41 @@ $(function() {
 		.fail(function(err) {
 			console.log(err)
 		})
+	});
+
+
+	// 添加项目
+	$('#add-project').submit(function(e){
+		e.preventDefault();
+
+		var _name = $('[name="pro-name"]').val();
+		var _private = $('[name="private"]:checked').val();
+
+		if (!_name) {
+			setErr($('[name="pro-name"]'), '项目名称不可为空');
+			return
+		}
+
+		$.ajax({
+			url: '/addProject',
+			type: 'POST',
+			data: { name: _name, private: _private},
+			dataType: 'json'
+		})
+		.done(function(json){
+			console.log(json)
+		})
+		.fail(function(err) {
+			console.log(err)
+		})
 	})
-})
+});
+
+
+/*
+	设置显示错误
+	-----------------------------------
+*/
+function setErr(ele, info) {
+	ele.addClass('err').focus().next().text(info);
+}

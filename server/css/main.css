@@ -180,15 +180,21 @@ ul {
 	border-color: #39f;
 }
 
-.project-list-mod a {
-	display: block;
-	width: 100%;
-	border-bottom: 1px solid #eee;
+.project-list-mod li {
+	font-size: 14px;
+	color: #666;
 	padding: 10px 0;
+	border-bottom: 1px solid #eee;
+}
+.project-list-mod a {
+	width: 100%;
+	color: #39f;
+}
+.project-list-mod a:hover {
+	text-decoration: underline;
 }
 .project-list-mod h3 {
-	font-size: 18px;
-	color: #39f;
+	font-size: 20px;
 	font-weight: 100;
 	margin: 0 0 5px 0;
 }
@@ -196,7 +202,9 @@ ul {
 	font-size: 14px;
 	color: #777;
 }
-
+.svg-private-box {
+	float: right;
+}
 /* aside */
 .aside-box {
 	padding: 10px 30px;

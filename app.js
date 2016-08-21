@@ -67,7 +67,7 @@ if (iservers.type === 'SERVER') {
 	app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
 
-	mongoose.connect('mongodb://localhost/iservsers');
+	mongoose.connect('mongodb://localhost/iserver');
 	mongoose.set('debug', true);
 	
 	let db = mongoose.connection;
