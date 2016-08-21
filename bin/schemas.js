@@ -29,14 +29,16 @@ exports.usrs_m = mongoose.model('usrs', _usrs);
 
 	文档: myproject
 */
+const _myproject_project = new Schema({
+	name: String,
+	ctime: String,
+	utime: String,
+	private: Boolean
+}, {_id: false});
+
 const _myproject = new Schema({
 	usr: String,
-	project: [{
-		name: String,
-		ctime: Date,
-		utime: Date,
-		private: Boolean
-	}]
+	project: [_myproject_project]
 }, { collection: 'myproject', versionKey: false});
 
 exports.myproject_m = mongoose.model('myproject', _myproject);

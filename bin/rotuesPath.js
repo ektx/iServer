@@ -70,12 +70,6 @@ exports.usrHome = (req, res, next)=> {
 	console.log(req.url)
 	let fields = {_id:0, project: 1};
 
-	if (req.params.usr !== req.session.act) {
-		fields.project = {
-			$elemMatch: {private: false}
-		};
-	}
-
 	// 查看是否有此用户信息
 	let findAskUsr = new Promise((resolve, reject) => {
 		Schemas.usrs_m.findOne(
@@ -95,30 +89,71 @@ exports.usrHome = (req, res, next)=> {
 		)
 	});
 
+	let sendMsg = (req, res, usrData, proData)=> {
+		console.log(proData)
+							
+		res.render('demo', {
+			usrInfo: { 
+				usr: req.session.usr,
+				ico: req.session.ico
+			},
+			host: 'http://'+ req.headers.host,
+			askUsr: usrData,
+			project: proData
+		});
+	};
+
 	findAskUsr.then( 
 		// 存在用户时,查找此用户的项目
 		(usrData)=> {
-			Schemas.myproject_m.findOne(
-				{usr : req.params.usr}, 
-				fields, 
-				(err, data)=> {
-					let proData = null;
 
-					if (data) proData = data;
+			// 非用户本人访问时
+			if (req.params.usr !== req.session.act) {
+				Schemas.myproject_m.aggregate([
+						{$match: {
+							'usr': req.params.usr
+						}},
+						{$unwind: '$project'},
+						{$match: {
+							'project.private': false
+						}},
+						{$sort: {
+							'project.ctime': -1
+						}},
+						{$group: {
+							_id: '$usr',
+							project: {$push: '$project'}
+						}}
+					],
+					(err, data)=> {
 
-					console.log(data)
-						
-					res.render('demo', {
-						usrInfo: { 
-							usr: req.session.usr,
-							ico: req.session.ico
-						},
-						host: 'http://'+ req.headers.host,
-						askUsr: usrData,
-						project: proData
-					});
-				}
-			);
+						if (data.length > 0) {
+							sendMsg(req, res, usrData, data[0].project)
+						} else {
+							sendMsg(req, res, usrData, false)
+						}
+					}
+				)
+			}
+			// 如果是用户本人访问个人中心
+			else {
+				Schemas.myproject_m.findOne(
+					{usr : req.params.usr},
+					(err, data)=> {
+
+						if (!data) {
+							data = false
+						} else {
+							data = data.project;
+
+							data.reverse();
+						}
+
+						sendMsg(req, res, usrData, data)
+					}
+				);
+			}
+
 		},
 		// 不存在此用户时, 404
 		(reject)=> {
@@ -272,20 +307,8 @@ exports.PSetProfile = (req, res)=> {
 	访问密码修改页面
 	--------------------------------------
 */
-exports.getPasswdPage = (req, res)=> {
-	debugLog(req, res);
-
-	checkLoginForURL(req, res, ()=> {
-		res.render('passwd', {
-			usrInfo: { 
-				act: req.session.act,
-				usr: req.session.usr,
-				ico: req.session.ico
-			},
-			host: 'http://'+ req.headers.host,
-			askUsr: false
-		});
-	})	
+exports.getPasswdPage = (req, res) => {
+	goToPage(req, res, 'passwd')
 }
 
 
@@ -419,7 +442,75 @@ exports.loginIn = (req, res) => {
 };
 
 
+/*
+	添加新项目页面
+	-------------------------------------
+*/
+exports.addProject = (req, res) => {
+	goToPage(req, res, 'addProject')
+}
 
+/*
+	添加新项目-提交功能
+	------------------------------------
+*/
+exports.addProject_p = (req, res)=> {
+	checkLoginForURL(req, res, ()=> {
+
+		let _proName = req.body.name;
+		let _private = req.body.private;
+
+		console.log(req.body.name, req.body.private);
+
+		let toSaveProject = ()=> {
+			Schemas.myproject_m.update(
+				{usr: req.session.act},
+				{$push: {
+					'project': {
+						name: _proName,
+						private: _private,
+						ctime: new Date().toISOString()
+					}
+				}},
+				{_id: false},
+				(err, data)=> {
+					if (err) {
+						res.send({
+							success: false,
+							msg: "项目创建失败!请稍候再试!!"
+						});
+						return;
+					}
+
+					res.send({
+						success: true,
+						msg: "/"+req.session.act+"/"+_proName
+					})
+				}
+			)
+		}
+
+		Schemas.myproject_m.findOne(
+			{usr: req.session.act, 'project.name': _proName},
+			(err, data)=> {
+				if (err) {
+					console.log(err);
+					res.end('Server Error!')
+					return;
+				}
+
+				if (!data) {
+					toSaveProject();
+				} else {
+					res.send({
+						success: false,
+						msg: "此项目已经存在"
+					})
+				}
+			}
+		)
+	})
+} 
 
 /*
 	checkLoginForURL
@@ -450,7 +541,22 @@ function debugLog (req, res) {
 }
 
 
+function goToPage(req, res, page) {
 
+	debugLog(req, res);
+
+	checkLoginForURL(req, res, ()=> {
+		res.render(page, {
+			usrInfo: { 
+				act: req.session.act,
+				usr: req.session.usr,
+				ico: req.session.ico
+			},
+			host: 'http://'+ req.headers.host,
+			askUsr: false
+		});
+	})	
+}
 
 
 

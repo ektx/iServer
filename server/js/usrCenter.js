@@ -23,5 +23,11 @@ $(function() {
 		$('body').removeClass('drag-files-enetr')
 
 		console.log(e)
+	});
+
+
+	// 格式化时间
+	$('.project-list-mod time').each(function(e) {
+		$(this).text( moment($(this).attr('title')).fromNow() )
 	})
 })
