@@ -3,7 +3,6 @@
 	"version": "4.0.0",
 	"type": "TOOL",
 	"port": 8000,
-	"_port": 7999,
 	"compression": {
 		"css": true,
 		"js": true,
