@@ -6,6 +6,7 @@ const colors  = require('colors');
 const multer = require('multer');
 const server  = require('./server');
 const Schemas = require('./schemas');
+const mongoose = require('mongoose');
 
 
 // 访问 / [get]
@@ -462,7 +463,22 @@ exports.addProject_p = (req, res)=> {
 
 		console.log(req.body.name, req.body.private);
 
-		let toSaveProject = ()=> {
+		let sendMsg = (err, data)=> {
+			if (err) {
+				res.send({
+					success: false,
+					msg: "项目创建失败!请稍候再试!!"
+				});
+				return;
+			}
+
+			res.send({
+				success: true,
+				msg: "/"+req.session.act+"/"+_proName
+			})
+		}
+
+		let updatePro = () => {
 			Schemas.myproject_m.update(
 				{usr: req.session.act},
 				{$push: {
@@ -474,20 +490,39 @@ exports.addProject_p = (req, res)=> {
 				}},
 				{_id: false},
 				(err, data)=> {
-					if (err) {
-						res.send({
-							success: false,
-							msg: "项目创建失败!请稍候再试!!"
-						});
-						return;
-					}
-
-					res.send({
-						success: true,
-						msg: "/"+req.session.act+"/"+_proName
-					})
+					sendMsg(err, data)
 				}
 			)
+		};
+
+		let insertUsrAndPro = () => {
+			Schemas.myproject_m.create(
+			{
+				usr: req.session.act,
+				project: {
+					name: _proName,
+					private: _private,
+					ctime: new Date().toISOString()
+				}
+			}, 
+			(err, data) => {
+				sendMsg(err, data)
+			})
+		}
+
+		let toSaveProject = ()=> {
+			Schemas.myproject_m.find({usr: req.session.act}, (err, data)=>{
+				if (err) {
+					res.end('Find usr Err!');
+					return
+				}
+
+				if (data.length > 0) {
+					updatePro()
+				} else {
+					insertUsrAndPro()
+				}
+			})
 		}
 
 		Schemas.myproject_m.findOne(
