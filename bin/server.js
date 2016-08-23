@@ -4,7 +4,7 @@ var path = require('path');
 var ejs = require('ejs');
 var generate = require('./generate')
 var ifiles = require('./ifiles');
-var colors = require('colors')
+var colors = require('colors');
 
 /*
 	文件服务主功能
@@ -15,8 +15,6 @@ module.exports = (req, res, options) => {
 	let rootPath = options.serverRootPath;
 	// type 是用户服务还是根服务
 	let isUsr = options.isUsr;
-	// 中文乱码转码
-	reqPath = decodeURI(reqPath);
 
 	// 生成静态页面
 	if (/\/:[make|important]/.test(reqPath)) {
