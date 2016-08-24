@@ -22,9 +22,8 @@
     "ejs"
   ],
   "bin": {
-    "iserver": "epp.js",
     "dev": "app.js",
-    "go": "index.js"
+    "iserver": "index.js"
   },
   "dependencies": {
     "body-parser": "^1.15.2",

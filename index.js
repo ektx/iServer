@@ -8,7 +8,7 @@ const setServer = require('./bin/serverSet');
 
 program
 	.version('0.0.1')
-	.option('tool', '启动工具服务器')
+	.option('t, tool', '启动工具服务器')
 	.option('os', '启动系统服务');
 
 program.on('--help', ()=>{
@@ -20,7 +20,7 @@ program.on('--help', ()=>{
 program.parse(process.argv);
 
 
-if (program.tool) {
+if (program.tool || program.t) {
 	setServer('tool')
 }
 if (program.os) {
