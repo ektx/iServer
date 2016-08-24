@@ -2,17 +2,28 @@
 
 'use strict';
 
-const inquirer = require('inquirer');
+const program = require('commander');
 
-let questions = [
-	{
-		type: 'list',
-		name: 'type',
-		message: '你想让服务器来处理什么?',
-		choices: ['本地开发工具', '系统服务器']
-	}
-];
+const setServer = require('./bin/serverSet');
 
-inquirer.prompt(questions).then((answer)=> {
-	console.log(JSON.stringify(answer, null, ' '))
-})
+program
+	.version('0.0.1')
+	.option('tool', '启动工具服务器')
+	.option('os', '启动系统服务')
+	.option('config', '配置系统文件');
+
+program.on('--help', ()=>{
+	console.log('  例如:\n\t');
+	console.log('    go tool')
+	console.log('    go server')
+	console.log('    go config')
+});
+program.parse(process.argv);
+
+
+if (program.tool) {
+	setServer('tool')
+}
+if (program.os) {
+	setServer('os')
+}
