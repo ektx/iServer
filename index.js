@@ -9,8 +9,7 @@ const setServer = require('./bin/serverSet');
 program
 	.version('0.0.1')
 	.option('tool', '启动工具服务器')
-	.option('os', '启动系统服务')
-	.option('config', '配置系统文件');
+	.option('os', '启动系统服务');
 
 program.on('--help', ()=>{
 	console.log('  例如:\n\t');
