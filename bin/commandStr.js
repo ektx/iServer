@@ -25,6 +25,14 @@ exports.commandStr = function() {
 			case 'h':
 				name = 'help';
 				break;
+
+			case 't':
+				name = 'tool';
+				break;
+
+			case 'o':
+				name = 'os';
+				break;
 		}
 
 		// 对空命令不添加,eg: -h - - - 
@@ -42,10 +50,12 @@ exports.commandStr = function() {
 	----------------------------------
 */
 exports.printHelp = function () {
-	var Hstr = 'Usage: node epp.js [ -p port] [...]\n\n';
-	Hstr += 'Options\n';
-	Hstr += '-p, -port       iserver 端口号\n';
-	Hstr += '-v, -version    iServer 版本信息\n';
+	var Hstr = '\n  Usage: node epp.js [ -p port] [...]\n\n';
+	Hstr += '  Options\n\n';
+	Hstr += '    -p, -port       iserver 端口号\n';
+	Hstr += '    -v, -version    iServer 版本信息\n';
+	Hstr += '    -t, -tool    以工具方式启动服务[默认]\n';
+	Hstr += '    -o, -os    以系统方式启动服务\n';
 
 	console.log(Hstr)
 }
