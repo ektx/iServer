@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 
 const main = require('./main');
 
-function getServerSet(type, options) {
+function getServerSet(options) {
 
 	let questions = [];
 
@@ -47,7 +47,7 @@ function getServerSet(type, options) {
 
 	// 如果是使用系统
 	// 需要输入数据名和地址
-	if (type === 'os') {
+	if (options.type === 'os') {
 		questions.splice(0,0, {
 			type: 'input',
 			name: 'db',
@@ -77,6 +77,8 @@ console.log(options)
 		}
 
 		console.log(JSON.stringify(answer, null, ' '))
+
+		main(options)
 
 	})
 }
