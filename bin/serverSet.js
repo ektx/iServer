@@ -1,15 +1,10 @@
 const inquirer = require('inquirer');
 
-function getServerSet(type) {
+const main = require('./main');
 
-	let questions = [
-		{
-			type: 'list',
-			name: 'setting',
-			message: '是否自定义设置?',
-			choices: ['否', '是']
-		}
-	];
+function getServerSet(type, options) {
+
+	let questions = [];
 
 	let settingQuestions = [
 		{
@@ -71,7 +66,9 @@ function getServerSet(type) {
 	}
 
 	inquirer.prompt(questions).then((answer)=> {
-		if (answer.setting === '是') {
+console.log(options)
+
+		if (answer.setting === options.set) {
 
 			inquirer.prompt(settingQuestions).then((answer)=> {
 
@@ -79,7 +76,7 @@ function getServerSet(type) {
 			})
 		}
 
-				console.log(JSON.stringify(answer, null, ' '))
+		console.log(JSON.stringify(answer, null, ' '))
 
 	})
 }

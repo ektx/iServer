@@ -23,26 +23,26 @@ const unpack = require('tar-pack').unpack;
 const mongoose = require('mongoose');
 const iconv = require('iconv-lite');
 
-const ifiles  = require('./bin/ifiles')
-const getIPs  = require('./bin/getIPs')
-const comStr  = require('./bin/commandStr')
+const ifiles  = require('./ifiles')
+const getIPs  = require('./getIPs')
+const comStr  = require('./commandStr')
 const _command = comStr.commandStr();
-const open    = require('./bin/open');
-const rotues  = require('./bin/rotues');
-const parseURL  = require('./bin/parseURL');
+const open    = require('./open');
+const rotues  = require('./rotues');
+const parseURL  = require('./parseURL');
 
-// 系统配置
-const iservers = require('./config');
+// // 系统配置
+// const iservers = require('./config');
 
 
-if (_command.v || _command.help) {
-	if (_command.v) {
-		console.log(iservers.version);
-	} else {
-		console.log(comStr.printHelp())
-	}
-	return
-}
+// if (_command.v || _command.help) {
+// 	if (_command.v) {
+// 		console.log(iservers.version);
+// 	} else {
+// 		console.log(comStr.printHelp())
+// 	}
+// 	return
+// }
 
 // 默认端口设置
 const app = express();
@@ -91,12 +91,12 @@ rotues(app, iservers.type);
 // 主服务
 app.listen(iservers.port, function() {
 
-	if (_command.browser) {
+	// if (_command.browser) {
     	
-    	let openURL = 'http://'+getIPs().IPv4.public + ':' + iservers.port;
+ //    	let openURL = 'http://'+getIPs().IPv4.public + ':' + iservers.port;
 
-		open(openURL, _command.browser)
-	}
+	// 	open(openURL, _command.browser)
+	// }
 
 	let zIP = getIPs().IPv4;
 	let showInfo = 
