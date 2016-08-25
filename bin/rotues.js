@@ -10,7 +10,7 @@ module.exports = (app, type) => {
 		return
 	});
 
-	if (type == "SERVER") {
+	if (type == "os") {
 		app.get('/', rotuesPath.root)
 		app.get('/loginOut', rotuesPath.loginOut)
 		app.get('/session', rotuesPath.session)
@@ -21,7 +21,7 @@ module.exports = (app, type) => {
 
 	app.get('/server/*', rotuesPath.server)
 
-	if (type == "SERVER") {
+	if (type == "os") {
 		app.get('/:usr', rotuesPath.usrHome)
 		app.get('/:usr/:project', rotuesPath.usrProject)
 	

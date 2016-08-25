@@ -18,7 +18,8 @@ program
 	.option('-s, --set [set]', '开启自定义功能')
 	.action((options)=> {
 
-		setServer('tool', {
+		setServer({
+			type: 'tool',
 			browser: !options.browser ? false : true,
 			set: !options.set ? false : true,
 			port: isNaN(options.port) ? 8000 : options.port,
@@ -35,7 +36,8 @@ program
 	.option('-s, --set [set]', '开启自定义功能')
 	.action((options)=> {
 
-		setServer('os', {
+		setServer({
+			type: 'os',
 			browser: !options.browser ? false : true,
 			set: !options.set ? false : true,
 			port: isNaN(options.port) ? 8000 : options.port,
