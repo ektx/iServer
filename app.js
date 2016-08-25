@@ -21,7 +21,6 @@ const pack  = require('tar-pack').pack;
 // 解压功能
 const unpack = require('tar-pack').unpack;
 const mongoose = require('mongoose');
-const iconv = require('iconv-lite');
 
 const ifiles  = require('./bin/ifiles')
 const getIPs  = require('./bin/getIPs')
