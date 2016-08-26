@@ -24,6 +24,8 @@ module.exports = openBrowser;
 function open(target, appName) {
     var opener;
 
+    if (appName == 'ie' || appName == 'IE') appName = 'iexplore';
+
     switch (process.platform) {
         case 'darwin':
             if (appName) {
