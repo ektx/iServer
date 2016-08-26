@@ -66,7 +66,6 @@ function getServerSet(options) {
 	}
 
 	inquirer.prompt(questions).then((answer)=> {
-console.log(options)
 
 		if (answer.setting === options.set) {
 
@@ -77,6 +76,9 @@ console.log(options)
 		}
 
 		console.log(JSON.stringify(answer, null, ' '))
+
+		options.db = answer.db;
+		options.dbURL = answer.dbURL;
 
 		main(options)
 
