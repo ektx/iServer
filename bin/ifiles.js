@@ -64,23 +64,19 @@ function getHTML(files, filePath) {
 
 	if (files.length > 0) {
 		files.forEach(function(val, index) {
-			// console.log(filePath + val)
-			if ((val == 'css' || val == 'img') && filePath == __dirname + ' \\public') {
-				console.log(val + ' not show windows')
+	
+			let stat = fs.statSync(filePath + val);
+			let filesIco = '';
+
+			if (stat.isDirectory(val)) {
+				aURL = val + '/'
+				filesIco = '<svg aria-hidden="true"  height="16" version="1.1" viewBox="0 0 14 16" width="14"><path d="M13 4H7V3c0-.66-.31-1-1-1H1c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zM6 4H1V3h5v1z"></path></svg>';
 			} else {
-				let stat = fs.statSync(filePath + val);
-				let filesIco = '';
-
-				if (stat.isDirectory(val)) {
-					aURL = val + '/'
-					filesIco = '<svg aria-hidden="true"  height="16" version="1.1" viewBox="0 0 14 16" width="14"><path d="M13 4H7V3c0-.66-.31-1-1-1H1c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zM6 4H1V3h5v1z"></path></svg>';
-				} else {
-					aURL = val
-					filesIco = '<svg aria-hidden="true"  height="16" version="1.1" viewBox="0 0 12 16" width="12"><path d="M6 5H2V4h4v1zM2 8h7V7H2v1zm0 2h7V9H2v1zm0 2h7v-1H2v1zm10-7.5V14c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V2c0-.55.45-1 1-1h7.5L12 4.5zM11 5L8 2H1v12h10V5z"></path></svg>'
-				}
-
-				body.push('<li>'+filesIco+'<a href="'+aURL+'">'+val+'</a></li>')
+				aURL = val
+				filesIco = '<svg aria-hidden="true"  height="16" version="1.1" viewBox="0 0 12 16" width="12"><path d="M6 5H2V4h4v1zM2 8h7V7H2v1zm0 2h7V9H2v1zm0 2h7v-1H2v1zm10-7.5V14c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V2c0-.55.45-1 1-1h7.5L12 4.5zM11 5L8 2H1v12h10V5z"></path></svg>'
 			}
+
+			body.push('<li>'+filesIco+'<a href="'+aURL+'">'+val+'</a></li>')
 		})
 
 	} else {
@@ -109,7 +105,7 @@ exports.showDirecotry = (req, res, serverRootPath, reqPath) => {
 		res.writeHead(200, resHeaders());
 
 		html += '<h5>共有 '+ files.length + ' 个文件!</h5>';
-		html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 3</a></p></html>';
+		html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 4</a></p></html>';
 		res.write(html)
 		res.end()
 	})
@@ -188,9 +184,8 @@ exports.sendFile = function(req, res, filePath) {
 	--------------------------------------------
 */
 exports.sendError = function sendError(res, codeNo) {
-	// console.log(codeNo + ' Server Error!');
 	res.writeHead(codeNo, resHeaders() );
-	res.write('<h3>'+codeNo+'!</h2>');
+	res.write('<h2>'+codeNo+'!</h2>');
 	res.end()	
 }
 
@@ -233,6 +228,6 @@ function resHeaders(type) {
 	return {
 		'Content-Type': type+';charset="utf8"',
 		'x-xss-protection': '1; mode=block',
-		'Server': 'iServer 3.0 beta'
+		'Server': 'iServer 4.0.0 beta'
 	}
 }
