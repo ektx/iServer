@@ -396,6 +396,7 @@ exports.loginOut = (req, res)=> {
 
 // 登录 /loginIn [post]
 exports.loginIn = (req, res) => {
+	
 	console.log(req.body.user, req.body.passwd);
 
 	let sendMsg = {};

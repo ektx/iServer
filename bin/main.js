@@ -39,7 +39,6 @@ function server(options) {
 			resave: false,
 			saveUninitialized: false,
 			cookie: {
-				secure: true,
 				maxAge: 60* 1000 * 30
 			}
 		}));
