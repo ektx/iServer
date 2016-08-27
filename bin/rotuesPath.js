@@ -396,7 +396,7 @@ exports.loginOut = (req, res)=> {
 
 // 登录 /loginIn [post]
 exports.loginIn = (req, res) => {
-	
+
 	console.log(req.body.user, req.body.passwd);
 
 	let sendMsg = {};
@@ -457,95 +457,118 @@ exports.addProject = (req, res) => {
 	------------------------------------
 */
 exports.addProject_p = (req, res)=> {
-	checkLoginForURL(req, res, ()=> {
 
-		let _proName = req.body.name;
-		let _private = req.body.private;
+	let _proName = req.body.name;
+	let _private = req.body.private;
 
-		console.log(req.body.name, req.body.private);
+	console.log(req.body.name, req.body.private);
+		console.log('usr project path:')
 
-		let sendMsg = (err, data)=> {
-			if (err) {
-				res.send({
-					success: false,
-					msg: "项目创建失败!请稍候再试!!"
-				});
-				return;
-			}
+	let sendMsg = (err, errInfo)=> {
+		if (err) {
+			res.send({
+				success: false,
+				msg: errInfo
+			});
+			return;
+		}
+
+		// 生成项目目录
+		fs.mkdir(path.join(process.cwd(), req.session.act, _proName), (err, i)=>{
 
 			res.send({
 				success: true,
 				msg: "/"+req.session.act+"/"+_proName
 			})
-		}
+		})
+	}
 
-		let updatePro = () => {
-			Schemas.myproject_m.update(
-				{usr: req.session.act},
-				{$push: {
-					'project': {
-						name: _proName,
-						private: _private,
-						ctime: new Date().toISOString()
-					}
-				}},
-				{_id: false},
-				(err, data)=> {
-					sendMsg(err, data)
-				}
-			)
-		};
+	// 验证值是否正常
+	if (!_proName) {
+		res.send({
+			success: false,
+			msg: '项目名称不可为空'
+		});
+		return;
+	}
+	else if ( /[^\w-]/g.test(_proName) ) {
+		res.send({
+			success: false,
+			msg: '项目名称中只能使用 - 或 _'
+		});
+		return;
+	}
 
-		let insertUsrAndPro = () => {
-			Schemas.myproject_m.create(
-			{
-				usr: req.session.act,
-				project: {
+	// 更新数据 
+	let updatePro = () => {
+		Schemas.myproject_m.update(
+			{usr: req.session.act},
+			{$push: {
+				'project': {
 					name: _proName,
 					private: _private,
 					ctime: new Date().toISOString()
 				}
-			}, 
-			(err, data) => {
-				sendMsg(err, data)
-			})
-		}
-
-		let toSaveProject = ()=> {
-			Schemas.myproject_m.find({usr: req.session.act}, (err, data)=>{
-				if (err) {
-					res.end('Find usr Err!');
-					return
-				}
-
-				if (data.length > 0) {
-					updatePro()
-				} else {
-					insertUsrAndPro()
-				}
-			})
-		}
-
-		Schemas.myproject_m.findOne(
-			{usr: req.session.act, 'project.name': _proName},
+			}},
+			{_id: false},
 			(err, data)=> {
-				if (err) {
-					console.log(err);
-					res.end('Server Error!')
-					return;
-				}
-
-				if (!data) {
-					toSaveProject();
-				} else {
-					res.send({
-						success: false,
-						msg: "此项目已经存在"
-					})
-				}
+				sendMsg(err, "项目创建失败!请稍候再试!!")
 			}
 		)
-	})
+	};
+
+	// 第一次时,创建添加
+	let insertUsrAndPro = () => {
+		Schemas.myproject_m.create(
+		{
+			usr: req.session.act,
+			project: {
+				name: _proName,
+				private: _private,
+				ctime: new Date().toISOString()
+			}
+		}, 
+		(err, data) => {
+			sendMsg(err, "项目创建失败!请稍候再试!!")
+		})
+	}
+
+	// 验证保存数据的方法
+	let toSaveProject = ()=> {
+		Schemas.myproject_m.find({usr: req.session.act}, (err, data)=>{
+			if (err) {
+				res.end('Find usr Err!');
+				return
+			}
+
+			if (data.length > 0) {
+				updatePro()
+			} else {
+				insertUsrAndPro()
+			}
+		})
+	}
+
+	// 查看项目是否已经存在
+	Schemas.myproject_m.findOne(
+		{usr: req.session.act, 'project.name': _proName},
+		(err, data)=> {
+			if (err) {
+				console.log(err);
+				res.end('Server Error!')
+				return;
+			}
+
+			if (!data) {
+				toSaveProject();
+			} else {
+				res.send({
+					success: false,
+					msg: "此项目已经存在"
+				})
+			}
+		}
+	)
 } 
 
 /*
@@ -564,6 +587,7 @@ function checkLoginForURL(req, res, callback) {
 		callback()
 	}
 }
+
 
 
 function debugLog (req, res) {

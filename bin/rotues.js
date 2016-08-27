@@ -27,7 +27,7 @@ module.exports = (app, type) => {
 	
 		app.post('/loginIn', rotuesPath.loginIn)
 		app.post('/checkPwd', rotuesPath.checkPwd)
-		app.post('/addproject', rotuesPath.addProject_p)
+		app.post('/addproject', checkLoginUsr, rotuesPath.addProject_p)
 		app.post('/set/passwd', rotuesPath.updatePwd)
 		app.post('/set/profile', rotuesPath.PSetProfile)
 	}
@@ -36,3 +36,21 @@ module.exports = (app, type) => {
 	app.post('*', rotuesPath.postAll)
 }
 
+
+/*
+	使用中间件的方式来验证用户是否登录过期问题
+	----------------------------------------
+*/
+function checkLoginUsr(req, res, next) {
+	let url = req.url;
+	
+	if ( !req.session.act ) {
+		res.send({
+			"success": false,
+			msg: "登录过期",
+			href: url ? '/#referer='+url : '/'
+		});
+		
+	}
+	else next()
+}

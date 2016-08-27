@@ -155,30 +155,67 @@ $(function() {
 
 
 	// 添加项目
-	$('#add-project').submit(function(e){
-		e.preventDefault();
+	function checkProName(type) {
 
-		var _name = $('[name="pro-name"]').val();
+		var reslut = true;
+		var _name    = $('[name="pro-name"]');
+		var _nameVal = $.trim(_name.val());
 		var _private = $('[name="private"]:checked').val();
 
-		if (!_name) {
-			setErr($('[name="pro-name"]'), '项目名称不可为空');
-			return
+		if (!_nameVal) {
+			if (type !== 'blur') {
+				setErr(_name, '项目名称不可为空');
+			}
+			reslut = false;
 		}
+		else if ( /[^\w-]/g.test(_nameVal) ) {
+			setErr(_name, '项目名称中只能使用 - 或 _')
+			reslut = false;
+		}
+
+		if (reslut) {
+			reslut = {
+				name: _nameVal,
+				private: _private
+			}
+		}
+
+		return reslut;
+
+	}
+
+	$('[name="pro-name"]').blur(function() {
+		checkProName('blur')
+	})
+
+	$('#add-project').submit(function(e){
+		e.preventDefault();
+		var _name    = $('[name="pro-name"]');
+
+		var getVal = checkProName();
+
+		if (!getVal) return;
 
 		$.ajax({
 			url: '/addProject',
 			type: 'POST',
-			data: { name: _name, private: _private},
+			data: { name: getVal.name, private: getVal.private},
 			dataType: 'json'
 		})
 		.done(function(json){
-			console.log(json)
+			if (json.success) {
+				location.href = json.msg
+			} else {
+				setErr(_name, json.msg);
+			}
 		})
 		.fail(function(err) {
-			console.log(err)
+			setErr(_name, json.msg);
 		})
-	})
+	});
+
+
+
 });
 
 
