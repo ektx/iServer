@@ -3,7 +3,8 @@
 body, div, p, section, main, header, footer,
 ul, li, ol,
 h1, h2, h3, h4, h5, h6,
-form, dl, dt, dd {
+form, dl, dt, dd,
+hr {
 	margin: 0;
 	padding: 0
 }
@@ -112,6 +113,11 @@ ul {
 }
 .usr-hd-list a:hover {
 	background-color: #eee;
+}
+.usr-hd-list hr {
+	border: none;
+	border-top: 1px solid #eee;
+	margin: 5px 0;
 }
 
 .add-project-set {

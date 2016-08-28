@@ -204,7 +204,6 @@ exports.usrProject = (req, res, next)=> {
 				return;
 			}
 
-			console.time('xxxxx')
 			let fileArr = [];
 			for (let f = 0, l = files.length; f < l; f++) {
 				let stat = fs.statSync(filePath + files[f]);
@@ -221,7 +220,6 @@ exports.usrProject = (req, res, next)=> {
 					})
 				}
 			}
-			console.timeEnd('xxxxx')
 
 			let usrInfo = false;
 			let breadArr = req.url.split('/');
@@ -239,6 +237,7 @@ exports.usrProject = (req, res, next)=> {
 				host: 'http://'+ req.headers.host,
 				usrInfo: usrInfo,
 				title: req.params.project,
+				titurl: req.params.usr,
 				breadCrumbs: breadArr
 			})
 		})
@@ -297,8 +296,8 @@ exports.setProfile = (req, res) => {
 
 				res.render('profile', {
 					usrInfo: {
-						act: data.account,
-						usr: data.name,
+						usr: data.account,
+						name: data.name,
 						email: data.email,
 						ico: data.ico
 					},
@@ -367,12 +366,10 @@ exports.PSetProfile = (req, res)=> {
 				{$set: updateUsr},
 				(err, raw)=> {
 					if (err) throw err;
-					setTimeout(function() {
 
-						res.send({
-							"success": true
-						})
-					}, 10000)
+					res.send({
+						"success": true
+					})
 				}
 			)
 		})
@@ -693,8 +690,8 @@ function goToPage(req, res, page) {
 	checkLoginForURL(req, res, ()=> {
 		res.render(page, {
 			usrInfo: { 
-				act: req.session.act,
-				usr: req.session.usr,
+				usr: req.session.act,
+				name: req.session.usr,
 				ico: req.session.ico
 			},
 			host: 'http://'+ req.headers.host,
