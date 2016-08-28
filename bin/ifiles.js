@@ -183,9 +183,9 @@ exports.sendFile = function(req, res, filePath) {
 	响应码
 	--------------------------------------------
 */
-exports.sendError = function sendError(res, codeNo) {
+exports.sendError = function sendError(res, codeNo, msg) {
 	res.writeHead(codeNo, resHeaders() );
-	res.write('<h2>'+codeNo+'!</h2>');
+	res.write('<h2>'+msg+'!</h2>');
 	res.end()	
 }
 
