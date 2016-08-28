@@ -97,7 +97,6 @@ function getHTML(files, filePath) {
 	@reqPath: 请求路径
 */
 exports.showDirecotry = (req, res, serverRootPath, reqPath) => {
-	var html = '';
 	let _filePath = path.join(serverRootPath, reqPath)
 
 	fs.readdir(_filePath, function(err, files) {

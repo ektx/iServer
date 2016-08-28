@@ -8,6 +8,8 @@ const server  = require('./server');
 const Schemas = require('./schemas');
 const mongoose = require('mongoose');
 
+const ifiles = require('./ifiles');
+
 
 // 访问 / [get]
 exports.root = (req, res) => {
@@ -28,7 +30,7 @@ exports.getAll = (req, res) => {
 	server(req, res, {serverRootPath: process.cwd() });
 };
 
-// 请求服务本身
+// 服务器内部文件请求
 exports.server = (req, res) => {
 
 	server(req, res, {serverRootPath: __dirname.replace('bin', '') });
@@ -169,25 +171,108 @@ exports.usrProject = (req, res, next)=> {
 
 	console.log(':: Your asking User:', req.params.usr )
 	console.log(':: Your asking Her Project:', req.params.project )
+	console.log('URL:', req.url);
 
-	// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
-	if (req.url.split('/').length === 2) {
+	// 访问用户的头像文件夹
+	if (req.params.project === '__USER') { 
+		next(); return;
+	}
 
-		console.log('you vist :', req.url.substr(1))
-		// 先判断用户在不在了
-		// checkLoginForURL(req, res, () => {
-			res.render('demo', {
-				usrInfo: {
-					act: req.session.act,
-					usr: req.session.usr,
+	let filePath = process.cwd()+req.url;
+
+	let gitProFiles = (req, res, filePath)=> {
+
+		let isFs = false;
+
+		try {
+			isFs = fs.statSync(filePath);
+		} catch (err) {
+			ifiles.sendError(res, 404, '没有发现此目录');
+			return;
+		}
+
+		// 如果是文件,只接读取
+		if ( isFs.isFile() ) {
+			next();
+			return;
+		}
+
+		// 对目录文件时
+		fs.readdir(filePath, (err, files)=> {
+			if (err) {
+				console.log(err); 
+				return;
+			}
+
+			console.time('xxxxx')
+			let fileArr = [];
+			for (let f = 0, l = files.length; f < l; f++) {
+				let stat = fs.statSync(filePath + files[f]);
+
+				if (stat.isDirectory()) {
+					fileArr.push({
+						type: 'dir',
+						name: files[f]
+					})
+				} else {
+					fileArr.push({
+						type: 'file',
+						name: files[f]
+					})
+				}
+			}
+			console.timeEnd('xxxxx')
+
+			let usrInfo = false;
+			let breadArr = req.url.split('/');
+			req.url.endsWith('/') ? breadArr.pop() : breadArr;
+
+			if (req.session.act) {
+				usrInfo = {
+					usr: req.session.act,
 					ico: req.session.ico
 				}
+			}
+
+			res.render('../server/project', {
+				files: fileArr,
+				host: 'http://'+ req.headers.host,
+				usrInfo: usrInfo,
+				title: req.params.project,
+				breadCrumbs: breadArr
 			})
-		// })
-		
-	} else {
-		next()
+		})
 	}
+
+	// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
+	Schemas.myproject_m.aggregate([
+		{$match: {usr: req.params.usr}},
+		{$unwind: '$project'},
+		{$match: {'project.name': req.params.project }}
+	], (err, data)=> {
+		if (err) { console.log(err); return }
+
+		if (data.length == 0) {
+			ifiles.sendError(res, 404, '没有此项目!')
+			return;
+		}
+
+		if (data[0].project.private) {
+			if (req.session.act && req.session.act == req.params.usr) {
+				gitProFiles(req, res, filePath)
+			} else {
+				// 423 当前资源被锁定
+				ifiles.sendError(res, 423, '您无权访问此项目!!')
+			}
+		} else {
+
+			gitProFiles(req, res, filePath)
+
+		}
+	})
+
+	console.log('you vist :', req.url.substr(1))
+		
 };
 
 
