@@ -23,7 +23,7 @@ module.exports = (app, type) => {
 
 	if (type == "os") {
 		app.get('/:usr', rotuesPath.usrHome)
-		app.get('/:usr/:project', rotuesPath.usrProject)
+		app.get(['/:usr/:project', '/:usr/:project/*'], rotuesPath.usrProject)
 	
 		app.post('/loginIn', rotuesPath.loginIn)
 		app.post('/checkPwd', rotuesPath.checkPwd)
@@ -50,7 +50,7 @@ function checkLoginUsr(req, res, next) {
 			msg: "登录过期",
 			href: url ? '/#referer='+url : '/'
 		});
-		
+
 	}
 	else next()
 }

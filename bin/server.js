@@ -1,10 +1,10 @@
 
-var fs = require('fs');
-var path = require('path');
-var ejs = require('ejs');
-var generate = require('./generate')
-var ifiles = require('./ifiles');
-var colors = require('colors');
+const fs = require('fs');
+const path = require('path');
+const ejs = require('ejs');
+const generate = require('./generate');
+const ifiles = require('./ifiles');
+const colors = require('colors');
 
 /*
 	文件服务主功能
@@ -136,7 +136,7 @@ module.exports = (req, res, options) => {
 
 				// 如果没有建议文件或建议文件也不存在
 				// 提示 404
-				ifiles.sendError(res, 404)
+				ifiles.sendError(res, 404, 404)
 				return;
 			}
 
@@ -158,7 +158,6 @@ module.exports = (req, res, options) => {
 			} 
 			// 文件夹则显示内部的文件目录
 			else if(stats.isDirectory()) {
-				console.log('To show isDirectory', rootPath, reqPath)
 
 				if ( !reqPath.endsWith('/') ) {
 					reqPath += '/';
