@@ -7,6 +7,9 @@
 
 		<ul class="usr-hd-info-mod">
 			<% if (usr.usr) { %>
+
+			<% if (typeof proSet !== 'undefined') { %>
+
 			<li class="project-set-mod">
 				<a class="add-project-set" href="#">
 					<svg width="16" height="16" viewBox="0 0 16 16" >
@@ -19,13 +22,14 @@
 				<div class="usr-hd-list">
 					<ul>
 						<a href="">上传文件</a>
-						<hr />
 						<a href="">项目设置</a>
 						<hr />
 						<a href="">下载代码</a>
 					</ul>
 				</div>
 			</li>
+			<% } %>
+			
 			<li class="project-set-mod">
 				<a class="add-project-set" href="#">
 					<svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 12 16" width="12"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"></path></svg>
