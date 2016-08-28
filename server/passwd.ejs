@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh">
-	<%- include('parts/head', {host: host, title: usrInfo.act, css: ['/server/css/setting.css']}) %>
+	<%- include('parts/head', {host: host, title: usrInfo.usr, css: ['/server/css/setting.css']}) %>
 <body>
 	
-	<%- include('parts/header', {host: host, usr: usrInfo, title: '个人中心'}) %>
+	<%- include('parts/header', {host: host, usr: usrInfo, title: '个人中心', titurl: usrInfo.usr }) %>
 
 	<section class="main-body">
 
