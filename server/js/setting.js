@@ -12,7 +12,7 @@ $(function() {
 		var _ico = $('[name="usrIco"]');
 		var _name = $('[name="name"]');
 		var _email = $('[name="email"]');
-		var _subtn = $('[type="submit"]');
+		var _subtn = $('.green-btn');
 
 		if (!_name.val()) {
 			_name.addClass('err').focus().next().text('用户名不能为空');
@@ -25,6 +25,7 @@ $(function() {
 		formData.append('email', _email.val())
 
 		_subtn.attr('disabled', 'disabled')
+		.find('b i').hide().next().show().end()
 		.find('span').text('提交中...')
 
 		$.ajax({
@@ -38,8 +39,11 @@ $(function() {
 		.done(function(data) {
 			console.log(data)
 			if (data.success) {
-				_subtn.removeAttr('disabled')
-				.find('span').text('保存修改')
+				_subtn.find('b i').hide().next().show();
+				setTimeout(function() {
+					_subtn.removeAttr('disabled')
+					.find('span').text('保存修改')
+				}, 5000)
 			} else {
 				location.href = data.msg.href
 			}
@@ -190,11 +194,14 @@ $(function() {
 
 	$('#add-project').submit(function(e){
 		e.preventDefault();
-		var _name    = $('[name="pro-name"]');
-
+		var _name = $('[name="pro-name"]');
+		var _btn = $(this).find('.btn');
+		var _btnTxt = _btn.find('.name').text();
 		var getVal = checkProName();
 
 		if (!getVal) return;
+
+		btnSattus(_btn, 'loading', '加载中..') 
 
 		$.ajax({
 			url: '/addProject',
@@ -203,11 +210,15 @@ $(function() {
 			dataType: 'json'
 		})
 		.done(function(json){
+			debugger
 			if (json.success) {
-				location.href = json.msg
+				location.href = json.msg;
+				btnSattus(_btn, 'done', _btnTxt)
 			} else {
 				setErr(_name, json.msg);
+				btnSattus(_btn, 'normal', _btnTxt)
 			}
+
 		})
 		.fail(function(err) {
 			setErr(_name, json.msg);

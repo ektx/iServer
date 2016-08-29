@@ -25,10 +25,10 @@
 							<img src="<%= host %>/<%= usrInfo.ico %>">
 						</div>
 						<div class="usr-ico-upload-box">
-							<button class="btn middle-btn usr-upload-btn">
+							<span class="btn middle-btn usr-upload-btn">
 								<input type="file" accept="image/*" name="usrIco">
 								<span>上传头像</span>
-							</button>
+							</span>
 						</div>
 					</dd>
 				</dl>
@@ -58,7 +58,12 @@
 				<dl>
 					<dd>
 						<button class="btn middle-btn green-btn" type="submit">
-							<b><i></i></b>
+							<b><i></i>
+							<svg version="1.1" width="16" height="16" viewBox="0 0 200 200">
+								<polyline style="fill:none;stroke:#FFF; stroke-miterlimit:10; stroke-width: 24px;" points="29.186,107.663 76.279,150.105 177.151,45 "/>
+								<animate attributeName="stroke-dasharray" begin="0s" dur="1s" values="0,230; 230,0" repeatCount="indefinite"></animate>
+
+							</svg></b>
 							<span>保存修改</span>
 						</button>
 					</dd>

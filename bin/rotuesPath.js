@@ -93,7 +93,7 @@ exports.usrHome = (req, res, next)=> {
 	});
 
 	let sendMsg = (req, res, usrData, proData)=> {
-		console.log(proData)
+		console.log( usrData, proData)
 							
 		res.render('demo', {
 			usrInfo: { 
@@ -353,7 +353,12 @@ exports.PSetProfile = (req, res)=> {
 			if (!req.body.ico && req.body.ico === undefined) {
 				// 删除老的头像
 				if (req.session.ico !== 'server/img/kings.png') {
-					fs.unlink( path.join(process.cwd(), req.session.ico) )
+					fs.unlink( path.join(process.cwd(), req.session.ico) , (err, data)=> {
+						if (err) {
+							console.log('Not Find Old Pic!');
+							return;
+						}
+					})
 				}
 
 				updateUsr.ico = saveDir;
@@ -498,27 +503,28 @@ exports.loginIn = (req, res) => {
 			if ( character[0].pwd === req.body.passwd ) {
 
 				console.log(character)
+				let sess = req.session;
 
 				// 保存 session 信息
-				req.session.act = character[0].account;
-				req.session.usr = character[0].name;
-				// req.session.pwd = req.body.passwd;
-				req.session.ico = character[0].ico;
+				sess.act = character[0].account;
+				sess.usr = character[0].name;
+				sess.pwd = req.body.passwd;
+				sess.ico = character[0].ico;
 
-				console.log('登录后信息:',req.session)
 
 				sendMsg = {
 					"success": true,
 					"msg": '/'
 				}
 
-				res.json(sendMsg)
+				console.log('登录后信息:',sess)
+				res.send(sendMsg)
 			} else {
 				sendMsg = {
 					'success': false,
 					'msg': '密码错误!'
 				}
-				res.json(sendMsg)
+				res.send(sendMsg)
 			}
 		}
 
@@ -527,7 +533,7 @@ exports.loginIn = (req, res) => {
 
 
 /*
-	添加新项目页面
+	添加新项目页面 [GET]
 	-------------------------------------
 */
 exports.addProject = (req, res) => {

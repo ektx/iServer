@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 	@account: 帐号(不可修改)
 	@name: 用户名
 	@pwd: 密码
+	@email: 邮箱
 	@ico: 头像
 
 	文档: usrs
