@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh">
-	<%- include('parts/head', {host: host, title: usrInfo.act, css: ['/server/css/setting.css']}) %>
+	<%- include('parts/head', {host: host, title: usrInfo.usr, css: ['/server/css/setting.css']}) %>
 <body>
 	
-	<%- include('parts/header', {host: host, usr: usrInfo, title: '创建项目'}) %>
+	<%- include('parts/header', {host: host, usr: usrInfo, title: '创建项目', 'titurl': usrInfo.usr}) %>
 
 	<section class="main-body">
 
@@ -32,8 +32,8 @@
 				<dl>
 					<dd>
 						<button class="btn middle-btn green-btn" type="submit">
-							<b><i></i></b>
-							<span>创建</span>
+							<span class="ico"></span>
+							<span class="name">创建</span>
 						</button>
 					</dd>
 				</dl>
