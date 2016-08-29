@@ -172,7 +172,8 @@ $(function() {
 			}
 			reslut = false;
 		}
-		else if ( /[^\w-]/g.test(_nameVal) ) {
+		else if ( !/^[a-zA-Z0-9_-\u4e00-\u9fa5]+$/g.test(_nameVal) ) {
+			debugger
 			setErr(_name, '项目名称中只能使用 - 或 _')
 			reslut = false;
 		}
@@ -210,10 +211,11 @@ $(function() {
 			dataType: 'json'
 		})
 		.done(function(json){
-			debugger
 			if (json.success) {
-				location.href = json.msg;
 				btnSattus(_btn, 'done', _btnTxt)
+				setTimeout(function() {
+					location.href = json.msg;
+				}, 2000)
 			} else {
 				setErr(_name, json.msg);
 				btnSattus(_btn, 'normal', _btnTxt)

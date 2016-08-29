@@ -318,7 +318,7 @@ ul {
 	outline: none;
 	background-color: transparent;
 }
-.login-usr-name {
+.login-mod form div:nth-last-of-type(n+2) {
 	border-bottom: 1px solid #333;
 }
 .login-usr-pwd input {

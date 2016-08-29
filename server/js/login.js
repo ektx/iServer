@@ -5,7 +5,7 @@
 
 $(function() {
 
-	$('form').submit(function( e ) {
+	$('#signIn-form form').submit(function( e ) {
 		
 		e.preventDefault();
 
