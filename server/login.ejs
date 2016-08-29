@@ -10,7 +10,7 @@
 	
 	<section class="login-body">
 
-		<div class="login-mod">
+		<div id="signIn-form" class="login-mod" style="display:none">
 			<h1>iServer</h1>
 			<p class="error-info">Error!</p>
 			<form method="post" action="/loginIn">
@@ -29,6 +29,31 @@
 			<p class="login-help">
 				<a href="#">忘记密码</a>
 				<a href="">申请帐号</a>
+			</p>
+		</div>
+
+		<div class="login-mod signUp-mod">
+			<h1>注册</h1>
+			<p class="error-info">Error!</p>
+			<form method="post" action="/loginIn">
+				<div class="login-usr-name">
+					<input type="text" name="usr" placeholder="帐号" autofocus="" value="">
+				</div>
+				<div class="login-usr-pwd">
+					<input type="password" name="passwd" placeholder="邮箱" value="">
+				</div>
+				<div class="login-usr-pwd">
+					<input type="password" name="passwd" placeholder="确认密码" value="">
+				</div>
+				<button class="login-btn" type="submit">
+					<svg width="16" height="16" viewBox="0 0 24 24">
+						<path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z"/>
+					</svg>
+				</button>
+			</form>
+			<p class="login-help">
+				<a href="#">忘记密码</a>
+				<a href="">登录</a>
 			</p>
 		</div>
 		
