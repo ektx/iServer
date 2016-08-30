@@ -13,12 +13,12 @@
 		<div id="signIn-form" class="login-mod login-current-mod">
 			<h1>iServer</h1>
 			<p class="error-info">Error!</p>
-			<form method="post" action="/loginIn">
+			<form method="post" action="/loginIn" novalidate>
 				<div class="login-usr-name">
-					<input type="text" name="usr" placeholder="帐号" autofocus="" value="ektx">
+					<input type="text" name="usr" placeholder="帐号" autofocus="" value="" required>
 				</div>
 				<div class="login-usr-pwd">
-					<input type="password" name="passwd" placeholder="密码" value="1234">
+					<input type="password" name="passwd" placeholder="密码" value="" required>
 				</div>
 				<button class="login-btn" type="submit">
 					<svg width="16" height="16" viewBox="0 0 24 24">
@@ -35,15 +35,15 @@
 		<div id="signUp-form" class="login-mod">
 			<h1>注册</h1>
 			<p class="error-info">Error!</p>
-			<form method="post" action="/signUp">
+			<form method="post" action="/signUp" novalidate>
 				<div class="login-usr-name">
-					<input type="text" name="usr" placeholder="帐号" autofocus="" value="">
+					<input type="text" name="usr" placeholder="帐号" autofocus="" required>
+				</div>
+				<div class="login-usr-name">
+					<input type="email" name="email" placeholder="邮箱" value="">
 				</div>
 				<div class="login-usr-pwd">
-					<input type="password" name="passwd" placeholder="邮箱" value="">
-				</div>
-				<div class="login-usr-pwd">
-					<input type="password" name="passwd" placeholder="确认密码" value="">
+					<input type="password" name="passwd" placeholder="密码" required>
 				</div>
 				<button class="login-btn" type="submit">
 					<svg width="16" height="16" viewBox="0 0 24 24">
@@ -60,9 +60,9 @@
 		<div id="forgot-form" class="login-mod">
 			<h1>忘记密码</h1>
 			<p class="error-info">Error!</p>
-			<form method="post" action="/forgotPwd">
+			<form method="post" action="/forgotPwd" novalidate>
 				<div class="login-usr-pwd">
-					<input type="email" name="passwd" placeholder="主邮箱" value="">
+					<input type="email" name="passwd" placeholder="邮箱" required>
 				</div>
 				<button class="login-btn" type="submit">
 					<svg width="16" height="16" viewBox="0 0 24 24">
@@ -85,3 +85,4 @@
 	<script src="server/js/login.js"></script>
 </body>
 </html>
+
