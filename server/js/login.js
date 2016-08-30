@@ -66,6 +66,7 @@ $.fn.myVerification = function(options) {
 	var data = {};
 	var url = _.attr('action');
 	var type = _.attr('method');
+	var hasErr = false;
 
 	console.log(event)
 
@@ -79,6 +80,8 @@ $.fn.myVerification = function(options) {
 		if (event.type === 'submit') {
 			it.focus()
 		}
+
+		hasErr = true;
 	}
 
 	var removeErr = function(ele) {
@@ -103,16 +106,13 @@ $.fn.myVerification = function(options) {
 		if (_this.hasAttr('required')) {
 
 			// 当指定了显示错误的容器时,此时逐个验证信息
-			// if (_this.attr('type') === 'text' ) {
-				if ( _val === '' ) {
-					setError(_this, options.errBox, _placeholder + '不能为空')
-					// 当指定了显示错误的容器时,此时逐个验证信息
-					if (options.errBox) return false;
-				} else {
-					removeErr(_this)
-				}
-
-			// }
+			if ( _val === '' ) {
+				setError(_this, options.errBox, _placeholder + '不能为空')
+				// 当指定了显示错误的容器时,此时逐个验证信息
+				if (options.errBox) return false;
+			} else {
+				removeErr(_this)
+			}
 
 			// 邮箱验证
 			if (_this.attr('type') === 'email' ) {
@@ -139,28 +139,23 @@ $.fn.myVerification = function(options) {
 			}
 		}
 
-		console.log(_this.hasAttr('required'))
-		console.log()
-
 		data[_this.attr('name')] = _val;
 
 	})
 
-	$.ajax({
-		url: url,
-		type: type,
-		dataType: 'json',
-		data: data
-	})
-	.done(function(data) {
-		if (options.done) options.done(data)
-	})
-	.fail(function(err){
-		if (options.fail) options.fail(err)
-	})
-	
+	if (event.type === 'submit' && !hasErr) {
+		$.ajax({
+			url: url,
+			type: type,
+			dataType: 'json',
+			data: data
+		})
+		.done(function(data) {
+			if (options.done) options.done(data)
+		})
+		.fail(function(err){
+			if (options.fail) options.fail(err)
+		})
+	}
 
-	console.log(url)
-	console.log(type)
-	console.log(data)
 }

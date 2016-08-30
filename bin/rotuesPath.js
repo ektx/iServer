@@ -3,7 +3,8 @@ const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const colors  = require('colors');
-const multer = require('multer');
+const multer  = require('multer');
+const imkdirs = require('imkdirs');
 const server  = require('./server');
 const Schemas = require('./schemas');
 const mongoose = require('mongoose');
@@ -420,6 +421,10 @@ exports.checkPwd = (req, res)=> {
 						txt: "密码错误!"
 					}
 				})
+			} else {
+				res.send({
+					"success": true
+				})
 			}
 		})
 
@@ -455,14 +460,11 @@ exports.updatePwd = (req, res)=> {
 					return;
 				}
 
-				console.log(data);
-				setTimeout(function(){
-					res.send({
-						"success": true,
-						"msg": "完成!"
-					})
+				res.send({
+					"success": true,
+					"msg": "完成!"
+				})
 
-				}, 5000)
 			}
 		) // End Schemas
 	})
@@ -483,8 +485,6 @@ exports.loginOut = (req, res)=> {
 
 // 登录 /loginIn [post]
 exports.loginIn = (req, res) => {
-
-	console.log(req.body.user, req.body.passwd);
 
 	let sendMsg = {};
 
@@ -530,6 +530,64 @@ exports.loginIn = (req, res) => {
 
 	}) // End find
 };
+
+
+/*
+	注册
+	==============================================
+*/
+exports.signUp = (req, res)=> {
+	console.log(req.body.user, req.body.passwd, req.body.email);
+
+	let act = req.body.user;
+	let ico = 'server/img/kings.png';
+
+	let toSaveUsr = ()=> {
+		Schemas.usrs_m.create(
+		{
+			account: act,
+			name: act,
+			pwd: req.body.passwd,
+			email: req.body.email,
+			ico: ico
+		}, 
+		(err, data) => {
+			imkdirs( path.join(process.cwd(), act, '__USER') );
+
+			// 自动登录
+			req.session.act = act;
+			req.session.ico = ico;
+			req.session.usr = act;
+
+			// 跳转主页
+			res.send({
+				success: true,
+				msg: '/'+act
+			})
+		})
+	};
+
+	Schemas.usrs_m.find({account: act}, (err, data)=> {
+		if (err) {
+			console.log(err);
+			
+			res.send({
+				success: false,
+				msg: '服务器错误'
+			});
+			return;
+		}
+
+		if (data.length > 0) {
+			res.send({
+				success: false,
+				msg: '此用户已经注册'
+			})
+		} else {
+			toSaveUsr()
+		}
+	})
+}
 
 
 /*
