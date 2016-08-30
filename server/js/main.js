@@ -24,7 +24,7 @@ $(function() {
 /*
 	点击按钮效果
 	==========================================
-	@status {String} [loading|done]
+	@status {String} [loading|done|normal]
 	@ele
 	@txt 提示内容
 */
