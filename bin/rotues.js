@@ -26,6 +26,8 @@ module.exports = (app, type) => {
 		app.get(['/:usr/:project', '/:usr/:project/*'], rotuesPath.usrProject)
 	
 		app.post('/loginIn', rotuesPath.loginIn)
+		app.post('/signUp', rotuesPath.signUp)
+		// app.post('/forgotPwd', rotuesPath.forgotPwd)
 		app.post('/checkPwd', rotuesPath.checkPwd)
 		app.post('/addproject', checkLoginUsr, rotuesPath.addProject_p)
 		app.post('/set/passwd', rotuesPath.updatePwd)

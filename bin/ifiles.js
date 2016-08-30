@@ -4,8 +4,6 @@ const path = require('path');
 
 const ejs  = require('ejs');
 const mime = require('mime');
-const getIPs = require('./getIPs');
-const rootServerPoot = require('../config')._port;
 
 // 智能生成文件夹
 // 如果指定的文件夹的父级也不存在的话,则同时生成
@@ -39,10 +37,7 @@ exports.mkdirs = function (res, _path) {
 	@filePath 文件夹路径
 */
 function getHTML(files, filePath) {
-	// console.log('>>>', req, res)
 	let title = '', body = [], aURL;
-	let zIP = getIPs().IPv4.public;
-	let httpUrl = 'http://' + zIP +':'+rootServerPoot;
 
 	title = path.basename(filePath);
 
@@ -230,3 +225,4 @@ function resHeaders(type) {
 		'Server': 'iServer 4.0.0 beta'
 	}
 }
+
