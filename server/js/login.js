@@ -27,12 +27,23 @@ $(function() {
 		
 		e.preventDefault();
 
-		var user = $('.login-usr-name input').val();
-		var pwd = $('.login-usr-pwd input').val();
-
 		$(this).myVerification({
 			errBox: '.error-info',
-			show: 'show'
+			show: 'show',
+			done: function(data) {
+				if (!data.success) {
+					$('.error-info').addClass('show').text(data.msg)
+				} else {
+					if (location.hash && location.hash.length > 9) {
+						location.href = location.hash.substr(9)
+					} else {
+						location.href = data.msg
+					}
+				}
+			},
+			fail: function(err) {
+				$(this).prev('.error-info').show().text(err)
+			}
 		})
 
 	}).keyup(function(e) {
@@ -142,18 +153,10 @@ $.fn.myVerification = function(options) {
 		data: data
 	})
 	.done(function(data) {
-		if (!data.success) {
-			$('.error-info').addClass('show').text(data.msg)
-		} else {
-			if (location.hash && location.hash.length > 9) {
-				location.href = location.hash.substr(9)
-			} else {
-				location.href = data.msg
-			}
-		}
+		if (options.done) options.done(data)
 	})
 	.fail(function(err){
-		$('.error-info').show().text(err)
+		if (options.fail) options.fail(err)
 	})
 	
 
