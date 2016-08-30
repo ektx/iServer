@@ -11,6 +11,8 @@ hr {
 body {
 	-webkit-font-smoothing: subpixel-antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+button, body, input {
 	font-family: "Microsoft Yahei","SimHei","Hiragino Sans GB","Helvetica Neue",sans-serif,Arial;
 }
 li {
@@ -270,13 +272,24 @@ ul {
 	background-color: #333;
 }
 .login-mod {
+	/*display: none;*/
+	visibility: hidden;
 	width: 360px;
 	height: auto;
 	position: absolute;
 	top: 40%;
 	left: 50%;
 	margin: -60px -180px;
-
+	opacity: 0;
+	will-change: transform;
+	transform: translateY(100px);
+	transition: visibility .3s ease, opacity .3s ease, transform .3s ease;
+}
+.login-current-mod {
+	/*display: block;*/
+	visibility: visible;
+	transform: translateY(0);
+	opacity: 1;
 }
 .login-mod h1 {
 	font-size: 36px;
@@ -346,6 +359,7 @@ ul {
 .login-help a {
 	font-size: 14px;
 	color: #666;
+	cursor: pointer;
 }
 .login-help a:last-child {
 	float: right;
@@ -353,6 +367,14 @@ ul {
 .login-help a:hover {
 	color: #eee;
 	transition: color .3s ease;
+}
+
+.login-help-mod {
+	margin: 20px 0 0;
+	padding: 5px 0 0;
+	border-top: 1px solid #444;
+	font-size: 12px;
+	color: #666;
 }
 
 /* 挺拽上传 */
