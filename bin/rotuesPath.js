@@ -177,13 +177,10 @@ exports.usrProject = (req, res, next)=> {
 
 	console.log(':: Your asking User:', req.params.usr )
 	console.log(':: Your asking Her Project:', req.params.project )
-	console.log('URL:', req.url);
 
 	let realUrl  = req.url = req.url.replace('/f', '');	
 	let filePath = process.cwd()+ realUrl;
 	
-console.log(filePath);
-
 	let gitProFiles = (req, res, filePath)=> {
 
 		let isFs = false;
