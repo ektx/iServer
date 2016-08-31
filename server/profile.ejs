@@ -17,7 +17,7 @@
 				<li><a href="/set/passwd">密码修改</a></li>
 			</ul>
 			
-			<form id="profile" class="upload-form" method="post" enctype="multipart/form-data">
+			<form id="profile" class="upload-form" method="post" enctype="multipart/form-data" action="/set/profile" novalidate>
 				<dl>
 					<dt>头像</dt>
 					<dd class="cf">
@@ -26,7 +26,7 @@
 						</div>
 						<div class="usr-ico-upload-box">
 							<span class="btn middle-btn usr-upload-btn">
-								<input type="file" accept="image/*" name="usrIco">
+								<input type="file" accept="image/*" name="ico">
 								<span>上传头像</span>
 							</span>
 						</div>
@@ -41,10 +41,10 @@
 				</dl>
 
 				<dl>
-					<dt>名称</dt>
+					<dt>呢称</dt>
 					<dd>
-						<input type="text" name="name" value="<%= usrInfo.name %>" placeholder="用户名称">
-						<span class="err-info">用户名不能为空!</span>
+						<input type="text" name="name" value="<%= usrInfo.name %>">
+						<span class="err-info"></span>
 					</dd>
 				</dl>
 
@@ -52,19 +52,15 @@
 					<dt>邮箱</dt>
 					<dd>
 						<input type="email" name="email" value="<%= usrInfo.email %>">
+						<span class="err-info"></span>
 					</dd>
 				</dl>
 
 				<dl>
 					<dd>
 						<button class="btn middle-btn green-btn" type="submit">
-							<b><i></i>
-							<svg version="1.1" width="16" height="16" viewBox="0 0 200 200">
-								<polyline style="fill:none;stroke:#FFF; stroke-miterlimit:10; stroke-width: 24px;" points="29.186,107.663 76.279,150.105 177.151,45 "/>
-								<animate attributeName="stroke-dasharray" begin="0s" dur="1s" values="0,230; 230,0" repeatCount="indefinite"></animate>
-
-							</svg></b>
-							<span>保存修改</span>
+							<span class="ico"></span>
+							<span class="name">保存修改</span>
 						</button>
 					</dd>
 				</dl>
