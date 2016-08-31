@@ -335,8 +335,8 @@ exports.PSetProfile = (req, res)=> {
 			}
 		})
 
+		// 设置上传头像参数
 		let upload = multer({storage: storage}).single('ico');
-
 		
 		upload(req, res, function (err) {
 			if (err) {

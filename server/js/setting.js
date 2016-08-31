@@ -9,48 +9,50 @@ $(function() {
 	$('#profile').submit(function(e) {
 		e.preventDefault();
 
-		var _ico = $('[name="usrIco"]');
-		var _name = $('[name="name"]');
-		var _email = $('[name="email"]');
-		var _subtn = $('.green-btn');
+		$(this).myVerification()
 
-		if (!_name.val()) {
-			_name.addClass('err').focus().next().text('用户名不能为空');
-			return;
-		}
+// 		var _ico = $('[name="usrIco"]');
+// 		var _name = $('[name="name"]');
+// 		var _email = $('[name="email"]');
+// 		var _subtn = $('.green-btn');
 
-		var formData = new FormData();
-		formData.append('ico', $('[name="usrIco"]')[0].files[0])
-		formData.append('name', _name.val())
-		formData.append('email', _email.val())
+// 		if (!_name.val()) {
+// 			_name.addClass('err').focus().next().text('用户名不能为空');
+// 			return;
+// 		}
 
-		_subtn.attr('disabled', 'disabled')
-		.find('b i').hide().next().show().end()
-		.find('span').text('提交中...')
+// 		var formData = new FormData();
+// 		formData.append('ico', $('[name="ico"]')[0].files[0])
+// 		formData.append('name', _name.val())
+// 		formData.append('email', _email.val())
+// console.log(formData)
+// 		_subtn.attr('disabled', 'disabled')
+// 		.find('b i').hide().next().show().end()
+// 		.find('span').text('提交中...')
 
-		$.ajax({
-			url: '/set/profile',
-			type: 'post',
-			data: formData,
-			processData: false,
-			contentType: false,
-			dataType: 'json'
-		})
-		.done(function(data) {
-			console.log(data)
-			if (data.success) {
-				_subtn.find('b i').hide().next().show();
-				setTimeout(function() {
-					_subtn.removeAttr('disabled')
-					.find('span').text('保存修改')
-				}, 5000)
-			} else {
-				location.href = data.msg.href
-			}
-		})
-		.fail(function(err) {
-			console.log(err)
-		})
+// 		$.ajax({
+// 			url: '/set/profile',
+// 			type: 'post',
+// 			data: formData,
+// 			processData: false,
+// 			contentType: false,
+// 			dataType: 'json'
+// 		})
+// 		.done(function(data) {
+// 			console.log(data)
+// 			if (data.success) {
+// 				_subtn.find('b i').hide().next().show();
+// 				setTimeout(function() {
+// 					_subtn.removeAttr('disabled')
+// 					.find('span').text('保存修改')
+// 				}, 5000)
+// 			} else {
+// 				location.href = data.msg.href
+// 			}
+// 		})
+// 		.fail(function(err) {
+// 			console.log(err)
+// 		})
 	});
 
 	// 时时预览个人头像
@@ -135,8 +137,9 @@ $(function() {
 			return;
 		};
 
-		_subtn.attr('disabled', 'disabled')
-		.find('span').text('提交中...')
+		// _subtn.attr('disabled', 'disabled')
+		// .find('span').text('提交中...')
+		btnSattus(_subtn, 'loading', '提交中...')
 
 		$.ajax({
 			url: '/set/passwd',
@@ -146,8 +149,7 @@ $(function() {
 		})
 		.done(function(json) {
 			if (json.success) {
-				_subtn.removeAttr('disabled')
-				.find('span').text('保存修改')
+				btnSattus(_subtn, 'done', '保存修改')
 			} else {
 				location.href = json.msg.href
 			}
