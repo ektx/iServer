@@ -23,7 +23,8 @@ module.exports = (app, type) => {
 
 	if (type == "os") {
 		app.get('/:usr', rotuesPath.usrHome)
-		app.get(['/:usr/:project', '/:usr/:project/*'], rotuesPath.usrProject)
+		app.get('/:usr/__USER/*', rotuesPath.__USER)
+		app.get(['/:usr/:project', '/:usr/:project/f/*'], rotuesPath.usrProject)
 	
 		app.post('/loginIn', rotuesPath.loginIn)
 		app.post('/signUp', rotuesPath.signUp)
@@ -32,10 +33,11 @@ module.exports = (app, type) => {
 		app.post('/addproject', checkLoginUsr, rotuesPath.addProject_p)
 		app.post('/set/passwd', rotuesPath.updatePwd)
 		app.post('/set/profile', rotuesPath.PSetProfile)
+	} else {
+		app.get('*', rotuesPath.getAll)
+		app.post('*', rotuesPath.postAll)
 	}
 
-	app.get('*', rotuesPath.getAll)
-	app.post('*', rotuesPath.postAll)
 }
 
 
