@@ -12,6 +12,7 @@
 				<% var url = '/' %>
 				<% for (var i = 1, l =breadCrumbs.length; i < l; i++){ %>
 					<% url += breadCrumbs[i]+'/' %>
+					<% if (i == 2) url+='f/' %>
 				<a href="<%= url %>"> <%= breadCrumbs[i] %></a>
 				<% } %>
 			</dl>

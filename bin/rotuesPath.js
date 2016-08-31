@@ -167,6 +167,11 @@ exports.usrHome = (req, res, next)=> {
 };
 
 
+exports.__USER = (req, res)=> {
+	server(req, res, {serverRootPath: process.cwd() });
+}
+
+
 // 访问用户项目
 exports.usrProject = (req, res, next)=> {
 
@@ -174,12 +179,10 @@ exports.usrProject = (req, res, next)=> {
 	console.log(':: Your asking Her Project:', req.params.project )
 	console.log('URL:', req.url);
 
-	// 访问用户的头像文件夹
-	if (req.params.project === '__USER') { 
-		next(); return;
-	}
-
-	let filePath = process.cwd()+req.url;
+	let realUrl  = req.url = req.url.replace('/f', '');	
+	let filePath = process.cwd()+ realUrl;
+	
+console.log(filePath);
 
 	let gitProFiles = (req, res, filePath)=> {
 
@@ -194,12 +197,16 @@ exports.usrProject = (req, res, next)=> {
 
 		// 如果是文件,只接读取
 		if ( isFs.isFile() ) {
-			next();
+			server(req, res, {serverRootPath: process.cwd() });
 			return;
 		}
 
 		// 对目录文件时
 		fs.readdir(filePath, (err, files)=> {
+
+			// 防止访问文件夹时,系统崩溃
+			if (!filePath.endsWith('/')) filePath += '/';
+
 			if (err) {
 				console.log(err); 
 				return;
@@ -223,8 +230,8 @@ exports.usrProject = (req, res, next)=> {
 			}
 
 			let usrInfo = false;
-			let breadArr = req.url.split('/');
-			req.url.endsWith('/') ? breadArr.pop() : breadArr;
+			let breadArr = realUrl.split('/');
+			realUrl.endsWith('/') ? breadArr.pop() : breadArr;
 
 			if (req.session.act) {
 				usrInfo = {
@@ -271,8 +278,6 @@ exports.usrProject = (req, res, next)=> {
 		}
 	})
 
-	console.log('you vist :', req.url.substr(1))
-		
 };
 
 
