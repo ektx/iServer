@@ -637,7 +637,7 @@ exports.addProject_p = (req, res)=> {
 		});
 		return;
 	}
-	else if ( !/^[a-zA-Z0-9_-\u4e00-\u9fa5]+$/g.test(_proName) ) {
+	else if ( !/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/g.test(_proName) ) {
 		res.send({
 			success: false,
 			msg: '项目名称中只能使用 - 或 _'

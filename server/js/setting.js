@@ -172,8 +172,7 @@ $(function() {
 			}
 			reslut = false;
 		}
-		else if ( !/^[a-zA-Z0-9_-\u4e00-\u9fa5]+$/g.test(_nameVal) ) {
-			debugger
+		else if ( !/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/g.test(_nameVal) ) {
 			setErr(_name, '项目名称中只能使用 - 或 _')
 			reslut = false;
 		}
