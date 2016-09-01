@@ -24,6 +24,7 @@ module.exports = (app, type) => {
 	if (type == "os") {
 		app.get('/:usr', rotuesPath.usrHome)
 		app.get('/:usr/__USER/*', rotuesPath.__USER)
+		app.get('/:usr/:project/settings', rotuesPath.proSettings)
 		app.get(['/:usr/:project', '/:usr/:project/f/*'], rotuesPath.usrProject)
 	
 		app.post('/loginIn', rotuesPath.loginIn)

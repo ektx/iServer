@@ -12,6 +12,41 @@ const mongoose = require('mongoose');
 const ifiles = require('./ifiles');
 
 
+const hasProject = (req, res) => {
+
+	let p = new Promise(function(resolve, reject) {
+		// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
+		Schemas.myproject_m.aggregate([
+			{$match: {usr: req.params.usr}},
+			{$unwind: '$project'},
+			{$match: {'project.name': req.params.project }}
+		], (err, data)=> {
+			if (err) { console.log(err); return }
+
+			if (data.length == 0) {
+				ifiles.sendError(res, 404, '没有此项目!')
+				return;
+			}
+
+			if (data[0].project.private) {
+				if (req.session.act && req.session.act == req.params.usr) {
+					resolve()
+				} else {
+					// 423 当前资源被锁定
+					ifiles.sendError(res, 423, '您无权访问此项目!!')
+				}
+			} else {
+
+				resolve()
+
+			}
+		})
+	});
+
+	return p;
+}
+
+
 // 访问 / [get]
 exports.root = (req, res) => {
 	// 默认访问根目录时,如果用户登录过则进入用户中心
@@ -181,7 +216,7 @@ exports.usrProject = (req, res, next)=> {
 	let realUrl  = req.url = req.url.replace('/f', '');	
 	let filePath = process.cwd()+ realUrl;
 	
-	let gitProFiles = (req, res, filePath)=> {
+	let gitProFiles = ()=> {
 
 		let isFs = false;
 
@@ -239,7 +274,7 @@ exports.usrProject = (req, res, next)=> {
 
 			res.render('../server/project', {
 				files: fileArr,
-				host: 'http://'+ req.headers.host,
+				host: req.secure?'https://':'http://'+ req.headers.host,
 				usrInfo: usrInfo,
 				title: req.params.project,
 				titurl: req.params.usr,
@@ -248,32 +283,7 @@ exports.usrProject = (req, res, next)=> {
 		})
 	}
 
-	// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
-	Schemas.myproject_m.aggregate([
-		{$match: {usr: req.params.usr}},
-		{$unwind: '$project'},
-		{$match: {'project.name': req.params.project }}
-	], (err, data)=> {
-		if (err) { console.log(err); return }
-
-		if (data.length == 0) {
-			ifiles.sendError(res, 404, '没有此项目!')
-			return;
-		}
-
-		if (data[0].project.private) {
-			if (req.session.act && req.session.act == req.params.usr) {
-				gitProFiles(req, res, filePath)
-			} else {
-				// 423 当前资源被锁定
-				ifiles.sendError(res, 423, '您无权访问此项目!!')
-			}
-		} else {
-
-			gitProFiles(req, res, filePath)
-
-		}
-	})
+	hasProject(req, res).then( gitProFiles )
 
 };
 
@@ -719,6 +729,21 @@ exports.addProject_p = (req, res)=> {
 	)
 } 
 
+
+exports.proSettings = (req, res)=> {
+
+	hasProject(req, res).then(()=>{
+		console.log('This people have the project!')
+		res.render('../server/project', {
+			host: req.secure?'https://':'http://'+ req.headers.host,
+			usrInfo: usrInfo,
+			title: req.params.project,
+			titurl: req.params.usr,
+			breadCrumbs: breadArr
+		})
+	})
+}
+
 /*
 	checkLoginForURL
 	---------------------------------------
@@ -765,6 +790,7 @@ function goToPage(req, res, page) {
 		});
 	})	
 }
+
 
 
 
