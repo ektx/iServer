@@ -28,6 +28,7 @@ $(function() {
 		e.preventDefault();
 
 		$(this).myVerification({
+			event: e,
 			errBox: '.error-info',
 			show: 'show',
 			done: function(data) {
@@ -48,6 +49,7 @@ $(function() {
 
 	}).keyup(function(e) {
 		$(this).myVerification({
+			event: e,
 			errBox: '.error-info',
 			show: 'show'
 		})

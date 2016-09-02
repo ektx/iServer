@@ -219,18 +219,17 @@ ul {
 	float: left;
 }
 .aside-usr-ico {
-	display: -webkit-box;
-	display: -moz-box;
 	width: 260px;
 	height: 260px;
 	background-color: #f5f5f5;
 	border-radius: 5px;
 	overflow: hidden;
-	-webkit-box-align: center;
-	-moz-box-align: center;
 }
 .aside-usr-ico img {
 	width: 100%;
+	transform: translateY(-50%);
+	position: relative;
+	top: 50%;
 }
 .aside-usr-name {
 	font-size: 30px;

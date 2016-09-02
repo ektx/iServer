@@ -9,7 +9,7 @@ $(function() {
 	$('#profile').submit(function(e) {
 		e.preventDefault();
 
-		$(this).myVerification()
+		$(this).myVerification({event: e})
 
 // 		var _ico = $('[name="usrIco"]');
 // 		var _name = $('[name="name"]');
