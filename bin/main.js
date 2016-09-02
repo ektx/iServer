@@ -35,9 +35,9 @@ function server(options) {
 		console.log('服务启动目录:', __dirname);
 
 		app.use(session({
-			secret: 'hello world!',
+			secret: 'helloWorld!',
 			resave: false,
-			saveUninitialized: false,
+			saveUninitialized: true,
 			cookie: {
 				maxAge: 60* 1000 * 30
 			}
@@ -59,7 +59,7 @@ function server(options) {
 	}
 
 	// GBK URL中文乱码问题
-	app.use(parseURL)
+	// app.use(parseURL)
 
 	// 使用路由
 	rotues(app, options.type);

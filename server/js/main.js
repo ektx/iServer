@@ -82,7 +82,7 @@ $.fn.hasAttr = function(name) {
 
 */
 $.fn.myVerification = function(options) {
-
+console.log(this)
 	var _ = this;
 	var data = {};
 	var options = options || {};
@@ -91,8 +91,9 @@ $.fn.myVerification = function(options) {
 	var hasErr = false;
 	var errBox = options.errBox ? options.errBox : false;
 	var intFileSize = _.find('input[type="file"]').length;
+	var event = options.event;
 
-	console.log(event);
+	// console.log(event);
 
 	var ajaxOption = {
 		url: url,
