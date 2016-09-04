@@ -23,36 +23,30 @@ $(function() {
 		.siblings('#'+ boxData[_class]).addClass(_showC);
 	})
 
-	$('form').submit(function( e ) {
-		
-		e.preventDefault();
 
-		$(this).myVerification({
-			event: e,
-			errBox: '.error-info',
-			show: 'show',
-			done: function(data) {
-				if (!data.success) {
-					$('.error-info').addClass('show').text(data.msg)
+	$('form').myVerification({
+		checkAll: false,
+		done: function(data) {
+			if (!data.success) {
+				$('.error-info').addClass('show').text(data.msg)
+			} else {
+				if (location.hash && location.hash.length > 9) {
+					location.href = location.hash.substr(9)
 				} else {
-					if (location.hash && location.hash.length > 9) {
-						location.href = location.hash.substr(9)
-					} else {
-						location.href = data.msg
-					}
+					location.href = data.msg
 				}
-			},
-			fail: function(err) {
-				$(this).prev('.error-info').show().text(err)
 			}
-		})
-
-	}).keyup(function(e) {
-		$(this).myVerification({
-			event: e,
-			errBox: '.error-info',
-			show: 'show'
-		})
+		},
+		fail: function(err) {
+			$(this).prev('.error-info').show().text(err)
+		},
+		errBox: function(ele, info) {
+			console.log(ele, info)
+			ele.parents('form').prev('.error-info').addClass('show').html(info)
+		},
+		errHide: function(ele) {
+			ele.parents('form').prev('.error-info').removeClass('show')
+		}		
 	})
 
 });

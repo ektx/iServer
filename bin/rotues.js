@@ -24,15 +24,16 @@ module.exports = (app, type) => {
 	if (type == "os") {
 		app.get('/:usr', rotuesPath.usrHome)
 		app.get('/:usr/__USER/*', rotuesPath.__USER)
-		app.get('/:usr/:project/settings', rotuesPath.proSettings)
+		app.get('/:usr/:project/settings', redirectCheckLoginUsr, rotuesPath.proSettings)
 		app.get(['/:usr/:project', '/:usr/:project/f/*'], rotuesPath.usrProject)
 	
 		app.post('/loginIn', rotuesPath.loginIn)
 		app.post('/signUp', rotuesPath.signUp)
 		// app.post('/forgotPwd', rotuesPath.forgotPwd)
 		app.post('/checkPwd', rotuesPath.checkPwd)
+		app.post('/updateProSettings', checkLoginUsr, rotuesPath.updateProSettings)
 		app.post('/addproject', checkLoginUsr, rotuesPath.addProject_p)
-		app.post('/set/passwd', rotuesPath.updatePwd)
+		app.post('/set/passwd', checkLoginUsr, rotuesPath.updatePwd)
 		app.post('/set/profile', rotuesPath.PSetProfile)
 	} else {
 		app.get('*', rotuesPath.getAll)
@@ -45,6 +46,7 @@ module.exports = (app, type) => {
 /*
 	使用中间件的方式来验证用户是否登录过期问题
 	----------------------------------------
+	JSON版
 */
 function checkLoginUsr(req, res, next) {
 	let url = req.url;
@@ -58,4 +60,15 @@ function checkLoginUsr(req, res, next) {
 
 	}
 	else next()
+}
+
+/*
+	使用中间件的方式来验证用户是否登录过期问题
+	----------------------------------------
+	自动重定向版
+*/
+function redirectCheckLoginUsr(req, res, next) {
+	if (!req.session.act) {
+		res.redirect(req.url ? '/#referer='+req.url: '/')
+	} else next()
 }

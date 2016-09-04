@@ -12,34 +12,53 @@ const mongoose = require('mongoose');
 const ifiles = require('./ifiles');
 
 
-const hasProject = (req, res) => {
+const hasProject = (req, res, options) => {
+
+	let usr = req.params.usr || options.usr;
 
 	let p = new Promise(function(resolve, reject) {
 		// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
 		Schemas.myproject_m.aggregate([
-			{$match: {usr: req.params.usr}},
+			{$match: {usr: usr }},
 			{$unwind: '$project'},
-			{$match: {'project.name': req.params.project }}
+			{$match: {'project.name': req.params.project || options.proName }}
 		], (err, data)=> {
 			if (err) { console.log(err); return }
+
+			// 归属状态
+			let isOpen = (status)=> {
+				// 项目状态
+				if (data[0].project.private) {
+					// 是本人访问隐私项目
+					if (status.isMaster) {
+						status.isOpen = 0;
+						resolve(status)
+					} 
+					// 非本人访问隐私项目
+					else {
+						ifiles.sendError(res, 423, '您无权访问此项目!!')
+					}
+				} else {
+					// 访问公开项目
+					status.isOpen = 1;
+					resolve(status)
+				}
+
+			};
 
 			if (data.length == 0) {
 				ifiles.sendError(res, 404, '没有此项目!')
 				return;
 			}
 
-			if (data[0].project.private) {
-				if (req.session.act && req.session.act == req.params.usr) {
-					resolve()
-				} else {
-					// 423 当前资源被锁定
-					ifiles.sendError(res, 423, '您无权访问此项目!!')
-				}
+			if (req.session.act && req.session.act == usr) {
+				// isMaster: 1 这个项目只有自己可以看
+				isOpen({ isMaster: 1})
 			} else {
-
-				resolve()
-
+				isOpen({ isMaster: 0})
+				// 423 当前资源被锁定
 			}
+
 		})
 	});
 
@@ -211,13 +230,13 @@ exports.__USER = (req, res)=> {
 exports.usrProject = (req, res, next)=> {
 
 	console.log(':: Your asking User:', req.params.usr )
-	console.log(':: Your asking Her Project:', req.params.project )
+	console.log(':: Your asking Her Project:', req.params.project || options.proName )
 
 	let realUrl  = req.url = req.url.replace('/f', '');	
 	let filePath = process.cwd()+ realUrl;
 	
-	let gitProFiles = ()=> {
-
+	let gitProFiles = (status)=> {
+console.log('sss',status)
 		let isFs = false;
 
 		try {
@@ -276,6 +295,7 @@ exports.usrProject = (req, res, next)=> {
 				files: fileArr,
 				host: req.secure?'https://':'http://'+ req.headers.host,
 				usrInfo: usrInfo,
+				proStatus: status,
 				title: req.params.project,
 				titurl: req.params.usr,
 				breadCrumbs: breadArr
@@ -283,7 +303,9 @@ exports.usrProject = (req, res, next)=> {
 		})
 	}
 
-	hasProject(req, res).then( gitProFiles )
+	hasProject(req, res).then( (status)=>{
+		gitProFiles(status) 
+	})
 
 };
 
@@ -459,27 +481,25 @@ exports.checkPwd = (req, res)=> {
 exports.updatePwd = (req, res)=> {
 	debugLog(req, res);
 
-	checkLoginForURL(req, res, ()=> {
-		Schemas.usrs_m.update(
-			{account: req.session.act},
-			{$set: {pwd: req.body.pwd}},
-			(err, data)=> {
-				if (err) {
-					res.send({
-						"success": false,
-						"msg": "保存出错!"
-					});
-					return;
-				}
-
+	Schemas.usrs_m.update(
+		{account: req.session.act},
+		{$set: {pwd: req.body.newpwd}},
+		(err, data)=> {
+			if (err) {
 				res.send({
-					"success": true,
-					"msg": "完成!"
-				})
-
+					"success": false,
+					"msg": "保存出错!"
+				});
+				return;
 			}
-		) // End Schemas
-	})
+
+			res.send({
+				"success": true,
+				"msg": "完成!"
+			})
+
+		}
+	) // End Schemas
 }
 
 /*
@@ -729,18 +749,79 @@ exports.addProject_p = (req, res)=> {
 	)
 } 
 
-
+/*
+	项目设置 [GET]
+	-----------------------------------
+*/
 exports.proSettings = (req, res)=> {
 
-	hasProject(req, res).then(()=>{
-		console.log('This people have the project!')
-		res.render('../server/project', {
+	hasProject(req, res).then((status)=>{
+		console.log('This people have the project!', status)
+
+		if (!status.isMaster) {
+			res.redirect('/'+req.params.usr+'/'+req.params.project)
+			return;
+		}
+
+		res.render('../server/proSettings', {
 			host: req.secure?'https://':'http://'+ req.headers.host,
-			usrInfo: usrInfo,
+			usrInfo: { 
+				usr: req.session.act,
+				name: req.session.usr,
+				ico: req.session.ico
+			},
+			proStatus: status,
 			title: req.params.project,
-			titurl: req.params.usr,
-			breadCrumbs: breadArr
+			titurl: req.params.usr
 		})
+	})
+}
+
+/*
+	更新项目设置 [GET]
+	-----------------------------------
+*/
+exports.updateProSettings = (req, res)=> {
+	let oldProName = req.body.oldName;
+	let newProName = req.body.proName;
+	let newPrivate = req.body.private;
+	let updateJSON = {};
+
+	console.log('原项目名称: '+oldProName, '\n新项目名称: '+newProName, '\n新隐私: '+newPrivate)
+
+	hasProject(req, res, {
+		usr: req.session.act, 
+		proName: oldProName
+	})
+	.then( (status)=> {
+		if (newPrivate == 'true') {
+			if (status.isOpen) {
+				console.log('公开项目不可以收回!!')
+			} else {
+				updateJSON.private = false;
+			}
+		}
+
+		updateJSON['priject.$.name'] = newProName;
+
+		// 通过抓包将公开的项目 private: false 改成自己的项目时 true
+		// 或是本来就是个人的项目,测试直接保存时
+		// 项目名称不变时,直接返回成功(不修改数据库)
+		if (oldProName == newProName && newPrivate == status.isOpen?'false':'true') {
+			console.log('No cchange! OK')
+			res.send({
+				success: true,
+				msg: '保存成功!'
+			});
+			return;
+		}
+
+		console.log(status, '\nUpdate Info: ', updateJSON)
+
+		// Schemas.myproject_m.update(
+		// 	{usr: req.session.act, 'priject.name': oldName},
+		// 	{$set: updateJSON }
+		// )
 	})
 }
 
@@ -785,7 +866,7 @@ function goToPage(req, res, page) {
 				name: req.session.usr,
 				ico: req.session.ico
 			},
-			host: 'http://'+ req.headers.host,
+			host: req.secure?'https://':'http://'+ req.headers.host,
 			askUsr: false
 		});
 	})	

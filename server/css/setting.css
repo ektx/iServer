@@ -78,7 +78,7 @@ input[type="password"] {
 	transition: border-color .3s ease, background-color .3s ease;
 }
 
-input.err {
+.err input {
 	border-color: #FF5722;
     background-color: #fbfaee;
 }
@@ -92,13 +92,14 @@ input:disabled {
 	visibility: hidden;
 	color: #FF5722;
 	font-size: 14px;
+	margin-left: 10px;
 }
 .err-info a {
 	margin: 0 5px;
 	color: #FF5722;
 	border-bottom: 1px solid;
 }
-.err + .err-info {
+.err .err-info {
 	opacity: 1;
 	visibility: visible;
 }

@@ -6,54 +6,46 @@
 $(function() {
 
 	// 提交个人信息
-	$('#profile').submit(function(e) {
-		e.preventDefault();
+	$('#profile, #passwd').myVerification({
+		show: 'err',
+		always: function() {
+			btnSattus($('.green-btn'), 'loading', '提交中...')
+		},
+		done: function(data, postData) {
+			btnSattus($('.green-btn'), 'done', '保存修改')
 
-		$(this).myVerification({event: e})
+			var ico = $('.set-usr-ico img').attr('src');
+			var oldIco = $('.hd-usr-ico img').attr('src');
+			var oldName = $('.hd-usr-name');
+			
+			if (ico !== oldIco) {
+				$('.hd-usr-ico img').attr('src', ico)
+			}
 
-// 		var _ico = $('[name="usrIco"]');
-// 		var _name = $('[name="name"]');
-// 		var _email = $('[name="email"]');
-// 		var _subtn = $('.green-btn');
+			if (oldName.text() !== postData.postData.name) {
+				oldName.text(postData.postData.name).attr('title', postData.postData.name)
+			}
 
-// 		if (!_name.val()) {
-// 			_name.addClass('err').focus().next().text('用户名不能为空');
-// 			return;
-// 		}
+		},
+		verDone: function(data, ele, name){
+			if (name === 'pwd') {
 
-// 		var formData = new FormData();
-// 		formData.append('ico', $('[name="ico"]')[0].files[0])
-// 		formData.append('name', _name.val())
-// 		formData.append('email', _email.val())
-// console.log(formData)
-// 		_subtn.attr('disabled', 'disabled')
-// 		.find('b i').hide().next().show().end()
-// 		.find('span').text('提交中...')
+				if (!data.success) {
 
-// 		$.ajax({
-// 			url: '/set/profile',
-// 			type: 'post',
-// 			data: formData,
-// 			processData: false,
-// 			contentType: false,
-// 			dataType: 'json'
-// 		})
-// 		.done(function(data) {
-// 			console.log(data)
-// 			if (data.success) {
-// 				_subtn.find('b i').hide().next().show();
-// 				setTimeout(function() {
-// 					_subtn.removeAttr('disabled')
-// 					.find('span').text('保存修改')
-// 				}, 5000)
-// 			} else {
-// 				location.href = data.msg.href
-// 			}
-// 		})
-// 		.fail(function(err) {
-// 			console.log(err)
-// 		})
-	});
+					var appendRemind = '';
+					// 提示要重新登录时
+					if (data.msg.href) {
+						appendRemind = '<a href="'+data.msg.href+'">登录</a>'
+					}
+
+					ele.parent().addClass(this.show).end().next().text(data.msg.txt+appendRemind)
+				} else {
+					ele.parent().removeClass(this.show)
+				}
+			}
+		}
+	})
+
 
 	// 时时预览个人头像
 	$('[type="file"]').change(function(e) {
@@ -75,36 +67,36 @@ $(function() {
 		$(this).removeClass()
 	});
 
-	// 确认旧密码是否正确
-	$('[name="oldpwd"]').blur(function() {
-		var _ = $(this);
-		var _val = _.val();
+	// // 确认旧密码是否正确
+	// $('[name="oldpwd"]').blur(function() {
+	// 	var _ = $(this);
+	// 	var _val = _.val();
 
-		if (_val) {
-			$.ajax({
-				url: '/checkPwd',
-				type: 'post',
-				data: {pwd: _val},
-				dataType: 'json'
-			})
-			.done(function(json) {
-				if (!json.success) {
-					var appendRemind = '';
-					// 提示要重新登录时
-					if (json.msg.href) {
-						appendRemind = '<a href="'+json.msg.href+'">登录</a>'
-					}
-					_.addClass('err').next().html(json.msg.txt+appendRemind)
-				}
-			})
-			.fail(function(err) {
-				_.addClass('err').next().text('500!')
-			})
-		}
-	})
+	// 	if (_val) {
+	// 		$.ajax({
+	// 			url: '/checkPwd',
+	// 			type: 'post',
+	// 			data: {pwd: _val},
+	// 			dataType: 'json'
+	// 		})
+	// 		.done(function(json) {
+	// 			if (!json.success) {
+	// 				var appendRemind = '';
+	// 				// 提示要重新登录时
+	// 				if (json.msg.href) {
+	// 					appendRemind = '<a href="'+json.msg.href+'">登录</a>'
+	// 				}
+	// 				_.addClass('err').next().html(json.msg.txt+appendRemind)
+	// 			}
+	// 		})
+	// 		.fail(function(err) {
+	// 			_.addClass('err').next().text('500!')
+	// 		})
+	// 	}
+	// })
 
 	// 密码修改提交功能
-	$('#passwd').submit(function(e) {
+	$('#passwd2').submit(function(e) {
 		e.preventDefault();
 
 		var _old = $('[name="oldpwd"]');

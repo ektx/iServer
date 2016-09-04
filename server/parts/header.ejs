@@ -4,11 +4,10 @@
 		<% } else { %>
 		<h1> <a href="/<%= titurl %>"><%= title %></a></h1>
 		<% } %>
-
 		<ul class="usr-hd-info-mod">
 			<% if (usr.usr) { %>
 
-			<% if (typeof proSet !== 'undefined') { %>
+			<% if (typeof proSet !== 'undefined' && proSet.isMaster) { %>
 
 			<li class="project-set-mod">
 				<a class="add-project-set" href="#">
@@ -55,6 +54,7 @@
 
 				<div class="usr-hd-list">
 					<ul>
+						<a href="/">我的主页</a>
 						<a href="/set/profile">个人中心</a>
 						<a href="/loginOut">退出</a>
 					</ul>
