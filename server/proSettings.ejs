@@ -3,45 +3,35 @@
 	<%- include('parts/head', {host: host, title: usrInfo.usr, css: ['/server/css/setting.css']}) %>
 <body>
 	
-	<%- include('parts/header', {host: host, usr: usrInfo, title: '个人中心', titurl: usrInfo.usr }) %>
+	<%- include('parts/header', {host: host, usr: usrInfo, title: title, titurl: titurl, proSet: proStatus }) %>
 
 	<section class="main-body">
 
 
 		<section class="content">
-
-			<ul class="setting-tag">
-				<li>
-					<a href="/set/profile">个人信息</a>
-				</li>
-				<li class="current"><a href="/set/passwd">密码修改</a></li>
-			</ul>
 			
-			<form id="passwd" class="upload-form" method="post" enctype="multipart/form-data">
+			<form id="profile" class="upload-form" method="post" enctype="multipart/form-data" action="/updateProSettings" novalidate>
 
 				<dl>
-					<dt>旧密码</dt>
+					<dt>项目名称</dt>
 					<dd>
-						<input type="password" name="oldpwd" autofocus="" required ver-url="/checkPwd" ver-name="pwd" ver-type="post">
+						<input type="hidden" name="oldName" value="<%= title %>">
+						<input type="text" name="proName" value="<%= title %>" required>
 						<span class="err-info"></span>
 					</dd>
 				</dl>
-
+				
+				<%# if (!proStatus.isOpen) {%>
 				<dl>
-					<dt>新密码</dt>
+					<dt>隐私</dt>
 					<dd>
-						<input type="password" name="newpwd" value="" required>
+						<label><input type="radio" name="private" value="false">公开 所有访问项目者匀可见</label>			
+						<br />
+						<label><input type="radio" name="private" checked="" value="true">个人 只有我自己可以查看</label>			
 						<span class="err-info"></span>
 					</dd>
 				</dl>
-
-				<dl>
-					<dt>确认新密码</dt>
-					<dd>
-						<input type="password" name="newpwd2" value="" required sameAs="newpwd">
-						<span class="err-info"></span>
-					</dd>
-				</dl>
+				<%#}%>
 
 				<dl>
 					<dd>

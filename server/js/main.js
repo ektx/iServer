@@ -70,7 +70,9 @@ $.fn.hasAttr = function(name) {
 	表单验证
 	=====================================
 	options:
-	@errBox: {class|id} 用于存放错误显示的地方,
+	@checkAll: {true|false} 验证方式,默认为全部验证-[true]
+	@errHide: {function} 当你使用了errBox功能为function时
+	@errBox: {class|id|function} 用于存放错误显示的地方,
 			 使用这个标签将会从头验证表单,发现
 			 错误就会停止,直到此错误解决才会验证下一个
 	@show:   {class} 此属性用于指定错误时,对错误标签上加的显示样式
@@ -81,133 +83,257 @@ $.fn.hasAttr = function(name) {
 	eg:
 
 */
-$.fn.myVerification = function(options) {
-console.log(this)
-	var _ = this;
-	var data = {};
-	var options = options || {};
-	var url = _.attr('action');
-	var type = _.attr('method');
-	var hasErr = false;
-	var errBox = options.errBox ? options.errBox : false;
-	var intFileSize = _.find('input[type="file"]').length;
-	var event = options.event;
+$.fn.extend({
+	myVerification : function(options) {
 
-	// console.log(event);
+	// var _ = $(this);
 
-	var ajaxOption = {
-		url: url,
-		type: type,
-		dataType: 'json'
-	};
-
-	var setError = function(it, ele, info) {
-		if (options.show) {
-			_.prev(ele).addClass(options.show).html(info)
-		} else {
-			_.prev(ele).html(info)
-		}
-
-		if (event.type === 'submit') {
-			it.focus()
-		}
-
-		hasErr = true;
-	}
-
-	var removeErr = function(ele) {
-		if (options.show) _.prev(ele).removeClass(options.show);
-		else _.prev(ele).html('')
-	}
-	
-	// 文件上传形式
-	if (intFileSize > 0) {
-		data = new FormData();
-		ajaxOption.processData = false;
-		ajaxOption.contentType = false;
-	}
-
-	_.find('input').each(function(e) {
-
-		var _this = $(this);
-		var _name = _this.attr('name');
-
-		if (event.type === 'keyup' && event.target.name !== _name) {
-			return true
-		}
-
-		var _val = $.trim(_this.val());
-		var _placeholder = _this.hasAttr('placeholder') ? _this.attr('placeholder') : '';
-
-
-		// 非空验证
-		if (_this.hasAttr('required')) {
-
-			// 当指定了显示错误的容器时,此时逐个验证信息
-			if ( _val === '' ) {
-				setError(_this, errBox, _placeholder + '不能为空')
-				// 当指定了显示错误的容器时,此时逐个验证信息
-				if (errBox) return false;
-			} else {
-				removeErr(_this)
-			}
-
-			// 邮箱验证
-			if (_this.attr('type') === 'email' ) {
-				if ( !/\w+@\w+\.\w+/.test(_val) ) {
-					setError(_this, errBox, _placeholder + '格式不正确')
-					// 当指定了显示错误的容器时,此时逐个验证信息
-					if (errBox) return false;
-				} else {
-					removeErr(_this)
-				}
-
-			}
-
-			// 密码验证
-			if (_this.attr('type') === 'password' ) {
-				if ( /\s/g.test(_val) ) {
-					setError(_this, errBox, _placeholder + '不能出现空格')
-					// 当指定了显示错误的容器时,此时逐个验证信息
-					if (errBox) return false;
-				} else {
-					removeErr(_this)
-				}
-
-			}
-		}
-
-		// 数据取值
-		if (_this.attr('type') === 'file') {
-
-			console.log(_this[0].files[0])
-
-			data.append(_this.attr('name'), _this[0].files[0]);
-console.log(data)
-
-		} else {
-			if (intFileSize > 0) {
-				data.append(_this.attr('name'), _val)
-console.log(data)
-
-			} else {
-				data[_this.attr('name')] = _val;
-			}
-		}
-
-
-	})
-console.log(data)
-	if (event.type === 'submit' && !hasErr) {
-
-		ajaxOption.data = data;
-		$.ajax(ajaxOption)
+	var ajaxFun = function(option) {
+		$.ajax(option)
+		.always(function() {
+			if (options.always) options.always()
+		})
 		.done(function(data) {
-			if (options.done) options.done(data)
+			if (options.done) options.done(data, option)
 		})
 		.fail(function(err){
+			console.error(err)
 			if (options.fail) options.fail(err)
 		})
 	}
 
-}
+	var sameAs = function(ele) {
+		var _val = ele.val();
+		var result = false;
+
+		var _name = ele.attr('sameAs');
+		var _brothers = $('input[name="'+_name+'"]');
+		if ( _val !== _brothers.val() ) {
+			setError(ele, '请使用相同的值!')
+			setError(_brothers, '请使用相同的值!')
+			result = true;
+		} else {
+			removeErr(ele)
+			removeErr(_brothers)
+		}
+		
+
+		return result;
+	}
+	
+
+	/*
+	@it 当前错误元素
+	@info 错误信息
+	*/
+	var setError = function(it, info) {
+
+		hasErr = true;
+		var errType = typeof options.errBox;
+
+		if (errType === 'function') {
+			options.errBox(it, info)
+		} 
+		else if (errType === 'undefined') {
+			if (options.show) {
+				it.parent().addClass(options.show);
+				if ( it.next().length > 0 ) {
+					it.next().text(info)
+				} else {
+					it.after('<span class="err-info">'+info+'</span>')
+				}
+			} else {
+				if ( it.next().length > 0 ) {
+					it.next().show().text(info)
+				} else {
+					it.after('<span class="err-info">'+info+'</span>').show()
+				}
+			}
+		}
+	}
+
+	var removeErr = function(it) {
+
+		var errType = typeof options.errHide;
+		if (errType === 'function') {
+			options.errHide(it)
+		}
+		else if (errType === 'undefined') {
+			if (options.show) {
+				it.parent().removeClass(options.show)
+			} else {
+				it.next().hide()
+			}
+		}
+	}
+
+
+	var checkedVal = function(options, event, _) {
+		var data = {};
+		var postData = {};
+		var options = options || {};
+		var url = _.attr('action');
+		var type = _.attr('method');
+		var hasErr = false;
+		var checkAll = options.checkAll || true;
+		var intFileSize = _.find('input[type="file"]').length;
+
+		var ajaxOption = {
+			url: url,
+			type: type,
+			dataType: 'json'
+		};
+		
+		// 文件上传形式
+		if (intFileSize > 0) {
+			data = new FormData();
+			ajaxOption.processData = false;
+			ajaxOption.contentType = false;
+		}
+
+		_.find('input').each(function(e) {
+
+			var _this = $(this);
+			var _name = _this.attr('name');
+
+			if (event.type === 'keyup' && event.target.name !== _name) {
+				return true
+			}
+
+			var _val = $.trim(_this.val());
+			var _placeholder = _this.hasAttr('placeholder') ? _this.attr('placeholder') : '';
+
+
+			// 非空验证
+			if (_this.hasAttr('required')) {
+
+				// 当指定了显示错误的容器时,此时逐个验证信息
+				if ( _val === '' ) {
+					setError(_this, _placeholder + '不能为空')
+					// 当指定了显示错误的容器时,此时逐个验证信息
+					if (checkAll) return false;
+				} else {
+					removeErr(_this)
+				}
+
+
+				// 密码验证
+				if (_this.attr('type') === 'password' ) {
+					if ( /\s/g.test(_val) ) {
+						setError(_this, _placeholder + '不能出现空格')
+						// 当指定了显示错误的容器时,此时逐个验证信息
+						if (checkAll) return false;
+					} else {
+						removeErr(_this)
+					}
+
+				}
+			}
+
+			// 邮箱验证
+			if (_this.attr('type') === 'email' ) {
+				if ( _val.length > 0 || _this.hasAttr('required') ) {
+					if ( !/\w+@\w+\.\w+/.test(_val) ) {
+						setError(_this, _placeholder + '格式不正确')
+						// 当指定了显示错误的容器时,此时逐个验证信息
+						if (checkAll) return false;
+					} else {
+						removeErr(_this)
+					}
+					
+				} else if (_val.length == 0 && !_this.hasAttr('required')) {
+					removeErr(_this)
+				}
+			}
+
+			// 数据取值
+			if (_this.attr('type') === 'file') {
+
+				data.append(_this.attr('name'), _this[0].files[0]);
+
+			} else {
+				if (intFileSize > 0) {
+					data.append(_this.attr('name'), _val)
+
+				} else {
+					// 单选取值
+					if (_this.attr('type') === 'radio') {
+						if (!_this.is(':checked')) return true;
+					}
+				
+					data[_this.attr('name')] = _val;
+
+				}
+			}
+
+			postData[_this.attr('name')] = _val;
+
+			if (event.type === 'submit' && _this.hasAttr('sameAs')) {
+				hasErr = sameAs(_this)
+			}
+
+		}) // End each
+
+		if (event.type === 'submit' && !hasErr) {
+			ajaxOption.data = data;
+			ajaxOption.postData = postData;
+
+			ajaxFun(ajaxOption)
+		}
+
+	};
+
+
+	// Add novalidate tag if HTML5.
+	this.attr( "novalidate", "novalidate" );
+
+	// 事件绑定
+	this.on('submit', function(e) {
+		e.preventDefault();
+
+		checkedVal(options, e, $(this))
+	}).on('keyup', function(e) {
+		e.preventDefault();
+		
+		checkedVal(options, e, $(this))
+	}).on('blur', 'input', function(e){
+		e.preventDefault();
+		
+		var _t = $(this);
+		var _val = _t.val();
+
+		if (_t.hasAttr('ver-url')) {
+			var _url = _t.attr('ver-url');
+			var _type = _t.attr('ver-type');
+			var _name = _t.attr('ver-name');
+
+			if (_url && _type && _name) {
+
+				var toDate = {};
+				toDate[_name] = _val
+
+				$.ajax({
+					url: _url,
+					type: _type,
+					data: toDate
+				})
+				.done(function(data) {
+					if (options.verDone) options.verDone(data, _t, _name)
+				})
+				.fail(function(err){
+					console.log(err)
+				})
+				
+			} else {
+				console.log('您丢失部分参数:')
+				console.log('ver-url:  请求地址')
+				console.log('ver-type: 请求类型')
+				console.log('ver-name: 请求名称')
+			}
+			
+		} 
+
+		if (_t.hasAttr('sameAs')) sameAs(_t);
+	})
+
+}});
