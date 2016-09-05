@@ -46,7 +46,7 @@ function btnSattus (ele, status, txt) {
 
 
 		setTimeout(function() {
-			ele.removeClass('show').find('.name').text(txt)
+			ele.removeClass('show').removeAttr('disabled').find('.name').text(txt)
 		}, 1000)
 	}
 	else if (status == 'normal') {
