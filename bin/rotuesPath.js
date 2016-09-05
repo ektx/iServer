@@ -772,7 +772,7 @@ exports.proSettings = (req, res)=> {
 			},
 			proStatus: status,
 			title: req.params.project,
-			titurl: req.params.usr
+			titurl: '../'+req.params.project+'/'
 		})
 	})
 }
@@ -785,6 +785,7 @@ exports.updateProSettings = (req, res)=> {
 	let oldProName = req.body.oldName;
 	let newProName = req.body.proName;
 	let newPrivate = req.body.private;
+	let filePath   = path.join(process.cwd(), req.session.act);
 	let updateJSON = {};
 
 	console.log('原项目名称: '+oldProName, '\n新项目名称: '+newProName, '\n新隐私: '+newPrivate)
@@ -797,17 +798,18 @@ exports.updateProSettings = (req, res)=> {
 		if (newPrivate == 'true') {
 			if (status.isOpen) {
 				console.log('公开项目不可以收回!!')
-			} else {
-				updateJSON.private = false;
-			}
+			} 
+		} else {
+			updateJSON['project.$.private'] = false;
 		}
 
-		updateJSON['priject.$.name'] = newProName;
+		updateJSON['project.$.name'] = newProName;
 
 		// 通过抓包将公开的项目 private: false 改成自己的项目时 true
 		// 或是本来就是个人的项目,测试直接保存时
 		// 项目名称不变时,直接返回成功(不修改数据库)
-		if (oldProName == newProName && newPrivate == status.isOpen?'false':'true') {
+		console.log( oldProName == newProName)
+		if (oldProName === newProName && (newPrivate == status.isOpen?'false':'true')) {
 			console.log('No cchange! OK')
 			res.send({
 				success: true,
@@ -816,12 +818,35 @@ exports.updateProSettings = (req, res)=> {
 			return;
 		}
 
-		console.log(status, '\nUpdate Info: ', updateJSON)
+		let renameDir = (req, res)=> {
+			fs.rename(path.join(filePath, oldProName), path.join(filePath, newProName), (err, data)=>{
+				if (err) {
+					console.log(err);
+					return;
+				}
+				console.log(data,'1')
 
-		// Schemas.myproject_m.update(
-		// 	{usr: req.session.act, 'priject.name': oldName},
-		// 	{$set: updateJSON }
-		// )
+				res.send({
+					success: true,
+					msg: '保存成功!'
+				})
+				
+			})
+		}
+
+		Schemas.myproject_m.update(
+			{usr: req.session.act, 'project.name': oldProName},
+			{$set: updateJSON },
+			(err, data)=> {
+				console.log(data)
+				if (err) {
+					console.log(err);
+					return;
+				}
+
+				renameDir(req, res)
+			}
+		)
 	})
 }
 

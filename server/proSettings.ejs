@@ -10,7 +10,7 @@
 
 		<section class="content">
 			
-			<form id="profile" class="upload-form" method="post" enctype="multipart/form-data" action="/updateProSettings" novalidate>
+			<form id="renamePro" class="upload-form" method="post" enctype="multipart/form-data" action="/updateProSettings" novalidate>
 
 				<dl>
 					<dt>项目名称</dt>
@@ -21,7 +21,7 @@
 					</dd>
 				</dl>
 				
-				<%# if (!proStatus.isOpen) {%>
+				<% if (!proStatus.isOpen) {%>
 				<dl>
 					<dt>隐私</dt>
 					<dd>
@@ -31,7 +31,7 @@
 						<span class="err-info"></span>
 					</dd>
 				</dl>
-				<%#}%>
+				<% }%>
 
 				<dl>
 					<dd>

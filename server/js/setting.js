@@ -6,25 +6,39 @@
 $(function() {
 
 	// 提交个人信息
-	$('#profile, #passwd').myVerification({
+	$('#profile, #passwd, #renamePro').myVerification({
 		show: 'err',
 		always: function() {
 			btnSattus($('.green-btn'), 'loading', '提交中...')
 		},
 		done: function(data, postData) {
+			console.log(postData)
+
+			switch (postData.url) {
+				case '/updateProSettings':
+					var newName = postData.data.proName;
+					$('.os-header h1 a').text(newName).attr('href', '../'+newName+'/');
+					$('input[name="oldName"]').val(newName)
+
+					break;
+
+				default:
+
+
+					var ico = $('.set-usr-ico img').attr('src');
+					var oldIco = $('.hd-usr-ico img').attr('src');
+					var oldName = $('.hd-usr-name');
+					
+					if (ico !== oldIco) {
+						$('.hd-usr-ico img').attr('src', ico)
+					}
+
+					if (oldName.text() !== postData.postData.name) {
+						oldName.text(postData.postData.name).attr('title', postData.postData.name)
+					}
+			}
+
 			btnSattus($('.green-btn'), 'done', '保存修改')
-
-			var ico = $('.set-usr-ico img').attr('src');
-			var oldIco = $('.hd-usr-ico img').attr('src');
-			var oldName = $('.hd-usr-name');
-			
-			if (ico !== oldIco) {
-				$('.hd-usr-ico img').attr('src', ico)
-			}
-
-			if (oldName.text() !== postData.postData.name) {
-				oldName.text(postData.postData.name).attr('title', postData.postData.name)
-			}
 
 		},
 		verDone: function(data, ele, name){
