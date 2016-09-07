@@ -87,85 +87,87 @@ $.fn.extend({
 	myVerification : function(options) {
 
 	// var _ = $(this);
+		var hasErr = false;
 
-	var ajaxFun = function(option) {
-		$.ajax(option)
-		.always(function() {
-			if (options.always) options.always()
-		})
-		.done(function(data) {
-			if (options.done) options.done(data, option)
-		})
-		.fail(function(err){
-			console.error(err)
-			if (options.fail) options.fail(err)
-		})
-	}
-
-	var sameAs = function(ele) {
-		var _val = ele.val();
-		var result = false;
-
-		var _name = ele.attr('sameAs');
-		var _brothers = $('input[name="'+_name+'"]');
-		if ( _val !== _brothers.val() ) {
-			setError(ele, '请使用相同的值!')
-			setError(_brothers, '请使用相同的值!')
-			result = true;
-		} else {
-			removeErr(ele)
-			removeErr(_brothers)
+		var ajaxFun = function(option) {
+			$.ajax(option)
+			.always(function() {
+				if (options.always) options.always()
+			})
+			.done(function(data) {
+				if (options.done) options.done(data, option)
+			})
+			.fail(function(err){
+				console.error(err)
+				if (options.fail) options.fail(err)
+			})
 		}
-		
 
-		return result;
-	}
+		var sameAs = function(ele) {
+			var _val = ele.val();
+			var result = false;
+
+			var _name = ele.attr('sameAs');
+			var _brothers = $('input[name="'+_name+'"]');
+			if ( _val !== _brothers.val() ) {
+				setError(ele, '请使用相同的值!')
+				setError(_brothers, '请使用相同的值!')
+				result = true;
+			} else {
+				removeErr(ele)
+				removeErr(_brothers)
+			}
+			
+
+			return result;
+		}
 	
 
-	/*
-	@it 当前错误元素
-	@info 错误信息
-	*/
-	var setError = function(it, info) {
+		/*
+		@it 当前错误元素
+		@info 错误信息
+		*/
+		var setError = function(it, info) {
 
-		hasErr = true;
-		var errType = typeof options.errBox;
+			var errType = typeof options.errBox;
 
-		if (errType === 'function') {
-			options.errBox(it, info)
-		} 
-		else if (errType === 'undefined') {
-			if (options.show) {
-				it.parent().addClass(options.show);
-				if ( it.next().length > 0 ) {
-					it.next().text(info)
+			if (errType === 'function') {
+				options.errBox(it, info)
+			} 
+			else if (errType === 'undefined') {
+				if (options.show) {
+					it.parent().addClass(options.show);
+					if ( it.next().length > 0 ) {
+						it.next().text(info)
+					} else {
+						it.after('<span class="err-info">'+info+'</span>')
+					}
 				} else {
-					it.after('<span class="err-info">'+info+'</span>')
+					if ( it.next().length > 0 ) {
+						it.next().show().text(info)
+					} else {
+						it.after('<span class="err-info">'+info+'</span>').show()
+					}
 				}
-			} else {
-				if ( it.next().length > 0 ) {
-					it.next().show().text(info)
+			}
+
+			hasErr = true
+		}
+
+		var removeErr = function(it) {
+
+			var errType = typeof options.errHide;
+			if (errType === 'function') {
+				options.errHide(it)
+			}
+			else if (errType === 'undefined') {
+				if (options.show) {
+					it.parent().removeClass(options.show)
 				} else {
-					it.after('<span class="err-info">'+info+'</span>').show()
+					it.next().hide()
 				}
 			}
 		}
-	}
-
-	var removeErr = function(it) {
-
-		var errType = typeof options.errHide;
-		if (errType === 'function') {
-			options.errHide(it)
-		}
-		else if (errType === 'undefined') {
-			if (options.show) {
-				it.parent().removeClass(options.show)
-			} else {
-				it.next().hide()
-			}
-		}
-	}
 
 
 	var checkedVal = function(options, event, _) {
@@ -174,7 +176,6 @@ $.fn.extend({
 		var options = options || {};
 		var url = _.attr('action');
 		var type = _.attr('method');
-		var hasErr = false;
 		var checkAll = options.checkAll || true;
 		var intFileSize = _.find('input[type="file"]').length;
 
@@ -269,7 +270,7 @@ $.fn.extend({
 			postData[_this.attr('name')] = _val;
 
 			if (event.type === 'submit' && _this.hasAttr('sameAs')) {
-				hasErr = sameAs(_this)
+				hasErr = hasErr ? hasErr : sameAs(_this)
 			}
 
 		}) // End each
