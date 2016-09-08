@@ -155,6 +155,7 @@ $.fn.extend({
 		}
 
 		var removeErr = function(it) {
+			hasErr = false;
 
 			var errType = typeof options.errHide;
 			if (errType === 'function') {
