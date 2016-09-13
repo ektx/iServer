@@ -8,6 +8,7 @@ const imkdirs = require('imkdirs');
 const server  = require('./server');
 const Schemas = require('./schemas');
 const mongoose = require('mongoose');
+const CExec = require('child_process').exec;
 
 const ifiles = require('./ifiles');
 
@@ -849,6 +850,92 @@ exports.updateProSettings = (req, res)=> {
 		)
 	})
 }
+
+/*
+	删除个人项目
+	==========================================
+
+*/
+exports.delMyPro = (req, res)=> {
+	let oldProName = req.body.proName;
+
+	console.log('-------> ', oldProName);
+
+	Schemas.myproject_m.update(
+		{usr: req.session.act, 'project.name': oldProName},
+		{$pull: {
+			'project': {
+				'name': oldProName
+			}
+		}},
+		(err, data)=>{
+		if (err) {
+			console.log(err);
+			return
+		}
+
+		if (data) {
+
+			// fs.rmdir( path.join(process.cwd(), req.session.act, oldProName), (err, data)=> {
+			// })
+			let child = CExec('rm -rf '+ path.join(process.cwd(), req.session.act, oldProName), (err, data)=> {
+
+				if (err) {
+					console.log(err);
+					res.send({
+						success: false,
+						msg: '无法物理删除项目'
+					})
+					return;
+				}
+
+				res.send({
+					success: true,
+					msg: '项目已经删除!'
+				})
+
+			})
+
+		} else {
+			res.send({
+				success: false,
+				msg: 'No! Something was error!'
+			})
+		}
+	})
+}
+
+
+exports.delMyProFile = (req, res)=> {
+	let filePath = decodeURIComponent(req.body.file).split('/');
+	let user = filePath[1];
+	filePath.splice(3,1);
+	console.log(filePath, path.join(process.cwd(),filePath.join('/')))
+
+	if ( user === req.session.act ) {
+		let child = CExec('rm -rf '+ path.join(process.cwd(),filePath.join('/')), (err, data)=> {
+			if (err) {
+				res.send({
+					success: false,
+					msg: '删除文件出错!'
+				});
+				return;
+			}
+
+			res.send({
+				success: true,
+				msg: '文件已经删除'
+			})
+		} )
+		
+	} else {
+		res.send({
+			success: false,
+			msg: '你无权删除此文件!'
+		})
+	}
+}
+
 
 /*
 	checkLoginForURL

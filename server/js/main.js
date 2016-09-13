@@ -19,6 +19,72 @@ $(function() {
 	});
 
 
+	var contextmenuObj = '';
+	
+	// 右键自定义菜单
+	document.addEventListener('contextmenu', function(e) {
+
+		if (e.target.tagName === 'A' && e.target.parentNode.parentNode.className === 'project-list') {
+
+			contextmenuObj = e;
+
+			var navmenu = document.getElementById('my-contextmenu-nav');
+			if (navmenu) {
+				e.preventDefault();
+				navmenu.style.left = e.clientX + 'px';
+				navmenu.style.top = e.clientY + 'px';
+				navmenu.style.visibility = 'visible';			
+			}
+			
+		} else {
+			// 隐藏自定义菜单
+			hideContextMenu()
+		}
+
+	})
+
+	// DOM click事件
+	document.documentElement.addEventListener('click', function() {
+		// 隐藏自定义菜单
+		hideContextMenu();
+	});
+
+
+	$('#my-contextmenu-nav').on('click', 'a', function(e) {
+		console.log(this.id, contextmenuObj.target.href)
+		switch (this.id) {
+			case 'my-contextnav-open':
+				window.open(contextmenuObj.target.href);
+				break;
+
+			case 'my-contextnav-del':
+				$.ajax({
+					url: '/myPro/file',
+					type: 'delete',
+					data: { file: contextmenuObj.target.pathname },
+					dataType: 'json'
+				})
+				.done(function(data) {
+					if (data.success) {
+						var SumEle = $('.pro-fileSize');
+						var oldSum = parseInt(SumEle.text().match(/\d+/)[0]) -1;
+
+						SumEle.text('共有 '+oldSum+' 个文件')
+
+						$(contextmenuObj.target.parentNode).hide()
+					} else {
+						alert(data.msg)
+					}
+				})
+				.fail(function(err) {
+
+				});
+
+				break;
+		}
+	})
+
+
 })
 
 /*
@@ -90,10 +156,9 @@ $.fn.extend({
 		var hasErr = false;
 
 		var ajaxFun = function(option) {
+			if (options.always) options.always(option);
+
 			$.ajax(option)
-			.always(function() {
-				if (options.always) options.always()
-			})
 			.done(function(data) {
 				if (options.done) options.done(data, option)
 			})
@@ -110,8 +175,8 @@ $.fn.extend({
 			var _name = ele.attr('sameAs');
 			var _brothers = $('input[name="'+_name+'"]');
 			if ( _val !== _brothers.val() ) {
-				setError(ele, '请使用相同的值!')
-				setError(_brothers, '请使用相同的值!')
+				setError(ele, ' 请确认输入内容!')
+				setError(_brothers, ' 请确认输入内容!')
 				result = true;
 			} else {
 				removeErr(ele)
@@ -276,9 +341,11 @@ $.fn.extend({
 
 		}) // End each
 
+
 		if (event.type === 'submit' && !hasErr) {
 			ajaxOption.data = data;
 			ajaxOption.postData = postData;
+			ajaxOption.this = _;
 
 			ajaxFun(ajaxOption)
 		}
@@ -339,3 +406,15 @@ $.fn.extend({
 	})
 
 }});
+
+/*
+	隐藏自定义右键菜单
+	==============================================
+*/
+function hideContextMenu() {
+	var navmenu = document.getElementById('my-contextmenu-nav');
+
+	if (navmenu && navmenu.style.visibility == 'visible') {
+		navmenu.style.visibility = 'hidden'
+	}
+}

@@ -116,7 +116,8 @@ ul {
 .usr-hd-list a:hover {
 	background-color: #eee;
 }
-.usr-hd-list hr {
+.usr-hd-list hr,
+.split-line {
 	border: none;
 	border-top: 1px solid #eee;
 	margin: 5px 0;
@@ -566,6 +567,16 @@ ul {
 	stroke: #fff;
 }
 
+.red-btn {
+	border-color: #b72015;
+	color: #fff;
+	background-color: #F44336;
+}		
+.red-btn .circle-z,
+.red-btn .OK_SVG polyline {
+	stroke: #fff;
+}
+
 
 
 /*
@@ -617,3 +628,57 @@ ul {
 .project-list a:hover {
 	text-decoration: underline;
 }
+
+/*
+	右键菜单
+	========================================
+*/
+#my-contextmenu-nav {
+	visibility: hidden;
+	padding: 5px 0;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 9999;
+	background-color: #fff;
+	border: 1px solid #eee;
+	border-radius: 3px;
+	background-color: rgba(255, 255, 255, .9);
+}
+#my-contextmenu-nav a {
+	display: block;
+	font-size: 14px;
+	line-height: 22px;
+	color: #333;
+	padding: 0 15px;
+}
+#my-contextmenu-nav a:hover {
+	background-color: #eee;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
