@@ -3,7 +3,7 @@
 	<%- include('parts/head', {host: host, title: usrInfo.usr, css: ['/server/css/setting.css']}) %>
 <body>
 	
-	<%- include('parts/header', {host: host, usr: usrInfo, title: title, titurl: titurl, proSet: proStatus }) %>
+	<%- include('parts/header', {host: host, usr: usrInfo, title: '设置-'+title, titurl: titurl, proSet: proStatus }) %>
 
 	<section class="main-body">
 
@@ -43,6 +43,27 @@
 				</dl>
 			</form>
 
+			<form id="delPro" class="upload-form" method="delete" enctype="multipart/form-data" action="/deleteMyPro" novalidate>
+
+				<dl>
+					<dt>删除项目</dt>
+					<dd>
+						<p>注意,项目删除之后将无法恢复!</p>
+						<input type="hidden" name="proOldName" value="<%= title %>">
+						<input type="text" name="proName" value="" placeholder="确认项目名称" required sameAs="proOldName">
+						<span class="err-info"></span>
+					</dd>
+				</dl>
+
+				<dl>
+					<dd>
+						<button class="btn middle-btn red-btn" type="submit">
+							<span class="ico"></span>
+							<span class="name">删除</span>
+						</button>
+					</dd>
+				</dl>
+			</form>
 		</section>
 
 	</section>

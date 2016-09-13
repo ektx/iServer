@@ -52,6 +52,10 @@
 .upload-form dd label input {
 	margin: 0 10px 0 0;
 }
+.upload-form dd p {
+	font-size: 12px;
+	margin: 10px 0 5px;
+}
 
 .set-usr-ico {
 	float: left;

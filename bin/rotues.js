@@ -35,6 +35,9 @@ module.exports = (app, type) => {
 		app.post('/addproject', checkLoginUsr, rotuesPath.addProject_p)
 		app.post('/set/passwd', checkLoginUsr, rotuesPath.updatePwd)
 		app.post('/set/profile', rotuesPath.PSetProfile)
+
+		app.delete('/deleteMyPro', checkLoginUsr, rotuesPath.delMyPro)
+		app.delete('/myPro/file', checkLoginUsr, rotuesPath.delMyProFile)
 	} else {
 		app.get('*', rotuesPath.getAll)
 		app.post('*', rotuesPath.postAll)

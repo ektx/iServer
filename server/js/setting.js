@@ -6,19 +6,32 @@
 $(function() {
 
 	// 提交个人信息
-	$('#profile, #passwd, #renamePro').myVerification({
+	var btnTxt = '';
+	$('#profile, #passwd, #renamePro, #delPro').myVerification({
 		show: 'err',
-		always: function() {
-			btnSattus($('.green-btn'), 'loading', '提交中...')
+		always: function(postData) {
+			var btn = postData.this.find('.btn');
+			btnTxt = btn.text();
+
+			btnSattus(btn, 'loading', '提交中...')
 		},
 		done: function(data, postData) {
 			console.log(postData)
 
 			switch (postData.url) {
+				// 更新项目名称或隐私
 				case '/updateProSettings':
 					var newName = postData.data.proName;
 					$('.os-header h1 a').text(newName).attr('href', '../'+newName+'/');
 					$('input[name="oldName"]').val(newName)
+
+					break;
+
+				// 删除当前项目
+				case '/deleteMyPro':
+					setTimeout(function() {
+						location.href = '/'
+					}, 1000)
 
 					break;
 
@@ -38,8 +51,8 @@ $(function() {
 					}
 			}
 
-			btnSattus($('.green-btn'), 'done', '保存修改')
-
+			btnSattus( postData.this.find('.btn'), 'done', btnTxt)
+				
 		},
 		verDone: function(data, ele, name){
 			if (name === 'pwd') {
