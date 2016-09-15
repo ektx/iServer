@@ -8,6 +8,7 @@ const imkdirs = require('imkdirs');
 const server  = require('./server');
 const Schemas = require('./schemas');
 const mongoose = require('mongoose');
+const rimraf = require('rimraf');
 const CExec = require('child_process').exec;
 
 const ifiles = require('./ifiles');
@@ -237,7 +238,7 @@ exports.usrProject = (req, res, next)=> {
 	let filePath = process.cwd()+ realUrl;
 	
 	let gitProFiles = (status)=> {
-console.log('sss',status)
+
 		let isFs = false;
 
 		try {
@@ -298,7 +299,7 @@ console.log('sss',status)
 				usrInfo: usrInfo,
 				proStatus: status,
 				title: req.params.project,
-				titurl: req.params.usr,
+				titurl: '/'+req.params.usr+'/'+req.params.project+'/',
 				breadCrumbs: breadArr
 			})
 		})
@@ -913,19 +914,19 @@ exports.delMyProFile = (req, res)=> {
 	console.log(filePath, path.join(process.cwd(),filePath.join('/')))
 
 	if ( user === req.session.act ) {
-		let child = CExec('rm -rf '+ path.join(process.cwd(),filePath.join('/')), (err, data)=> {
-			if (err) {
+
+		rimraf( path.join(process.cwd(),filePath.join('/')), (err)=>{
+			if (!err) {
+				res.send({
+					success: true,
+					msg: '文件已经删除'
+				})
+			} else {
 				res.send({
 					success: false,
 					msg: '删除文件出错!'
 				});
-				return;
 			}
-
-			res.send({
-				success: true,
-				msg: '文件已经删除'
-			})
 		} )
 		
 	} else {
