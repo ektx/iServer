@@ -102,6 +102,12 @@ $(function() {
 		}
 	});
 
+	// 头部菜单 -- 上传代码
+	$('#hd-toUploadProFile').click(function(e) {
+		e.preventDefault();
+		$('#toUploadProFiles').trigger('click');
+	})
+
 
 	$('#toUploadProFiles').change(function() {
 		console.log(this.files.length)

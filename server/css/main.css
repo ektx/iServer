@@ -4,7 +4,7 @@ body, div, p, section, main, header, footer,
 ul, li, ol,
 h1, h2, h3, h4, h5, h6,
 form, dl, dt, dd,
-hr {
+hr, button {
 	margin: 0;
 	padding: 0
 }
@@ -665,15 +665,62 @@ ul {
 	visibility: hidden;
 }
 
-
-
-
-
-
-
-
-
-
+.status-bar-mod {
+	position: fixed;
+	top: 0;
+	right: 0;
+	z-index: 2000;
+}
+.status-bar-box {
+	-webkit-display: flex;
+	-moz-display: flex;
+	display: flex;
+	width: 300px;
+	margin: 10px;
+	border-radius: 5px;
+	border: 1px solid #eee;
+	overflow: hidden;
+	background-color: rgba(255, 255, 255, .9);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+.status-info {
+	flex: 1;
+}
+.status-info h3 {
+	font-size: 14px;
+	color: #333;
+	padding: 10px 10px 0px;
+}
+.status-info p {
+	color: #666;
+	font-size: 12px;
+	padding: 0 10px 10px;
+}
+.status-btns {
+	display: flex;
+	flex-flow: column;
+	width: 80px;
+}
+.status-btns button {
+	flex: 1;
+	border-width: 0 0 1px 1px;
+	border-color: #eee;
+	border-style: solid;
+	background-color: transparent;
+	cursor: pointer;
+	color: #333;
+	font-size: 12px;
+}
+.status-btns button:last-child {
+	border-bottom: none;
+}
+.status-btns button:hover {
+	color: #39f;
+	-webkit-transition: color .3s ease;
+	-moz-transition: color .3s ease;
+	transition: color .3s ease;
+}
 
 
 
