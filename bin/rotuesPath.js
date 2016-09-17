@@ -938,6 +938,72 @@ exports.delMyProFile = (req, res)=> {
 }
 
 
+/* 上传个人项目文件 */
+exports.uploadUsrProFile = (req, res)=> {
+	let hasErr = {
+		status: false,
+		msg: ''
+	};
+	// 最多上传 6 -1 = 5个
+	let maxCount = 6;
+	let hasCount = 0;
+
+	let storage = multer.diskStorage({
+			destination: (req, file, cb)=> {
+				let projectPathArr = req.body.dir.split(',');
+				console.log(file);
+
+				if (projectPathArr[1] !== req.session.act ) {
+					hasErr.status = true;
+					hasErr.msg ='上传非法用户目录!';
+				}
+
+
+				hasCount++;
+				if ( hasCount >= maxCount ) {
+					res.send({
+						success: false,
+						msg: '上传数量过多!'
+					});
+					return;
+				}
+
+				cb( null, path.join( process.cwd(), projectPathArr.join('/') ) )
+			},
+			filename: (req, file, cb)=> {
+				cb(null, file.originalname)
+			}
+		})
+
+	let upload = multer({storage: storage}).array('files', maxCount);
+	
+	upload(req, res, function (err) {
+		if (err) {
+		  	console.log(err)
+			res.send({
+				success: false,
+				msg: 'Server Error!'
+			})
+			return
+		}
+
+		if (hasErr.status) {
+			res.send({
+				success: false,
+				msg: hasErr.msg
+			})
+			return;
+		}
+
+		res.send({
+			success: true,
+			msg: 'Success!'
+		})
+
+	})
+}
+
+
 /*
 	checkLoginForURL
 	---------------------------------------

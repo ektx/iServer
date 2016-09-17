@@ -24,18 +24,26 @@ $(function() {
 	// 右键自定义菜单
 	document.addEventListener('contextmenu', function(e) {
 
-		if (e.target.tagName === 'A' && e.target.parentNode.parentNode.className === 'project-list') {
+		// 自定义菜单显示功能
+		if (e.target.tagName !== 'HTML' && (e.target.parentNode.className === 'project-list' || e.target.parentNode.parentNode.className === 'project-list')) {
+
+			var navmenu = document.getElementById('my-contextmenu-nav');
+
+			if (e.target.tagName === 'A' && navmenu) {
+				$('#my-contextnav-open, #my-contextnav-del').removeClass('not-used')
+			} else {
+				$('#my-contextnav-open, #my-contextnav-del').addClass('not-used')
+			}
 
 			contextmenuObj = e;
 
-			var navmenu = document.getElementById('my-contextmenu-nav');
 			if (navmenu) {
 				e.preventDefault();
 				navmenu.style.left = e.clientX + 'px';
 				navmenu.style.top = e.clientY + 'px';
 				navmenu.style.visibility = 'visible';			
 			}
-			
+
 		} else {
 			// 隐藏自定义菜单
 			hideContextMenu()
@@ -49,14 +57,19 @@ $(function() {
 		hideContextMenu();
 	});
 
-
+	/*
+		自定义菜单功能
+		---------------------------------
+	*/
 	$('#my-contextmenu-nav').on('click', 'a', function(e) {
 		console.log(this.id, contextmenuObj.target.href)
 		switch (this.id) {
+			// 打开新标签
 			case 'my-contextnav-open':
 				window.open(contextmenuObj.target.href);
 				break;
 
+			// 删除文件或文件夹
 			case 'my-contextnav-del':
 				$.ajax({
 					url: '/myPro/file',
@@ -81,7 +94,43 @@ $(function() {
 				});
 
 				break;
+
+			// 上传文件功能
+			case 'my-contextnav-upload':
+				$('#toUploadProFiles').trigger('click');
+				break;
 		}
+	});
+
+
+	$('#toUploadProFiles').change(function() {
+		console.log(this.files.length)
+		var _form = $(this).parents('form');
+		var _files = '';
+
+		if (this.files.length > 5) {
+			alert('最多上传文件数为 5');
+			return;
+		}
+
+		_files = this.files;
+		
+		_form.myVerification({
+			done: function(data) {
+				console.log(data, _files)
+
+				for (var i = 0, l= _files.length; i < l; i++) {
+					console.log(_files[i].name)
+				}
+
+				// 刷新当前页面
+				location.reload()
+			},
+			fail: function(err) {
+				console.error(err)
+			}
+		})
+		_form.submit()
 	})
 
 
