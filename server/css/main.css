@@ -655,8 +655,15 @@ ul {
 #my-contextmenu-nav a:hover {
 	background-color: #eee;
 }
+#my-contextmenu-nav a.not-used {
+	pointer-events: none;
+	color: #AAA;
+}
 
-
+#toUploadFile {
+	opacity: 0;
+	visibility: hidden;
+}
 
 
 

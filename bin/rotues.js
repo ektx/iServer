@@ -32,6 +32,7 @@ module.exports = (app, type) => {
 		// app.post('/forgotPwd', rotuesPath.forgotPwd)
 		app.post('/checkPwd', rotuesPath.checkPwd)
 		app.post('/updateProSettings', checkLoginUsr, rotuesPath.updateProSettings)
+		app.post('/uploadProFiles', checkLoginUsr, rotuesPath.uploadUsrProFile)
 		app.post('/addproject', checkLoginUsr, rotuesPath.addProject_p)
 		app.post('/set/passwd', checkLoginUsr, rotuesPath.updatePwd)
 		app.post('/set/profile', rotuesPath.PSetProfile)

@@ -47,6 +47,13 @@
 		<hr class="split-line">
 		<a id="my-contextnav-upload">上传文件</a>
 	</nav>
+
+	<form id="toUploadFile" action="/uploadProFiles" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="dir" value="<%= breadCrumbs %>">
+		<input id="toUploadProFiles" type="file" name="files" multiple>
+		<input id="toSubmit" type="submit">
+		<input type="reset">
+	</form>
 	<%}%>
 
 	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
