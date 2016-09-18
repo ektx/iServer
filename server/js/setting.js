@@ -259,3 +259,4 @@ $(function() {
 function setErr(ele, info) {
 	ele.addClass('err').focus().next().text(info);
 }
+
