@@ -675,7 +675,7 @@ ul {
 	-webkit-display: flex;
 	-moz-display: flex;
 	display: flex;
-	width: 300px;
+	width: 340px;
 	margin: 10px;
 	border-radius: 5px;
 	border: 1px solid #eee;
@@ -686,16 +686,18 @@ ul {
 }
 .status-info {
 	flex: 1;
+	max-height: 50vh;
+	overflow: auto;
 }
 .status-info h3 {
 	font-size: 14px;
 	color: #333;
-	padding: 10px 10px 0px;
+	padding: 10px 10px 0px 0;
 }
 .status-info p {
 	color: #666;
 	font-size: 12px;
-	padding: 0 10px 10px;
+	padding: 0 10px 10px 0;
 }
 .status-btns {
 	display: flex;
@@ -710,6 +712,7 @@ ul {
 	background-color: transparent;
 	cursor: pointer;
 	color: #333;
+	outline: none;
 	font-size: 12px;
 }
 .status-btns button:last-child {
@@ -722,14 +725,45 @@ ul {
 	transition: color .3s ease;
 }
 
+.status-icon {
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	width: 60px;
+}
+.status-icon svg {
+	display: none;
+}
+.warning-status-icon path {
+	fill: none;
+	stroke: #F8B62D;
+}
+.warning-status-icon path:nth-child(2) {
+	fill: #F8B62D;
+}
+.warning-status-icon circle {
+	fill: #F8B62D
+}
 
+.success-status-icon path {
+	fill: none;
+	stroke: #8FC31F;
+	stroke-miterlimit: 10; 
+	stroke-width: 2px;
+}
+.success-status-icon circle {
+	fill: none;
+	stroke: #8FC31F;
+}
 
-
-
-
-
-
-
+.error-status-icon path, 
+.error-status-icon line {
+	fill: none;
+	stroke: #C30D23;
+}
+.error-status-icon line {
+	stroke-width: 2px;
+}
 
 
 
