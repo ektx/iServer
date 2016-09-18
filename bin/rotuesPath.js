@@ -576,6 +576,15 @@ exports.signUp = (req, res)=> {
 	let act = req.body.user;
 	let ico = 'server/img/kings.png';
 
+	// 过滤名称安全
+	if ( !/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/g.test(req.body.user) ) {
+		res.send({
+			success: false,
+			msg: '项目名称中只能使用 - 或 _'
+		});
+		return;
+	}
+
 	let toSaveUsr = ()=> {
 		Schemas.usrs_m.create(
 		{

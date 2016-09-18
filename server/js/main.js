@@ -352,6 +352,19 @@ $.fn.extend({
 				}
 			}
 
+			// pattern 验证
+			if (_this.hasAttr('pattern')) {
+				if (_val.length> 0 || _this.hasAttr('required')) {
+					var newReg = new RegExp(this.pattern);
+					if ( !newReg.test(this.value) ) {
+						setError(_this, this.title);
+					}
+				} else {
+					removeErr(_this)
+				}
+			}
+
+
 			// 邮箱验证
 			if (_this.attr('type') === 'email' ) {
 				if ( _val.length > 0 || _this.hasAttr('required') ) {
