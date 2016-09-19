@@ -26,9 +26,9 @@ $(function() {
 
 	$('form').myVerification({
 		checkAll: false,
-		done: function(data) {
+		done: function(data, option) {
 			if (!data.success) {
-				$('.error-info').addClass('show').text(data.msg)
+				option.this.prev('.error-info').addClass('show').text(data.msg)
 			} else {
 				if (location.hash && location.hash.length > 9) {
 					location.href = location.hash.substr(9)
@@ -41,7 +41,6 @@ $(function() {
 			$(this).prev('.error-info').show().text(err)
 		},
 		errBox: function(ele, info) {
-			console.log(ele, info)
 			ele.parents('form').prev('.error-info').addClass('show').html(info)
 		},
 		errHide: function(ele) {
