@@ -215,6 +215,17 @@ $.fn.extend({
 
 			$.ajax(option)
 			.done(function(data) {
+				/*
+					data:
+					option: {
+						data: {object} ajax提交数据
+						dataType: {string} 字符串
+						postData: {object} 提交数据
+						this: {jq obj} 当前表单
+						type: {string} ajax类型
+						url:  {string} ajax地址
+					}
+				*/
 				if (options.done) options.done(data, option)
 			})
 			.fail(function(err){
@@ -223,6 +234,7 @@ $.fn.extend({
 			})
 		}
 
+		// 查看是否相同
 		var sameAs = function(ele) {
 			var _val = ele.val();
 			var result = false;
