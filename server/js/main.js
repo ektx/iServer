@@ -498,3 +498,165 @@ function hideContextMenu() {
 		navmenu.style.visibility = 'hidden'
 	}
 }
+
+
+/*
+	合并对象
+	-----------------------------------------
+	@obj 要输出的对象
+	@obj2 用来添加的对象
+*/
+function extendObj(obj, obj2) {
+
+	var findObj = function(_obj, _obj2) {
+
+		for (var key in _obj2) {
+
+			if (typeof _obj2[key] == 'object') {
+				if ( !_obj.hasOwnProperty(key) ) {
+
+					_obj[key] = _obj2[key]
+				} else {
+					// get 组合过的
+					_obj[key] = findObj(_obj[key], _obj2[key])
+				}
+				
+			}
+			else {
+				_obj[key] = _obj2[key]
+			}
+
+		}
+
+		return _obj
+	}
+
+
+	return findObj(obj, obj2)
+}
+
+
+/*
+	statusBar
+	===============================================
+	状态信息
+*/
+function statusBar(options) {
+
+	var createIcon = function(status) {
+		var icon = {
+			ok: '<svg class="success-status-icon" viewBox="0 0 80 80" ><circle cx="40" cy="40" r="30"/><path d="M22.511,43.532c0,0,9.096,9.311,13.554,9.361 c5.386,0.06,13.85-24.511,21.93-29.195"/>',
+			warn: '<svg class="warning-status-icon" viewBox="0 0 80 80"><path d="M21.736,63.836c-5.5,0-7.75-3.897-5-8.66l20.257-35.086 c2.75-4.763,7.25-4.763,10,0l20.257,35.086c2.75,4.763,0.5,8.66-5,8.66H21.736z"/><path d="M42.813,46.792c0,0.453-0.367,0.82-0.82,0.82l0,0 c-0.453,0-0.82-0.367-0.82-0.82V27.354c0-0.453,0.367-0.82,0.82-0.82l0,0c0.453,0,0.82,0.367,0.82,0.82V46.792z"/><circle cx="41.993" cy="54.52" r="1.054"/>',
+			err: '<svg class="error-status-icon" viewBox="0 0 80 80" style="display: block"><path d="M67.419,55.492c0,6.627-5.373,12-12,12H25.087 c-6.627,0-12-5.373-12-12V24.222c0-6.627,5.373-12,12-12h30.333c6.627,0,12,5.373,12,12V55.492z"/><line x1="23.773" y1="24.166" x2="58.902" y2="58.124"/><line x1="23.773" y1="58.124" x2="58.902" y2="24.166"/>'
+		};
+		
+		return '<div class="status-icon">' + icon[status] + '</svg></div>'
+	}
+
+	var createBody = function(title, msg) {
+		var _html = '<div class="status-info">' +
+						'<h3>'+ title +'</h3>'  +
+						'<p>' + msg   + '</p>'  +
+					'</div>';
+
+		return _html
+	}
+
+	var createBtns = function(id, btnArr) {
+		var _html = '<div class="status-btns">';
+		var _fun = {};
+		for (var i = 0, l = btnArr.length; i < l; i++) {
+			_html += '<button>' + btnArr[i].name + '</button>'
+
+			_fun[btnArr[i].name] = btnArr[i].fun;
+		}
+
+		statusBarFun['statusBarNo'+id] = _fun
+		_html += '</div>'
+
+		return _html;
+	}
+
+	var init = function() {
+		var option = {
+			ico: 'ok',
+			title: '',
+			msg: '',
+			btns: [
+				{
+					name: 'OK'
+				},
+				{
+					name: 'Cancel'
+				}
+			]
+		};
+		var id = +new Date(); 
+		console.log( $('#status-bar-mod').length )
+		console.log(options)
+
+		options = extendObj(option, options)
+
+		if (!window.statusBarFun) {
+			window.statusBarFun = {};
+		}
+
+		var HTML = '<div id="statusBarNo'+id+'" class="status-bar-box">';
+		var mainBox = $('#status-bar-mod');
+
+		HTML += createIcon(options.ico);
+		HTML += createBody(options.title, options.msg);
+		HTML += createBtns(id, options.btns);
+
+		if ( mainBox.length === 1) {
+			mainBox.append(HTML)
+		} else {
+			$('body').append('<aside id="status-bar-mod" class="status-bar-mod">' + HTML + '</div>');
+
+			// 绑定事件
+			$('#status-bar-mod').on('click', 'button', function(e) {
+				var _ = $(this);
+				var _p = _.parents('.status-bar-box')
+				var _id = _p.attr('id');
+				var _name = this.innerText;
+
+				statusBarFun[_id][_name]()
+				_p.hide()
+			})
+		}
+	}
+
+	init()
+}
+
+statusBar({
+	ico: 'ok',
+	title: 'Hello World!',
+	msg: 'lalalalala.....',
+	btns: [
+		{
+			name: '确认',
+			fun: function() {
+				console.log('xxxooo')
+			}
+		},
+		{
+			name: '取消',
+			fun: function() {
+				console.error('xxx---')
+			}
+		}
+	]
+})
+
+
+
+
+
+
+
+
+
+
+
+
