@@ -94,33 +94,6 @@ $(function() {
 		$(this).removeClass()
 	});
 
-	// // 确认旧密码是否正确
-	// $('[name="oldpwd"]').blur(function() {
-	// 	var _ = $(this);
-	// 	var _val = _.val();
-
-	// 	if (_val) {
-	// 		$.ajax({
-	// 			url: '/checkPwd',
-	// 			type: 'post',
-	// 			data: {pwd: _val},
-	// 			dataType: 'json'
-	// 		})
-	// 		.done(function(json) {
-	// 			if (!json.success) {
-	// 				var appendRemind = '';
-	// 				// 提示要重新登录时
-	// 				if (json.msg.href) {
-	// 					appendRemind = '<a href="'+json.msg.href+'">登录</a>'
-	// 				}
-	// 				_.addClass('err').next().html(json.msg.txt+appendRemind)
-	// 			}
-	// 		})
-	// 		.fail(function(err) {
-	// 			_.addClass('err').next().text('500!')
-	// 		})
-	// 	}
-	// })
 
 	// 密码修改提交功能
 	$('#passwd2').submit(function(e) {
