@@ -692,12 +692,12 @@ ul {
 .status-info h3 {
 	font-size: 14px;
 	color: #333;
-	padding: 10px 10px 0px 0;
+	padding: 12px 10px 0px 0;
 }
 .status-info p {
 	color: #666;
 	font-size: 12px;
-	padding: 0 10px 10px 0;
+	padding: 0 10px 12px 0;
 }
 .status-btns {
 	display: flex;
@@ -732,7 +732,7 @@ ul {
 	width: 60px;
 }
 .status-icon svg {
-	display: none;
+	display: block;
 }
 .warning-status-icon path {
 	fill: none;
