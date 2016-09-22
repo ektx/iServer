@@ -592,8 +592,6 @@ function statusBar(options) {
 			]
 		};
 		var id = +new Date(); 
-		console.log( $('#status-bar-mod').length )
-		console.log(options)
 
 		options = extendObj(option, options)
 
@@ -601,12 +599,13 @@ function statusBar(options) {
 			window.statusBarFun = {};
 		}
 
-		var HTML = '<div id="statusBarNo'+id+'" class="status-bar-box">';
+		var HTML = '<div id="statusBarNo'+id+'" class="status-bar-box"><div class="status-bar-inner show-status-bar">';
 		var mainBox = $('#status-bar-mod');
 
 		HTML += createIcon(options.ico);
 		HTML += createBody(options.title, options.msg);
 		HTML += createBtns(id, options.btns);
+		HTML += '</div></div>'
 
 		if ( mainBox.length === 1) {
 			mainBox.append(HTML)
@@ -619,9 +618,24 @@ function statusBar(options) {
 				var _p = _.parents('.status-bar-box')
 				var _id = _p.attr('id');
 				var _name = this.innerText;
+				var _H =  _p.height();
+
+				console.log(_H)
+				_p.height(_H)
 
 				statusBarFun[_id][_name]()
-				_p.hide()
+				_p.addClass('hide-status-bar')
+
+				setTimeout(function() {
+					_p.css({
+						height: 0,
+						padding: 0
+					})
+				}, 300)
+
+				setTimeout(function() {
+					// _p.remove()
+				}, 800)
 			})
 		}
 	}
