@@ -672,11 +672,15 @@ ul {
 	z-index: 2000;
 }
 .status-bar-box {
+	width: 340px;
+	padding: 10px 10px 0 ;
+	transition: height .3s ease, padding .3s ease;
+}
+.status-bar-inner {
 	-webkit-display: flex;
 	-moz-display: flex;
 	display: flex;
-	width: 340px;
-	margin: 10px;
+	width: 100%;
 	border-radius: 5px;
 	border: 1px solid #eee;
 	overflow: hidden;
@@ -765,8 +769,32 @@ ul {
 	stroke-width: 2px;
 }
 
+.show-status-bar {
+	animation: showStatusBar .6s ease;
+}
+@keyframes showStatusBar {
+	from {
+		transform: translateY(30px) scale(.9);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+}
 
-
-
-
+.hide-status-bar {
+	animation: hideStatusBar .4s ease;
+	animation-fill-mode: both;
+}
+@keyframes hideStatusBar {
+	from {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+	to {
+		transform: translateY(30px) scale(.9);
+		opacity: 0;
+	}
+}
 
