@@ -21,7 +21,8 @@
 				<div class="usr-hd-list">
 					<ul>
 						<a id="hd-toUploadProFile" href="#">上传文件</a>
-						<a href="/<%= titurl %>/<%= title %>/settings">项目设置</a>
+						<a id="hd-toUploadProFile" href="#">新建目录</a>
+						<a href="<%= titurl %>settings">项目设置</a>
 						<hr />
 						<a href="">下载代码</a>
 					</ul>
@@ -73,3 +74,20 @@
 			<% } %>
 		</ul>
 	</header>
+
+	<div class="prompt-box" style="display: none">
+		<form class="prompt-body">
+			<div class="prompt-body-header">
+				<p>你要添加的文件夹名是你要添加的文件夹名是你要添加的文件夹名是你要添加的文件夹名是你要添加的文件夹名是?</p>
+			</div>
+			<div class="prompt-form">
+				<input type="text" placeholder="文件夹名">
+			</div>
+			<div class="prompt-footer">
+				<div class="prompt-btns">
+					<button>Cancel</button>
+					<button type="submit">OK</button>
+				</div>
+			</div>
+		</form>
+	</div>
