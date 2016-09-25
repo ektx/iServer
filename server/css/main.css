@@ -444,12 +444,12 @@ ul {
 */
 .btn {
 	display: inline-block;
-	padding: 1px 8px;
-	line-height: 20px;
+	padding: .38em 1.8em;
+	line-height: 1.67em;
 	font-size: 12px;
 	background-color: #fff;
-	border: 1px solid #ccc;
-	border-radius: 3px;
+	border: 1px solid rgba(0,0,0,.3);
+	border-radius: .25em;
 	cursor: pointer;
 	outline: none;
 	position: relative;
@@ -486,6 +486,8 @@ ul {
 
 .btn .ico svg {
 	float: left;
+	width: 100%;
+	height: 100%;
 }
 .OK_SVG polyline {
 	fill:none;
@@ -545,33 +547,29 @@ ul {
 }
 
 .middle-btn {
-	padding: 3px 25px;
 	font-size: 16px;
-	line-height: 28px;
 }
 .middle-btn .ico {
-	width: 16px;
-	height: 16px;
-	top: 10px;
-	left: 5px;
+	width: 1.3em;
+	height: 1.3em;
+	top: 50%;
+	left: .4em;
+	margin-top: -.65em;
 }
 
 /* 绿色主题 */
 .green-btn {
-	border-color: #039008;
 	color: #fff;
 	background-color: #4caf50;
 }		
-.green-btn .circle-z,
-.green-btn .OK_SVG polyline {
-	stroke: #fff;
-}
 
 .red-btn {
-	border-color: #b72015;
 	color: #fff;
 	background-color: #F44336;
-}		
+}
+
+.green-btn .circle-z,
+.green-btn .OK_SVG polyline,		
 .red-btn .circle-z,
 .red-btn .OK_SVG polyline {
 	stroke: #fff;
