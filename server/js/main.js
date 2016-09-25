@@ -62,7 +62,6 @@ $(function() {
 		---------------------------------
 	*/
 	$('#my-contextmenu-nav').on('click', 'a', function(e) {
-		console.log(this.id, contextmenuObj.target.href)
 		switch (this.id) {
 			// 打开新标签
 			case 'my-contextnav-open':
@@ -106,6 +105,67 @@ $(function() {
 	$('#hd-toUploadProFile').click(function(e) {
 		e.preventDefault();
 		$('#toUploadProFiles').trigger('click');
+	});
+
+
+	// 创建文件夹功能
+	$('#hd-toCreateDir').click(function(e) {
+		e.preventDefault();
+
+		var okEvent = function(e) {
+			var int = $('#my-prompt-int');
+			var val = int.val();
+
+			console.log(val);
+
+			if (!val) {
+				myPrompt.error('不可以为空!');
+				int.focus();
+				return;
+			}
+
+			myPrompt.loading()
+
+			$.ajax({
+				url: '/create/myProDir',
+				type: 'POST',
+				data: {
+					path: location.pathname+'/zwl',
+					dirs: val
+				},
+				dataType: 'json'
+			})
+			.done(function(data){
+				console.log(data)
+
+				if (data.success) {
+					myPrompt.cancel(function() {
+						// location.reload()
+					})
+				}
+			})
+			.fail(function(err) {
+				myPrompt.error('创建错误!')
+			})
+			.always(function() {
+				myPrompt.loading()
+			})
+		}
+
+		myPrompt.init({
+			msg: '输入文件夹名称:',
+			input: ['text', '例如: root'],
+			btns: [
+				{
+					text: '取消'
+				},
+				{
+					text: '确认',
+					fun: okEvent
+				}
+			]
+		})
+
 	})
 
 
@@ -634,7 +694,7 @@ function statusBar(options) {
 				}, 300)
 
 				setTimeout(function() {
-					// _p.remove()
+					_p.remove()
 				}, 800)
 			})
 		}
@@ -643,29 +703,200 @@ function statusBar(options) {
 	init()
 }
 
-statusBar({
-	ico: 'ok',
-	title: 'Hello World!',
-	msg: 'lalalalala.....',
-	btns: [
-		{
-			name: '确认',
-			fun: function() {
-				console.log('xxxooo')
+// statusBar({
+// 	ico: 'ok',
+// 	title: 'Hello World!',
+// 	msg: 'lalalalala.....',
+// 	btns: [
+// 		{
+// 			name: '确认',
+// 			fun: function() {
+// 				console.log('xxxooo')
+// 			}
+// 		},
+// 		{
+// 			name: '取消',
+// 			fun: function() {
+// 				console.error('xxx---')
+// 			}
+// 		}
+// 	]
+// })
+
+
+/*
+	提示功能
+	===========================================================
+	HTML结构:
+	<div class="prompt-box" >
+		<form class="prompt-body">
+			<div class="prompt-body-header">
+				<p>你要添加的文件夹名?</p>
+			</div>
+			<div class="prompt-form">
+				<input type="text" placeholder="文件夹名">
+			</div>
+			<div class="prompt-footer">
+				<div class="prompt-btns">
+					<button class="err">Cancel</button>
+					<button type="submit">OK</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	-----------------------------------------------------------
+	示例:
+
+	myPrompt.init({
+		msg: '你好!你叫什么呀?',
+		input: ['text', '在这里输入你的名字!'],
+		btns: [
+			{
+				text: '谢谢,不了!'
+			},
+			{
+				text: '好的!'
 			}
-		},
-		{
-			name: '取消',
-			fun: function() {
-				console.error('xxx---')
+		]
+	})
+
+	myPrompt.init({
+		msg: '你好!请输入密码:',
+		input: ['password', '密码!'],
+		btns: [
+			{
+				text: '取消'
+			},
+			{
+				text: '确认'
 			}
+		]
+	})
+	-----------------------------------------------------------
+*/
+var myPrompt = {
+	options : {},
+
+	// close windows || cancal windows
+	cancel : function(callback) {
+		$('.prompt-box').removeClass('show');
+
+		if (callback && typeof callback === 'function') {
+			setTimeout(function() {
+				callback()
+			}, 600)	
 		}
-	]
-})
+	},
 
+	ok : function() {
+		console.log('OK')
+	},
 
+	loading: function() {
 
+		var header = $('.prompt-body-header');
 
+		if (header.hasClass('pdleft') ) {
+			header.siblings('.prompt-footer').find('button').removeAttr('disabled')
+		} else {
+			header.siblings('.prompt-footer').find('button').attr('disabled', 'disabled')
+		}
+
+		header.toggleClass('pdleft')
+	},
+
+	error: function(errInfo) {
+		var _hed = $('.prompt-body-header');
+		var _err = _hed.find('.err');
+		if (_err.length === 0) {
+			_hed.append('<p class="err">'+errInfo+'</p>')
+		} else {
+			_err.text(errInfo)
+		}
+	},
+
+	createHeader : function(msg) {
+		return '<div class="prompt-body-header"><i></i><p>' + msg + '</p></div>'
+	},
+
+	createInt : function(type, placeholder) {
+
+		if (!(type === 'text' || type === 'password')) {
+			type = 'text'
+		}
+
+		return '<div class="prompt-form"><input id="my-prompt-int" type="'+type+'" placeholder="'+placeholder+'"></div>'
+	},
+
+	createFooter : function(cancel, ok) {
+		var _html = '<div class="prompt-footer"><div class="prompt-btns">';
+		_html += '<button class="err">'+cancel+'</button>'
+		_html += '<button type="submit">'+ok+'</button>'
+
+		_html += '</div></div>';
+
+		return _html;
+	},
+
+	event: function() {
+
+		var __ = this;
+
+		$('body').on('click', '.prompt-btns button', function(e) {
+			e.preventDefault();
+			var _ = $(this);
+			var _i = _.index();
+
+			__.options.btns[_i].fun()
+		})
+
+		__.event = null
+			
+	},
+
+	init : function(options) {
+		
+		var html = '<form class="prompt-body">';
+		var promptBox = $('.prompt-box');
+
+		this.options = extendObj({
+			msg: '',
+			input: ['text', '在此输入内容'],
+			btns: [
+				{
+					text: 'Cancel',
+					fun: this.cancel
+				},
+				{
+					text: 'OK',
+					fun: this.ok
+				}
+			]
+		}, options);
+
+		var options = this.options;
+
+		html += this.createHeader(options.msg);
+		html += this.createInt(options.input[0], options.input[1]);
+		html += this.createFooter(options.btns[0].text, options.btns[1].text);
+		html += '</form>';
+
+		if (!promptBox.length) {
+			$('body').append('<div class="prompt-box" >'+html+'</div>');
+		} else {
+			promptBox.innerHTML = html
+		}
+
+		// show 
+		setTimeout(function() {
+			$('.prompt-box').addClass('show').find('input').focus()
+		}, 0)
+
+		if (typeof this.event === 'function') this.event()
+
+	}
+
+}
 
 
 

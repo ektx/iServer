@@ -917,10 +917,8 @@ exports.delMyPro = (req, res)=> {
 
 
 exports.delMyProFile = (req, res)=> {
-	let filePath = decodeURIComponent(req.body.file).split('/');
-	let user = filePath[1];
-	filePath.splice(3,1);
-	console.log(filePath, path.join(process.cwd(),filePath.join('/')))
+	let filePath = getPhysicalFilePath(req.body.file);
+	let user = filePath[0];
 
 	if ( user === req.session.act ) {
 
@@ -960,7 +958,6 @@ exports.uploadUsrProFile = (req, res)=> {
 	let storage = multer.diskStorage({
 			destination: (req, file, cb)=> {
 				let projectPathArr = req.body.dir.split(',');
-				console.log(file);
 
 				if (projectPathArr[1] !== req.session.act ) {
 					hasErr.status = true;
@@ -1014,6 +1011,42 @@ exports.uploadUsrProFile = (req, res)=> {
 
 
 /*
+	创建用户文件夹
+	--------------------------------------------
+	用于用户在自己的项目中手工添加目录文件夹
+
+*/
+exports.createUsrProjectDirs = (req, res)=> {
+	// 当前文件夹位置
+	let filePathArr = getPhysicalFilePath( req.body.path);
+	// 要创建个文件夹数组
+	let dirArr = req.body.dirs;
+
+	if ( filePathArr[0] === req.session.act ) {
+
+		dirArr = dirArr.split(',');
+
+		for (let i = 0, l = dirArr.length; i < l; i++) {
+			if (dirArr[i]) {
+				imkdirs( path.join(process.cwd(), filePathArr.join('/'), dirArr[i]) );
+			}
+		}
+
+		res.send({
+			success: true,
+			msg: 'OK'
+		})
+
+	} else {
+		res.send({
+			success: false,
+			msg: '你无权在此创建文件夹!'
+		})
+	}
+}
+
+
+/*
 	checkLoginForURL
 	---------------------------------------
 	如果没有 session 同时还不是来自服务器自己的请求
@@ -1060,8 +1093,20 @@ function goToPage(req, res, page) {
 	})	
 }
 
+/*
+	获取文件地物理地址
+	-----------------------------------------------------
+	/ektx/NX/f/iservers/
+	=>
+	/ektx/NX/iservers/
+*/
+function getPhysicalFilePath(url) {
+	let _url = decodeURIComponent(url).split('/')
+	_url.shift();
+	_url.splice(2,1);
 
-
+	return _url;
+}
 
 
 
