@@ -210,9 +210,9 @@ $(function() {
 	@txt 提示内容
 */
 function btnSattus (ele, status, txt) {
-	var load_svg = '<svg width="16" height="16" viewBox="0 0 230 230"><g class="circle-box"><circle class="circle-z loading" cx="117.351" cy="111.769" r="90"/></g></svg>';
+	var load_svg = '<svg viewBox="0 0 230 230"><g class="circle-box"><circle class="circle-z loading" cx="117.351" cy="111.769" r="90"/></g></svg>';
 
-	var Ok_svg = '<svg version="1.1" class="OK_SVG" width="16" height="16" viewBox="0 0 200 200"><polyline points="29.186,107.663 76.279,150.105 177.151,45 "/><animate attributeName="stroke-dasharray" begin="0s" dur="400ms" values="0,230; 230,0" repeatCount="1"></animate></svg>';
+	var Ok_svg = '<svg version="1.1" class="OK_SVG" viewBox="0 0 200 200"><polyline points="29.186,107.663 76.279,150.105 177.151,45 "/><animate attributeName="stroke-dasharray" begin="0s" dur="400ms" values="0,230; 230,0" repeatCount="1"></animate></svg>';
 
 	if (status == 'loading') {
 		if (!ele.hasClass('show')) {
