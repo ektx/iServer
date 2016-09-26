@@ -140,7 +140,7 @@ $(function() {
 
 				if (data.success) {
 					myPrompt.cancel(function() {
-						// location.reload()
+						location.reload()
 					})
 				}
 			})
