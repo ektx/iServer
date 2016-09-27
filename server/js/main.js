@@ -130,7 +130,7 @@ $(function() {
 				url: '/create/myProDir',
 				type: 'POST',
 				data: {
-					path: location.pathname+'/zwl',
+					path: location.pathname,
 					dirs: val
 				},
 				dataType: 'json'
