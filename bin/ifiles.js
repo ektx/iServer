@@ -1,9 +1,11 @@
 
+
 const fs = require('fs');
 const path = require('path');
 
 const ejs  = require('ejs');
 const mime = require('mime');
+
 
 // 智能生成文件夹
 // 如果指定的文件夹的父级也不存在的话,则同时生成
@@ -165,7 +167,7 @@ exports.sendFile = function(req, res, filePath) {
 
 		res.writeHead(
 			200,
-			resHeaders( mime.lookup(path.basename(filePath)) )
+			{'Content-Type': mime.lookup(path.basename(filePath)) + '; charset=UTF-8'}
 		)
 		stream.pipe(res);
 	}

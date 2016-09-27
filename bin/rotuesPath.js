@@ -576,11 +576,21 @@ exports.signUp = (req, res)=> {
 	let act = req.body.user;
 	let ico = 'server/img/kings.png';
 
+	let filter = ['root', 'admin', 'help'];
+
 	// 过滤名称安全
 	if ( !/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/g.test(req.body.user) ) {
 		res.send({
 			success: false,
 			msg: '项目名称中只能使用 - 或 _'
+		});
+		return;
+	}
+
+	if ( filter.includes(req.body.user) ) {
+		res.send({
+			success: false,
+			msg: '此用户已经注册'
 		});
 		return;
 	}
