@@ -7,18 +7,21 @@ var path = require('path');
 	@outputPath : 目标目录
 */
 function css(oldPath, outputPath) {
-	console.log(oldPath, outputPath)
+
 	try {
 
-
 		var data = fs.readFileSync(oldPath, 'utf8');
-		// 输出路径
 		var cssname = path.basename(oldPath, '.css');
 		var outdirname = path.dirname(outputPath);
+		console.log(outdirname)
+		
+		// min 文件输出路径
+		var outMinFilePath = path.normalize(outdirname + '/' + cssname+'.min.css');
 
+		// 在当前目录下生成压缩文件
 		if (oldPath === outputPath) {
 
-			minCss(cssname, outdirname, data);
+			outMinFile(outMinFilePath, minCss(cssname, outdirname, data));
 
 		} else {
 
@@ -74,9 +77,9 @@ function css(oldPath, outputPath) {
 									}
 								});
 
-								console.log('压缩文件：'+cssname)
+								console.log('压缩文件 CSS ：'+cssname)
 
-								minCss(cssname, outdirname, outpouCss)
+								outMinFile(outMinFilePath, minCss(cssname, outdirname, data));
 							}
 						})
 
@@ -87,7 +90,7 @@ function css(oldPath, outputPath) {
 			// 如果没有引用样式
 			// 直接输出，并压缩
 			else {
-				minCss(cssname, outdirname, data);
+				outMinFile(outMinFilePath, minCss(cssname, outdirname, data));
 
 				// 合成文件
 				console.log('No @:', oldPath)
@@ -114,8 +117,6 @@ function css(oldPath, outputPath) {
 	@css : 样式内容
 */
 function minCss(cssname, outputPath, css) {
-	var newdir = path.normalize(outputPath + '/' + cssname+'.min.css');
-
 	// 压缩css
 	// \t 去换行
 	// \s{2,} 去出现2次以上的空格
@@ -138,30 +139,23 @@ function minCss(cssname, outputPath, css) {
 
 	minOutputCss = minOutputCss.replace(/\s>\s/g, '>')
 	
-	fs.writeFile(newdir, minOutputCss, 'utf8', function(err){
+	return minOutputCss;
+
+};
+
+/*
+	输出 minCss 文件
+	@outPath 存放路径
+	@minCss  压缩的Css内容 
+*/
+function outMinFile(outPath, minCss) {
+	// 输出处理之后的样式 
+	fs.writeFile(outPath, minCss, 'utf8', function(err){
 		if (err) console.log(err);
 		console.log('OK!')
-	});
-}
-
-
-// 数组优化输出
-// ["@import url('parts/reset.css');"] => ["parts/reset.css"]
-function getCssArr(arr) {
-	var newArr = [];
-
-	for (var i of arr) {
-		var end = i.length - 1;
-		for (; end >= 0; end--) {
-			if (i[end] === "'" || i[end] === '"') break;
-		}
-
-		i = i.slice(13, end);
-		newArr.push(i)
-	}
-
-	return newArr;
-}
+	});	
+};
 
 
 exports.css = css;
+
