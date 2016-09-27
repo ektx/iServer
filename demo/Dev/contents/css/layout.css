@@ -1,0 +1,14 @@
+@charset "utf-8";
+/*
+    欢迎使用 iServer 脚手架
+    -------------------------------------
+    这是你的公共默认样式引用,如果你不需要使用
+    可以随时删除这些文档
+*/
+
+/* 样式格式化 */
+@import url('parts/reset.css');
+/* 模块样式 */
+/*@import url('parts/cell.css');*/
+/* 组件样式 */
+/*@import url('parts/mods.css');*/

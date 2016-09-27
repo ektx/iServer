@@ -25,13 +25,16 @@ function css(oldPath, outputPath) {
 
 		} else {
 
-			var RegImport = new RegExp("^@im[^;]+", "gi");
-			var importCss = data.match(RegImport) || [];
+			let RegImport = new RegExp("@im[^;]+", "gi");
+			let importCss = data.match(RegImport) || [];
+
+			importCss = getCssArr(importCss)
+
 			// css name
-			var dirname = path.dirname(oldPath);
+			let dirname = path.dirname(oldPath);
 
 			// 要输出的样式内容
-			var outpouCss = data;
+			let outpouCss = data;
 			// 清除 import 引用样式
 			outpouCss = outpouCss.replace(/@import.*?.css('|")\);/gi, '')
 
@@ -51,6 +54,11 @@ function css(oldPath, outputPath) {
 							} else {
 								// 读取样式表内容
 								cssdate = fs.readFileSync(newImpPath, 'utf-8');
+
+								/*  处理内部引用样式
+									url('../../') => url('../')
+								*/
+								cssdate = cssdate.replace(/(\.{2}\/){2}/g, '../');
 
 								cssdate = cssdate.replace(/@charset\s('|")utf-8('|");/i, '');
 
@@ -85,13 +93,12 @@ function css(oldPath, outputPath) {
 				outMinFile(outMinFilePath, minCss(cssname, outdirname, data));
 
 				// 合成文件
-				fs.writeFile(outputPath, data, 'utf8', function(err) {
-					if (err) { 
-						console.log('!!')
-					} else {
-						console.log(':: '+ cssname);
-					}
-				});
+				console.log('No @:', oldPath)
+				data = null;
+
+				var readS = fs.createReadStream(oldPath)
+				var writeS = fs.createWriteStream(outputPath)
+				readS.pipe(writeS)
 
 			}
 		}

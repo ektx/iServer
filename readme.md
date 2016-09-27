@@ -1,54 +1,42 @@
-## iServer 2.8
-![iServer 2](/bin/favicon.png 'Server 2.8')  
+# iServer 4.0 beta
+![iServer 2](/bin/favicon.png 'Server 4.0 Beta')  
 
-
-- 启动方式
-```sh
-# 启动服务
-node epp.js
-
-# 启动服务并在默认默认浏览器中打开服务根目录
-node epp.js -b
-```
- 
 ## 功能说明:    
 * Nodejs 文件服务器  
 * 让开发者使用`ejs`和`jade`来组件化开发自己的静态页面     
 * 支持样式的合并与压缩功能
-* 生成文件统计与输出
+* 生成文件及统计与输出
 * 覆盖生成功能  
 * 本地模拟数据引用 
-* 从命令行启动并打开浏览器   
+* 从命令行启动并打开浏览器
+* 支持生成 `js` `source map`
+* 支持min文件重向功能
 
-## 更新日志
-* 新加从命令行启动并打开浏览器  
-* 重新优化了命令行功能    
-* 部分细节优化   
-  
-## 本地模拟数据使用方式  
-```js
-/* 1. 在`bin`中新建个 `config.json`
-   添加数据
-   比如你的请求为：
-   post /demo/getUseList 
-   请求doem中getUseList模拟数据 
-   其中首个//之间请统一起来,用来指定public的文件夹
-
-*/
-{
-	'demo': 'demo'
-}
-
-/*  2.在 demo/data/config.josn中添加路径
-	
-*/
-{
-	'/demo/getUsrList': 'getUsrList.json'
-}
-
-// 3.添加 getUsrList.json 数据
-
+## 安装
 ```
+npm install -g iservers
+```
+
+## 启动服务
+```sh
+# 进入你要作为服务根目录的文件夹
+# 启动服务
+iserver
+
+# 启动服务并在浏览器中打开
+iserver -b
+
+# 使 Ejs 或 Jade 生成HTML
+localhost:8000/your_project/:make
+```
+
+## 卸装
+```sh
+npm uninstall -g iservers
+```
+
+## License
+MIT
 
 ## 相关资料  
 查看 [node.js](https://nodejs.org/)  

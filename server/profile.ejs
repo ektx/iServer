@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<%- include('parts/head', {host: host, title: usrInfo.usr, css: ['/server/css/setting.css']}) %>
+<body>
+	
+	<%- include('parts/header', {host: host, usr: usrInfo, title: '个人中心', titurl: usrInfo.usr }) %>
+
+	<section class="main-body">
+
+
+		<section class="content">
+
+			<ul class="setting-tag">
+				<li class="current">
+					<a href="/set/profile">个人信息</a>
+				</li>
+				<li><a href="/set/passwd">密码修改</a></li>
+			</ul>
+			
+			<form id="profile" class="upload-form" method="post" enctype="multipart/form-data" action="/set/profile" novalidate>
+				<dl>
+					<dt>头像</dt>
+					<dd class="cf">
+						<div class="set-usr-ico">
+							<img src="<%= host %>/<%= usrInfo.ico %>">
+						</div>
+						<div class="usr-ico-upload-box">
+							<span class="btn middle-btn usr-upload-btn">
+								<input type="file" accept="image/*" name="ico">
+								<span>上传头像</span>
+							</span>
+						</div>
+					</dd>
+				</dl>
+
+				<dl>
+					<dt>帐号</dt>
+					<dd>
+						<input type="text" name="usr" value="<%= usrInfo.usr %>" disabled>
+					</dd>
+				</dl>
+
+				<dl>
+					<dt>呢称</dt>
+					<dd>
+						<input type="text" name="name" value="<%= usrInfo.name %>" required>
+					</dd>
+				</dl>
+
+				<dl>
+					<dt>邮箱</dt>
+					<dd>
+						<input type="email" name="email" value="<%= usrInfo.email %>">
+						<span class="err-info"></span>
+					</dd>
+				</dl>
+
+				<dl>
+					<dd>
+						<button class="btn middle-btn green-btn" type="submit">
+							<span class="ico"></span>
+							<span class="name">保存修改</span>
+						</button>
+					</dd>
+				</dl>
+			</form>
+
+		</section>
+
+	</section>
+
+	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
+	<script src="<%= host %>/server/js/main.js"></script>
+	<script src="<%= host %>/server/js/setting.js"></script>
+	
+</body>
+</html>
