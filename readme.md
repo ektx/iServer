@@ -1,5 +1,5 @@
-# iServer 4.0 beta
-![iServer 2](/bin/favicon.png 'Server 4.0 Beta')  
+# iServer 4.0
+![iServer 4](/bin/favicon.png 'Server 4.0 Beta')  
 
 ## 功能说明:    
 * Nodejs 文件服务器  
@@ -24,7 +24,8 @@ npm install -g iservers
 iserver
 
 # 启动服务并在浏览器中打开
-iserver -b
+iserver os -b
+iserver tool -b
 
 # 使 Ejs 或 Jade 生成HTML
 localhost:8000/your_project/:make
