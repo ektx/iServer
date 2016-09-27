@@ -1,0 +1,39 @@
+			<section class="tab-mod">
+				<ul class="tab-title-box">
+					<li class="current">项目</li>
+					<li>团队项目</li>
+					<li>Demo</li>
+				</ul>
+
+				<div class="project-list-box">
+					<ul class="project-list-mod">
+							
+					<% if (pro) { %>
+						<% pro.forEach( function(val) { %>
+						<li>
+							<h3>
+								<a href="/<%= usr %>/<%= val.name %>/"><%= val.name %></a>
+								<% if (val.private){ %>
+								<span title="加密" class="svg-private-box">
+									<svg class="svg-lock" version="1.1" viewBox="7 0 50 50">
+										<path d="M18,47c-1.104,0-2-0.896-2-2  V23c0-1.104,0.896-2,2-2h28c1.104,0,2,0.896,2,2v22c0,1.104-0.896,2-2,2H18z"/>
+										<path d="M42,21c0-1.045,0-5.955,0-7  c0-5.523-4.477-10-10-10S22,8.477,22,14c0,1.045,0,5.955,0,7"/>
+										<path d="M35,32c0-1.657-1.343-3-3-3s-3,1.343-3,3c0,0.885,0.391,1.673,1,2.222V37c0,1.104,0.896,2,2,2s2-0.896,2-2v-2.778  C34.609,33.673,35,32.885,35,32z"/>
+									</svg>
+								</span>
+								<%}%>
+							</h3>
+
+							<p>
+								创建于: <time title="<%= val.ctime %>"> -- </time>
+							</p>
+						</li>
+					<% }) %>
+					<% } else { %>
+						<li>
+							<h3><a>还没有项目!</a></h3>
+						</li>
+					<% } %>
+					</ul>
+				</div>
+			</section>

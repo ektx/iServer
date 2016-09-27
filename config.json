@@ -1,0 +1,11 @@
+{
+	"name": "iServer",
+	"version": "4.0.0",
+	"type": "os",
+	"port": 8000,
+	"compression": {
+		"css": true,
+		"js": true,
+		"img": false
+	}
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" ondragleave="bye(event)" >
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		var body = document.querySelector('body');
+
+		document.addEventListener('dragover', function(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			body.innerHTML = '<h1>Hello</h1>'
+		}, false)
+
+		function bye(e) {
+			body.innerHTML = '<h1>Bye!</h1>'
+		}
+
+		document.addEventListener('drop', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			body.innerHTML = e;
+			return false;
+		}, false)
+	</script>
+</body>
+</html>

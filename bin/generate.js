@@ -26,16 +26,22 @@ var js = require('./jsmin');
 var delaySend = [];
 var generateType = '';
 
-exports.generate = function(res, root, copyPath, _type) {
+module.exports = function generate (originalPath, copyPath, _type) {
 	console.log('--------- GENERATE ---------')
+	console.log('originalPath:', originalPath)
+	console.log('copyPath:', copyPath)
+	console.log('------- GENERATE End -------')
 
 	copyPath = path.normalize(copyPath);
 	// 清空数据防止缓存
-	var delayPath = [], delaySend = [], changeList = [];
-	
+	let delayPath = []
+	, delaySend   = []
+	, changeList  = []
+	, cachingModObj = {}
+
 	generateType = _type;
 
-	var mkdirs = function(toURL) {
+	let mkdirs = function(toURL) {
 
 		try {
 			var isMS = fs.mkdirSync(toURL)
@@ -43,7 +49,7 @@ exports.generate = function(res, root, copyPath, _type) {
 			if (!isMS) {
 				if(delayPath.length == 0) {
 					console.log('文件夹生成完成!')
-					delaySend = readFile(root, copyPath, delaySend)
+					delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
 
 					return;
 				}
@@ -59,9 +65,7 @@ exports.generate = function(res, root, copyPath, _type) {
 			if (err.code === 'ENOENT') {
 
 				delayPath.push(toURL);
-				// window | mac
-				var _path = toURL.replace(/\\\w+$|\w+$/, '')
-
+				var _path = path.dirname(toURL)
 				mkdirs(_path)
 			}
 		}
@@ -69,15 +73,15 @@ exports.generate = function(res, root, copyPath, _type) {
 	}
 
 	// 遍历模板
-	getPartsList(root, changeList)
+	changeModArr = getPartsList(originalPath);
 
 	// 指定生成目录判断,创建
 	try {
 		fs.statSync(copyPath);
-		delaySend = readFile(root, copyPath, delaySend)
+		delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
 
 	} catch(err) {
-		console.log('not have dir');
+		console.log('not have dir:', copyPath);
 		mkdirs(copyPath)
 	}
 
@@ -89,39 +93,144 @@ exports.generate = function(res, root, copyPath, _type) {
 	读取文件夹下的文件
 	----------------------------------
 */
-function readFile(path, cPath, delaySend) {
+function readFile(originalPath, cPath, delaySend, changeModArr, cachingModObj) {
+	var filesArr = fs.readdirSync(originalPath);
 
-	var filesArr = fs.readdirSync(path);
+	for (let i = 0, len = filesArr.length; i < len; i++) {
 
-	for (var i = 0, fileLen = filesArr.length; i < fileLen; i++) {
-		(function(i) {
+		const _src = path.join(originalPath, filesArr[i])
+		const _crc = path.join(cPath, filesArr[i])
 
-			// delaySend.push(filesArr[i])
-			var _src = path  + '/' + filesArr[i]
-			var _crc = cPath + '/' + filesArr[i]
-
-			checkFile(filesArr[i], _src, _crc, delaySend)
-		})(i)
+		if ( _src != cPath) {
+			checkFile(filesArr[i], _src, _crc, delaySend, changeModArr, cachingModObj)
+		}
 	}
 
-	
 	return delaySend
 
 }
 
 
-function checkFile(fileName, _url, _curl, delaySend) {
+function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj) {
+
+	// @type 模板类型
+	// @str  模板内容
+	var getIncludeMod = function(type, str) {
+
+		var includeArr = []
+		,	strArr = [];
+		
+		if (type == '.ejs') {
+			
+			strArr = str.match(/<%-.+(?=(%>))/g);
+
+			if (!!strArr) {
+
+				for (var modPath of strArr) {
+					includeArr.push(modPath.match(/'.+(?=')/)[0].substr(1) + type)
+				}
+	
+			}
+			
+		} else {
+
+			strArr = str.match(/include (.+)/g)
+
+			if (!!strArr) {
+				for (var modPath of strArr) {
+					includeArr.push(modPath.replace(/include /, '') + type)
+				}
+			}
+		}
+
+		return includeArr
+	}
+
+
+	var includePath = function(type, url, cache) {
+
+
+		var returnARR = []
+
+		var str = fs.readFileSync(url, 'utf8');
+
+		var arr = getIncludeMod(type, str);
+
+		if (arr.length > 0) {
+			// 遍历此模板
+			for (var innerMod of arr) {
+
+				var innerModPath = path.join(path.dirname(url), innerMod)
+				// console.log('innerModPath: ',innerModPath)
+				// console.log('innerModPath dirname: ',path.dirname(url))
+
+				// 在缓存模板中
+				if (innerModPath in cache) {
+
+					returnARR.push(innerModPath)
+					returnARR = returnARR.concat(cache[innerModPath])
+				} 
+				// 不在缓存模板中
+				else {
+					var innerArr = includePath(type, innerModPath, cache)
+					var outArr = []
+
+					// 添加当前自身的完整路径
+					outArr.push(innerModPath)
+					cache[innerModPath] = []
+
+					// 添加内部包含的所有路径
+					for (var iA of innerArr) {
+						outArr.push(iA)
+						cache[innerModPath].push(iA)
+					}
+
+					returnARR = returnARR.concat(outArr)
+
+				}
+			}
+		}
+
+		// console.log('includePath: '+returnARR)
+		return returnARR
+
+	}
+
 
 	try {
 		// 判断文件上否存在
 		var _f = fs.statSync(_url)
-
 		// 如果是文件
 		if (_f.isFile()) {
 			var _fpath = false;
 
 			// 模板转 HTML
 			if (path.extname(fileName) == '.ejs' || path.extname(fileName) == '.jade') {
+			// console.log('changeModArr', changeModArr)
+				if (changeModArr.length > 0) {
+					
+
+					var thisIncludeArr = includePath(path.extname(fileName), _url, cachingModObj)
+
+					if (thisIncludeArr.length > 0) {
+
+						for (var changeMod of thisIncludeArr) {
+
+							if (inArray(changeMod, changeModArr) > -1) {
+								// console.log('变化的子模板是：', changeMod)
+								
+								makeFiles(fileName, _url, _curl, delaySend)
+								break;
+							}
+
+							// else {
+							// 	console.log('不是变化的模板: ',changeMod)
+							// }
+							
+						}
+					}
+
+				}
 
 				_fpath = getHTMLPath(fileName, _url, _curl);
 			}
@@ -176,25 +285,29 @@ function checkFile(fileName, _url, _curl, delaySend) {
 		else if (_f.isDirectory()) {
 			// 复制非组件的文件夹
 			if (fileName !== 'parts') {
-				createFolders(_url, _curl, delaySend)
+				createFolders(_url, _curl, delaySend, changeModArr, cachingModObj)
 			}
 		}
 
 	} catch (err) {
-		console.log(err)
+		console.log(err, '\n没有文件')
 	}
 
 }
 
 // 输出文件
+// @fileName 文件名
+// @_url 原始路径
+// @_curl 复制目标路径
 function outputs(fileName, _url, _curl) {
 	var html = '';
 
+
 	if (path.extname(fileName) == '.ejs') {
 
-		var read = fs.readFileSync;
+		var read = fs.readFileSync(_url, 'utf8');
 
-		html = ejs.render(read(_url, 'utf8'), {filename: _url});
+		html = ejs.render(read, {filename: _url});
 	} else {
 		html = jade.renderFile(_url)
 	}
@@ -240,9 +353,10 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 		// 如果是样式，且不是压缩过的样式
 		case '.css':
 			if (path.basename(fileName, '.css').indexOf('.min') === -1) {
+				console.log('NOT MIN CSS : ' + fileName)
 				// 样式以下划线命名的将要被忽略
 				if (path.basename(fileName).substr(0, 1) !== '_') {
-					css.css(_url, _url);
+					// css.css(_url, _url);
 					css.css(_url, _curl);
 				}
 			} else {
@@ -267,7 +381,7 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 
 }
 
-function createFolders(src, curl, delaySend) {
+function createFolders(src, curl, delaySend, changeModArr, cachingModObj) {
 
 	try {
 		var isMS = fs.mkdirSync(curl)
@@ -275,7 +389,7 @@ function createFolders(src, curl, delaySend) {
 
 	}
 
-	readFile(src, curl, delaySend)
+	readFile(src, curl, delaySend, changeModArr, cachingModObj)
 }
 
 /*
@@ -284,24 +398,25 @@ function createFolders(src, curl, delaySend) {
 	当parts中的文件发生变化时，更新其所有相关有引用文件
 
 */
-function getPartsList (_path, listArr) {
-	var filesArr = fs.readdirSync(_path);
-	var result = [];
+function getPartsList (_path) {
+	let filesArr = fs.readdirSync(_path);
+	let result = [];
 	// 当前项目中所有 parts 文件夹
-	var partsDirArr = [];
-	console.log('******* ' + _path)
+	let partsDirArr = [];
+	console.log('******* GET MODS *******')
+	console.log('Pro. Add. : ' + _path)
 
 	/*
 		获取所有的 parts 目录
 		然后把parts的内部文件统一处理
 	*/ 
-	var forEachDir = function(_pathName) {
-		var dirFilses = fs.readdirSync(_pathName);
+	const forEachDir = function(_pathName) {
+		let dirFilses = fs.readdirSync(_pathName);
 
 		// 遍历文件夹中的文件
-		for (var i of dirFilses) {
-			var newPath = path.normalize(path.join(_pathName,i));
-			var fileStat = fs.statSync(newPath);
+		for (let i of dirFilses) {
+			let newPath = path.normalize(path.join(_pathName,i));
+			let fileStat = fs.statSync(newPath);
 
 			// 只查看文件夹
 			if (fileStat.isDirectory()) {
@@ -321,15 +436,15 @@ function getPartsList (_path, listArr) {
 
 
 	// 得到所有 parts 文件夹下的文件
-	var getPartsFile = function (dirPath) {
+	const getPartsFile = function (dirPath) {
 
-		var partsDirFiles = fs.readdirSync(dirPath);
+		let partsDirFiles = fs.readdirSync(dirPath);
 		// 是否有版本文件，默认为无
 		// 在没有时，所有的关联文件默认是会被更新到的
-		var isVersionFile = false;
-		var versionFile = {};
+		let isVersionFile = false;
+		let versionFile = {};
 		// 当前版本文件的路径
-		var versionPath = path.join(dirPath, 'version.json');
+		let versionPath = path.join(dirPath, 'version.json');
 		// console.log('V P :' + versionPath)
 
 		try {
@@ -341,14 +456,15 @@ function getPartsList (_path, listArr) {
 			isVersionFile = true;
 
 		} catch (err) {
-			console.log('Warning: Not have version!\n' + err)
+			console.log('Warning: Not have version files!\n' + err)
 		}
 
 		// 遍历文件，然后对文件进行属性进行对比
 		// 以得到发生变化的文件信息
-		for (var filesname of partsDirFiles) {
-			var filePath = path.join(dirPath, filesname);
-			var fileStat = fs.statSync(filePath);
+		for (let filesname of partsDirFiles) {
+			let filePath = path.join(dirPath, filesname);
+			let fileStat = fs.statSync(filePath);
+
 
 			// 处理的文件不包含版本控制文件
 			if (filesname !== 'version.json') {
@@ -360,7 +476,7 @@ function getPartsList (_path, listArr) {
 				// 当只是文件时
 				else if (fileStat.isFile()) {
 
-					var timeStr = +new Date(fileStat.mtime);
+					let timeStr = +new Date(fileStat.mtime);
 
 					// 如果没有版本控制文件在
 					if (!isVersionFile) {
@@ -375,7 +491,7 @@ function getPartsList (_path, listArr) {
 							// console.log(versionFile[filesname])
 							// console.log(timeStr)
 							versionFile[filesname] = timeStr;
-							result.push(filesname)
+							result.push(filePath)
 						}
 					}
 
@@ -391,10 +507,29 @@ function getPartsList (_path, listArr) {
 	forEachDir(_path)
 	// console.log('所有 Parts 文件夹: ', partsDirArr)
 
-	for (var i of partsDirArr) {
+	for (let i of partsDirArr) {
 		getPartsFile(i)
 	}
 
-	console.log('变动过的子模板有：\n' + result)
+	console.log('Have been change sub-template：\n' + result)
 	return result 
+}
+
+
+/*
+	判断元素是否在数组中
+	@str 查询内容
+	@arr 数组
+*/
+function inArray(str, arr) {
+	var index = -1;
+
+	for (var i =0, l = arr.length; i < l; i++) {
+		if (arr[i] === str) {
+			index = i;
+			break
+		}
+	}
+
+	return index
 }
