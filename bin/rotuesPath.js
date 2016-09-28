@@ -879,8 +879,6 @@ exports.updateProSettings = (req, res)=> {
 exports.delMyPro = (req, res)=> {
 	let oldProName = req.body.proName;
 
-	console.log('-------> ', oldProName);
-
 	Schemas.myproject_m.update(
 		{usr: req.session.act, 'project.name': oldProName},
 		{$pull: {
@@ -896,10 +894,8 @@ exports.delMyPro = (req, res)=> {
 
 		if (data) {
 
-			// fs.rmdir( path.join(process.cwd(), req.session.act, oldProName), (err, data)=> {
-			// })
-			let child = CExec('rm -rf '+ path.join(process.cwd(), req.session.act, oldProName), (err, data)=> {
-
+			rimraf( path.join(process.cwd(), req.session.act, oldProName), (err, data)=> {
+			
 				if (err) {
 					console.log(err);
 					res.send({

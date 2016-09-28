@@ -854,6 +854,7 @@ ul {
 	transition: visibility .3s ease;
 	-webkit-transform-origin: center;
 	transform-origin: center;
+	overflow: hidden;
 }
 .prompt-body-header.pdleft i {
 	visibility: visible;
