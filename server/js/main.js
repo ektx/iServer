@@ -282,6 +282,7 @@ $.fn.extend({
 						dataType: {string} 字符串
 						postData: {object} 提交数据
 						this: {jq obj} 当前表单
+						btn: {jq obj}  当前点击的按钮
 						type: {string} ajax类型
 						url:  {string} ajax地址
 					}
@@ -491,6 +492,7 @@ $.fn.extend({
 			ajaxOption.data = data;
 			ajaxOption.postData = postData;
 			ajaxOption.this = _;
+			ajaxOption.btn = _.find('[type="submit"]')
 
 			ajaxFun(ajaxOption)
 		}

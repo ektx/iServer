@@ -10,10 +10,9 @@ $(function() {
 	$('#profile, #passwd, #renamePro, #delPro').myVerification({
 		show: 'err',
 		always: function(postData) {
-			var btn = postData.this.find('.btn');
-			btnTxt = btn.text();
+			btnTxt = postData.btn.text();
 
-			btnSattus(btn, 'loading', '提交中...')
+			btnSattus(postData.btn, 'loading', '提交中...')
 		},
 		done: function(data, postData) {
 			console.log(postData)
@@ -51,7 +50,7 @@ $(function() {
 					}
 			}
 
-			btnSattus( postData.this.find('.btn'), 'done', btnTxt)
+			btnSattus( postData.btn, 'done', btnTxt)
 				
 		},
 		verDone: function(data, ele, name){
