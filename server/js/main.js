@@ -455,8 +455,13 @@ $.fn.extend({
 
 			// 数据取值
 			if (_this.attr('type') === 'file') {
-
-				data.append(_this.attr('name'), _this[0].files[0]);
+				if(this.hasAttribute('multiple')) {
+					for(var i = 0, l= this.files.length; i < l; i++){
+						data.append(_this.attr('name'), this.files[i]);
+					}
+				} else {
+					data.append(_this.attr('name'), this.files[0]);
+				}
 
 			} else {
 				if (intFileSize > 0) {
@@ -724,6 +729,7 @@ function statusBar(options) {
 // })
 
 
+
 /*
 	提示功能
 	===========================================================
@@ -825,7 +831,7 @@ var myPrompt = {
 			type = 'text'
 		}
 
-		return '<div class="prompt-form"><input id="my-prompt-int" type="'+type+'" placeholder="'+placeholder+'"></div>'
+		return '<div class="prompt-form"><input id="my-prompt-int" type="'+type+'" placeholder="'+placeholder+'" autofocus></div>'
 	},
 
 	createFooter : function(cancel, ok) {
@@ -850,13 +856,20 @@ var myPrompt = {
 			__.options.btns[_i].fun()
 		})
 
+		$('#my-prompt-int').keyup(function(e){
+			e.preventDefault();
+
+			if (e.which === 13) __.options.btns[1].fun()
+			
+		})
+
 		__.event = null
 			
 	},
 
 	init : function(options) {
 		
-		var html = '<form class="prompt-body">';
+		var html = '<div class="prompt-body">';
 		var promptBox = $('.prompt-box');
 
 		this.options = extendObj({
@@ -879,7 +892,7 @@ var myPrompt = {
 		html += this.createHeader(options.msg);
 		html += this.createInt(options.input[0], options.input[1]);
 		html += this.createFooter(options.btns[0].text, options.btns[1].text);
-		html += '</form>';
+		html += '</div>';
 
 		if (!promptBox.length) {
 			$('body').append('<div class="prompt-box" >'+html+'</div>');
