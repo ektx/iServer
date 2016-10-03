@@ -291,7 +291,7 @@ exports.usrProject = (req, res, next)=> {
 				usrInfo = {
 					usr: req.session.act,
 					ico: req.session.ico,
-					pwo: req.session.pwo
+					pow: req.session.pow
 				}
 			}
 
@@ -576,7 +576,7 @@ exports.signUp = (req, res)=> {
 
 	let act = req.body.user;
 	let ico = 'server/img/kings.png';
-
+	let pow = 'user'; // root admin user 
 	let filter = ['root', 'admin', 'help'];
 
 	// 过滤名称安全
@@ -596,6 +596,20 @@ exports.signUp = (req, res)=> {
 		return;
 	}
 
+	// 权限设置
+	Schemas.usrs_m.findOne({power: 'root'}, (err, data)=> {
+		if (err) {
+			console.log(err); return;
+		}
+
+		console.log('>>>-----> ',data)
+
+		if (!data) {
+			pow = 'root' // 超级管理员
+		}
+	})
+
+
 	let toSaveUsr = ()=> {
 		Schemas.usrs_m.create(
 		{
@@ -603,7 +617,8 @@ exports.signUp = (req, res)=> {
 			name: act,
 			pwd: req.body.passwd,
 			email: req.body.email,
-			ico: ico
+			ico: ico,
+			power: pow
 		}, 
 		(err, data) => {
 			imkdirs( path.join(process.cwd(), act, '__USER') );
@@ -612,6 +627,7 @@ exports.signUp = (req, res)=> {
 			req.session.act = act;
 			req.session.ico = ico;
 			req.session.usr = act;
+			req.session.pow = pow;
 
 			// 跳转主页
 			res.send({
