@@ -17,7 +17,8 @@ const _usrs = new Schema({
 	name   : String,
 	pwd	   : String,
 	email  : String,
-	ico	   : String
+	ico	   : String,
+	power  : String
 }, {collection: 'usrs', versionKey: false});
 
 exports.usrs_m = mongoose.model('usrs', _usrs);
