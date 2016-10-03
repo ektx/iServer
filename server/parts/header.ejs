@@ -57,6 +57,13 @@
 					<ul>
 						<a href="/">我的主页</a>
 						<a href="/set/profile">个人中心</a>
+
+						<% if (usr.pow === 'root' || usr.pow === 'admin') { %>
+						<hr class="split-line" />
+						<a href="/">用户管理</a>
+						<% } %>
+
+						<hr class="split-line" />
 						<a href="/loginOut">退出</a>
 					</ul>
 				</div>

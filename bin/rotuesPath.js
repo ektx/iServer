@@ -155,7 +155,8 @@ exports.usrHome = (req, res, next)=> {
 		res.render('demo', {
 			usrInfo: { 
 				usr: req.session.usr,
-				ico: req.session.ico
+				ico: req.session.ico,
+				pow: req.session.pow
 			},
 			host: 'http://'+ req.headers.host,
 			askUsr: usrData,
@@ -289,7 +290,8 @@ exports.usrProject = (req, res, next)=> {
 			if (req.session.act) {
 				usrInfo = {
 					usr: req.session.act,
-					ico: req.session.ico
+					ico: req.session.ico,
+					pwo: req.session.pwo
 				}
 			}
 
@@ -533,10 +535,8 @@ exports.loginIn = (req, res) => {
 
 		} 
 		else if ( character.length > 0) {
-			console.log(character[0])
 			if ( character[0].pwd === req.body.passwd ) {
 
-				console.log(character)
 				let sess = req.session;
 
 				// 保存 session 信息
@@ -544,6 +544,7 @@ exports.loginIn = (req, res) => {
 				sess.usr = character[0].name;
 				sess.pwd = req.body.passwd;
 				sess.ico = character[0].ico;
+				sess.pow = character[0].power;
 
 
 				sendMsg = {
