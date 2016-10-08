@@ -85,7 +85,11 @@ exports.root = (req, res) => {
 	---------------------------
 */
 exports.addUser = (req, res)=> {
-	res.render('addUser')
+	if (req.session.pow === 'root') {
+		res.render('addUser')
+	} else {
+		res.redirect('/')
+	}
 }
 
 // 所有get * 请求
@@ -641,6 +645,80 @@ exports.signUp = (req, res)=> {
 			res.send({
 				success: true,
 				msg: '/'+act
+			})
+		})
+	};
+
+	Schemas.usrs_m.find({account: act}, (err, data)=> {
+		if (err) {
+			console.log(err);
+			
+			res.send({
+				success: false,
+				msg: '服务器错误'
+			});
+			return;
+		}
+
+		if (data.length > 0) {
+			res.send({
+				success: false,
+				msg: '此用户已经注册'
+			})
+		} else {
+			toSaveUsr()
+		}
+	})
+}
+
+
+/*
+	添加用户 [POST]
+	==============================================
+*/
+exports.addUserPost = (req, res)=> {
+	console.log('addUser POST',req.body.user, req.body.passwd, req.body.email);
+
+	let act = req.body.user;
+	let ico = 'server/img/kings.png';
+	let pow = 'user'; // root admin user 
+	let filter = ['root', 'admin', 'help'];
+
+	// 过滤名称安全
+	if ( !/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/g.test(req.body.user) ) {
+		res.send({
+			success: false,
+			msg: '项目名称中只能使用 - 或 _'
+		});
+		return;
+	}
+
+	if ( filter.includes(req.body.user) ) {
+		res.send({
+			success: false,
+			msg: '此用户已经注册'
+		});
+		return;
+	}
+
+
+	let toSaveUsr = ()=> {
+		Schemas.usrs_m.create(
+		{
+			account: act,
+			name: act,
+			pwd: req.body.passwd,
+			email: req.body.email,
+			ico: ico,
+			power: pow
+		}, 
+		(err, data) => {
+			imkdirs( path.join(process.cwd(), act, '__USER') );
+
+			// 跳转主页
+			res.send({
+				success: true,
+				msg: act
 			})
 		})
 	};
