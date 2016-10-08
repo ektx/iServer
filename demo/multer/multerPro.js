@@ -1,5 +1,6 @@
 var express = require('express')
 var multer = require('multer')
+const fs = require('fs')
 
 
 var storage = multer.diskStorage({
@@ -15,7 +16,12 @@ var upload = multer({storage: storage})
 var app = express();
 
 app.get('/', (req, res)=> {
-	res.sendFile(__dirname +'/multer.html')
+	res.sendFile(__dirname +'/jqProgress.html')
+})
+
+app.get('*', (req, res)=> {
+	let stream = fs.createReadStream(__dirname + '/' + req.path);
+	stream.pipe(res)
 })
 
 app.post('/profile', upload.single('avatar'), (req, res, next)=> {
