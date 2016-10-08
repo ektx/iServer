@@ -31,7 +31,7 @@ $(function() {
 				statusBar({
 					ico: 'ok',
 					title: '成功',
-					msg: '添加成功',
+					msg: data.msg + ' 添加成功',
 					btns: [
 						{
 							name: '好的'

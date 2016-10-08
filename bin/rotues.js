@@ -31,6 +31,7 @@ module.exports = (app, type) => {
 	
 		app.post('/loginIn', r.loginIn)
 		app.post('/signUp', r.signUp)
+		app.post('/addUser', checkLoginUsr, r.addUserPost)
 		// app.post('/forgotPwd', r.forgotPwd)
 		app.post('/checkPwd', r.checkPwd)
 		app.post('/updateProSettings', checkLoginUsr, r.updateProSettings)
