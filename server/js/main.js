@@ -760,7 +760,8 @@ function statusBar(options) {
 		input: ['text', '在这里输入你的名字!'],
 		btns: [
 			{
-				text: '谢谢,不了!'
+				text: '谢谢,不了!',
+				fun: function() { ... }
 			},
 			{
 				text: '好的!'

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const rotuesPath = require('./rotuesPath');
+const r = require('./rotuesPath');
 
 
 module.exports = (app, type) => {
@@ -11,38 +11,40 @@ module.exports = (app, type) => {
 	});
 
 	if (type == "os") {
-		app.get('/', rotuesPath.root)
-		app.get('/loginOut', rotuesPath.loginOut)
-		app.get('/session', rotuesPath.session)
-		app.get('/addproject', rotuesPath.addProject)
-		app.get('/set/profile', rotuesPath.setProfile)
-		app.get('/set/passwd', rotuesPath.getPasswdPage)
+		app.get('/', r.root)
+		app.get('/loginOut', r.loginOut)
+		app.get('/addUser', redirectCheckLoginUsr, r.addUser)
+		app.get('/session', r.session)
+		app.get('/addproject', r.addProject)
+		app.get('/set/profile', r.setProfile)
+		app.get('/set/passwd', r.getPasswdPage)
+		app.get('/users', redirectCheckLoginUsr, r.getUsers)
 	}
 
-	app.get('/server/*', rotuesPath.server)
+	app.get('/server/*', r.server)
 
 	if (type == "os") {
-		app.get('/:usr', rotuesPath.usrHome)
-		app.get('/:usr/__USER/*', rotuesPath.__USER)
-		app.get('/:usr/:project/settings', redirectCheckLoginUsr, rotuesPath.proSettings)
-		app.get(['/:usr/:project', '/:usr/:project/f/*'], rotuesPath.usrProject)
+		app.get('/:usr', r.usrHome)
+		app.get('/:usr/__USER/*', r.__USER)
+		app.get('/:usr/:project/settings', redirectCheckLoginUsr, r.proSettings)
+		app.get(['/:usr/:project', '/:usr/:project/f/*'], r.usrProject)
 	
-		app.post('/loginIn', rotuesPath.loginIn)
-		app.post('/signUp', rotuesPath.signUp)
-		// app.post('/forgotPwd', rotuesPath.forgotPwd)
-		app.post('/checkPwd', rotuesPath.checkPwd)
-		app.post('/updateProSettings', checkLoginUsr, rotuesPath.updateProSettings)
-		app.post('/uploadProFiles', checkLoginUsr, rotuesPath.uploadUsrProFile)
-		app.post('/addproject', checkLoginUsr, rotuesPath.addProject_p)
-		app.post('/set/passwd', checkLoginUsr, rotuesPath.updatePwd)
-		app.post('/set/profile', rotuesPath.PSetProfile)
-		app.post('/create/myProDir', checkLoginUsr, rotuesPath.createUsrProjectDirs)
+		app.post('/loginIn', r.loginIn)
+		app.post('/signUp', r.signUp)
+		// app.post('/forgotPwd', r.forgotPwd)
+		app.post('/checkPwd', r.checkPwd)
+		app.post('/updateProSettings', checkLoginUsr, r.updateProSettings)
+		app.post('/uploadProFiles', checkLoginUsr, r.uploadUsrProFile)
+		app.post('/addproject', checkLoginUsr, r.addProject_p)
+		app.post('/set/passwd', checkLoginUsr, r.updatePwd)
+		app.post('/set/profile', r.PSetProfile)
+		app.post('/create/myProDir', checkLoginUsr, r.createUsrProjectDirs)
 
-		app.delete('/deleteMyPro', checkLoginUsr, rotuesPath.delMyPro)
-		app.delete('/myPro/file', checkLoginUsr, rotuesPath.delMyProFile)
+		app.delete('/deleteMyPro', checkLoginUsr, r.delMyPro)
+		app.delete('/myPro/file', checkLoginUsr, r.delMyProFile)
 	} else {
-		app.get('*', rotuesPath.getAll)
-		app.post('*', rotuesPath.postAll)
+		app.get('*', r.getAll)
+		app.post('*', r.postAll)
 	}
 
 }

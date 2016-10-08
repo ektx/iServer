@@ -80,6 +80,14 @@ exports.root = (req, res) => {
 	}
 }
 
+/*
+	添加用户 [GET]
+	---------------------------
+*/
+exports.addUser = (req, res)=> {
+	res.render('addUser')
+}
+
 // 所有get * 请求
 exports.getAll = (req, res) => {
 	console.log('%s * %s', req.method.bgGreen.white, decodeURI(req.url) );
@@ -1068,6 +1076,47 @@ exports.createUsrProjectDirs = (req, res)=> {
 	}
 }
 
+/*
+	查看用户信息 [get]
+	-------------------------------------------
+*/
+exports.getUsers = (req, res)=> {
+
+	let session = req.session;
+
+	if (session.pow === 'user') {
+		res.redirect('/')
+	} else {
+
+		Schemas.usrs_m.find(
+			{'power': {'$ne': 'user'}},
+			{'_id': 0, 'pwd': 0},
+			(err, data)=> {
+				if (err) {
+					console.log(err);
+					return;
+				}
+
+				console.log(data);
+
+				res.render('users', {
+					usrInfo: { 
+						usr: session.act,
+						name: session.usr,
+						ico: session.ico,
+						pow: session.pow
+					},
+					title: '用户管理',
+					titurl: '/'+req.session.act,
+					admin: data,
+					host: req.secure?'https://':'http://'+ req.headers.host,
+					askUsr: false
+				});
+			}
+		);
+
+	}
+}
 
 /*
 	checkLoginForURL
