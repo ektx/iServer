@@ -603,11 +603,33 @@ function extendObj(obj, obj2) {
 }
 
 
-/*
+/* 
 	statusBar
 	===============================================
 	状态信息
+
+	statusBar({
+		ico: 'ok',
+		title: 'Hello World!',
+		msg: 'lalalalala.....',
+		btns: [
+			{
+				name: '确认',
+				fun: function() {
+					console.log('xxxooo')
+				}
+			},
+			{
+				name: '取消',
+				fun: function() {
+					console.error('xxx---')
+				}
+			}
+		]
+	})
+
 */
+
 function statusBar(options) {
 
 	var createIcon = function(status) {
@@ -660,7 +682,11 @@ function statusBar(options) {
 		};
 		var id = +new Date(); 
 
-		options = extendObj(option, options)
+		option = extendObj(option, options);
+		// 支持只要一个按钮功能
+		if (options.btns.length === 1) option.btns.pop();
+
+		options = option;
 
 		if (!window.statusBarFun) {
 			window.statusBarFun = {};
@@ -686,11 +712,12 @@ function statusBar(options) {
 				var _id = _p.attr('id');
 				var _name = this.innerText;
 				var _H =  _p.height();
+				var _isFun = statusBarFun[_id][_name]
 
 				console.log(_H)
 				_p.height(_H)
 
-				statusBarFun[_id][_name]()
+				if (typeof _isFun === 'function') _isFun()
 				_p.addClass('hide-status-bar')
 
 				setTimeout(function() {
@@ -710,25 +737,6 @@ function statusBar(options) {
 	init()
 }
 
-// statusBar({
-// 	ico: 'ok',
-// 	title: 'Hello World!',
-// 	msg: 'lalalalala.....',
-// 	btns: [
-// 		{
-// 			name: '确认',
-// 			fun: function() {
-// 				console.log('xxxooo')
-// 			}
-// 		},
-// 		{
-// 			name: '取消',
-// 			fun: function() {
-// 				console.error('xxx---')
-// 			}
-// 		}
-// 	]
-// })
 
 
 
