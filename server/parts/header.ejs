@@ -1,9 +1,11 @@
 	<header class="os-header">
+		<h1>
 		<% if (typeof title === 'undefined') { %>
-		<h1>iServers</h1>
+		<p>iServers</p>
 		<% } else { %>
-		<h1> <a href="<%= titurl %>"><%= title %></a></h1>
+		<a href="<%= titurl %>"><%= title %></a>
 		<% } %>
+		</h1>
 		<ul class="usr-hd-info-mod">
 			<% if (usr.usr) { %>
 
@@ -47,10 +49,10 @@
 			<li class="project-set-mod">
 
 				<a >
-					<span class="hd-usr-ico">
+					<span class="hd-usr-ico border-radius-box">
 						<img src="<%= host %>/<%= usr.ico %>" alt="<%= usr.usr %>">
 					</span>
-					<span class="hd-usr-name" title="<%= usr.name %>"><%= usr.name %></span>
+					<span class="hd-usr-name" title="<%= usr.usr %>"><%= usr.usr %></span>
 				</a>
 
 				<div class="usr-hd-list">
@@ -60,7 +62,7 @@
 
 						<% if (usr.pow === 'root' || usr.pow === 'admin') { %>
 						<hr class="split-line" />
-						<a href="/">用户管理</a>
+						<a href="/users">用户管理</a>
 						<% } %>
 
 						<hr class="split-line" />

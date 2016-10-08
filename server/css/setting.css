@@ -60,12 +60,8 @@
 .set-usr-ico {
 	float: left;
 	width: 100px;
+	height: 100px;
 	margin-right: 40px;
-	border-radius: 3px;
-	overflow: hidden;
-}
-.set-usr-ico img {
-	width: 100%;
 }
 
 input[type="text"],

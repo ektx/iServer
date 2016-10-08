@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<title>登录</title>
+	<link rel="stylesheet" href="server/css/main.css">
+</head>
+<body>
+	
+	<section class="login-body">
+
+		<div id="signUp-form" class="login-mod login-current-mod">
+			<h1>添加用户</h1>
+			<p class="error-info">Error!</p>
+			<form method="post" action="/signUp" novalidate>
+				<div class="login-usr-name">
+					<input type="text" name="user" placeholder="帐号" autofocus="" required pattern="^[a-zA-Z0-9\u4e00-\u9fa5_-]+$" title="项目名称中只能使用 - 或 _">
+				</div>
+				<div class="login-usr-name">
+					<input type="email" name="email" placeholder="邮箱" value="">
+				</div>
+				<div class="login-usr-pwd">
+					<input type="password" name="passwd" placeholder="密码" required>
+				</div>
+				<button class="login-btn" type="submit">
+					<svg width="16" height="16" viewBox="0 0 24 24">
+						<path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z"/>
+					</svg>
+				</button>
+			</form>
+		</div>
+
+	</section>
+
+	<script src="server/js/jquery-3.1.0.min.js"></script>
+	<script src="server/js/main.js"></script>
+	<script src="server/js/login.js"></script>
+</body>
+</html>
+

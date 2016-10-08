@@ -35,7 +35,35 @@ ul {
 	padding: 0;
 }
 
+/* 分页样式功能 >>> */
+.simple-pagination li {
+	display: inline-block;
+	min-width: 1.42em;
+	min-height: 1.42em;
+	line-height: 1.42em;
+	text-align: center;
+	padding: .35em;
+	font-size: 14px;
+}
+
+.page-link,
+.simple-pagination .ellipse {
+	color: #999;
+	font-size: inherit;
+	text-decoration: none;
+}
+.page-link:hover {
+	color: #666;
+}
+.simple-pagination .active {
+	color: #333;
+}
+/* <<< 分页样式功能 */
+
 .os-header {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: flex;
 	height: 60px;
 	position: fixed;
 	top: 0;
@@ -48,7 +76,9 @@ ul {
 	z-index: 1000;
 }
 .os-header h1 {
-	display: inline-block;
+	-webkit-flex: 1;
+	-moz-flex: 1;
+	flex: 1;
 	font-weight: 100;
 	font-size: 26px;
 	line-height: 60px;
@@ -134,20 +164,27 @@ ul {
 	border-top-color: #333;
 }
 
+/* 圆角模块 --> */
+.border-radius-box {
+	font-size: 0px;	
+	width: 1rem;
+	height: 1rem;	
+	border-radius: 100%;
+	background-color: #f5f5f5;
+	overflow: hidden;
+}
+.border-radius-box img {
+	width: 100%;
+	transform: translateY(-50%);
+	position: relative;
+	top: 50%;
+}
+/* <-- 圆角模块 */
+
 .hd-usr-ico {
 	float: left;
-	display: inline-block;
-	display: -webkit-box;
-	display: -moz-box;
 	width: 24px;
-	height: 24px;	
-	border-radius: 100%;
-	overflow: hidden;
-	-webkit-box-align: center;
-	-moz-box-align: center;
-}
-.hd-usr-ico img {
-	width: 100%;
+	height: 24px;
 }
 .hd-usr-name {
 	color: #333;
@@ -222,15 +259,6 @@ ul {
 .aside-usr-ico {
 	width: 260px;
 	height: 260px;
-	background-color: #f5f5f5;
-	border-radius: 100%;
-	overflow: hidden;
-}
-.aside-usr-ico img {
-	width: 100%;
-	transform: translateY(-50%);
-	position: relative;
-	top: 50%;
 }
 .aside-usr-name {
 	font-size: 30px;
@@ -918,6 +946,128 @@ ul {
 .prompt-btns button[disabled] {
 	color: #aaa;
 }
+
+.sign-user-title {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 5px 0;
+	font-size: 16px;
+	border-bottom: 1px solid #eee;
+}
+.sign-user-title button {
+	font-size: 14px;
+	color: #09f;
+	border: none;
+	padding: 0 5px;
+	outline: none;
+	cursor: pointer;
+	background-color: transparent;
+}
+.sign-user-title .right {
+	float: right;
+}
+.signUser-list-box {
+	max-width: 1000px;
+	margin: 0 auto;
+	font-size: 0;
+}
+.signUser-list-box .name {
+	font-size: 14px;
+}
+.signUser-list-box .jobs {
+	font-size: 12px;
+	color: #aaa;
+}
+.signUser-list-box {
+	padding: 20px 0;
+}
+.signUser-list-box li {
+	display: inline-block;
+	width: 200px;
+	text-align: center;
+	margin-bottom: 20px;
+	position: relative;
+}
+.admin-user-box li {
+	margin: 0;
+}
+.usr-photo-box {
+	display: block;
+	width: 100px;
+	height: 100px;
+	margin: 20px auto 10px;
+}
+
+#my-user-pages {
+	text-align: center;
+}
+/* 用户信息 >>> */
+.manage-user-inner {
+	display: none;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+.manage-see-box aside {
+	width: 200px;
+	float: left;
+	text-align: center;
+}
+.manage-user-info {
+	overflow: hidden;
+}
+/* <<< 用户信息 */
+
+.usr-manage-nav {
+	visibility: hidden;
+	width: 100px;
+	margin: 0 0 0 55px;
+	padding: 5px 0;
+	position: absolute;
+	left: 50%;
+	top: 0;
+	z-index: 10;
+	background-color: #fff;
+	border: 1px solid #eee;
+	border-radius: 5px;
+	opacity: 0;
+	transform: translateY(30px);
+	transition: visibility .3s ease, opacity .3s ease, transform .3s ease;
+}
+.signUser-list-box li:nth-of-type(5n) .usr-manage-nav {
+	left: -50%;
+	margin: 0 0 0 50px;
+}
+.signUser-list-box li:hover .usr-manage-nav {
+	visibility: visible;
+	opacity: 1;
+	transform: translateY(0);
+}
+.usr-manage-nav a {
+	display: block;
+	font-size: 12px;
+	line-height: 2.28em;
+	color: #333;
+}
+.usr-manage-nav a:hover {
+	background-color: #eee;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
