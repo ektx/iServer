@@ -747,6 +747,58 @@ exports.addUserPost = (req, res)=> {
 
 
 /*
+	获取用户列表页面 [GET]
+	-------------------------------------
+*/
+exports.getUserList = (req, res) => {
+	var page = req.body.page;
+	var limit = parseInt(req.body.limit);
+	console.log(page, limit)
+
+	Schemas.usrs_m.count({}, (err, c)=>{
+		if (err) {
+			console.log(err);
+			return;
+		}
+
+		console.log(c)
+
+		Schemas.usrs_m.find(
+			{},
+			{'_id': 0, pwd: 0, power: 0},
+			{skip: page * limit, limit: limit },
+			(err, data)=> {
+				if (err) {
+					console.log(err);
+					res.send({
+						success: false,
+						msg: 'Get user list error!'
+					})
+					return;
+				}
+
+				let obj = [];
+
+				for (var i = 0, l = data.length; i < l; i++) {
+					obj[i] = {};
+					obj[i]['act'] = data[i].account; 
+					obj[i]['name'] = data[i].name;
+					obj[i]['ico'] = data[i].ico;
+				}
+
+				res.send({
+					success: true,
+					msg: obj,
+					count: c
+				})
+			}
+		)
+	})
+
+}
+
+
+/*
 	添加新项目页面 [GET]
 	-------------------------------------
 */

@@ -38,12 +38,11 @@
 			</ul>
 
 			<h3 class="sign-user-title">
-				<span>用户(999)</span>
+				<span>用户(<b id="usr-list-count">---</b>)</span>
 				<a class="right" title="添加新用户" href="/addUser">添加</a>
 			</h3>
 
-			<ul class="signUser-list-box">
-			<% for (var i = 0; i < 10; i++) { %>
+			<ul id="z-web-users" class="signUser-list-box">
 				<li>
 					<div class="usr-icon-box">
 						<a href="#" class="usr-photo-box border-radius-box">
@@ -59,7 +58,6 @@
 						<a href="#">删除用户</a>
 					</nav>
 				</li>
-			<% } %>
 			</ul>
 
 			<div id="my-user-pages"></div>
@@ -109,7 +107,7 @@
 	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
 	<script src="<%= host %>/server/js/airpages.js"></script>
 	<script src="<%= host %>/server/js/main.js"></script>
-	<script src="<%= host %>/server/js/userManage.js"></script>
+	<script src="<%= host %>/server/js/userManages.js"></script>
 	
 </body>
 </html>

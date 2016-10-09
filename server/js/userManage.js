@@ -4,23 +4,8 @@
 */
 
 $(function() {
-	// 用户管理页面
-	var pageEle = $('#my-user-pages');
-	if (pageEle.length){
-		pageEle.pagination({
-			pages: 109, // 假定有10页
-			prevText: '上一页',
-			nextText: '下一页',
-			onPageClick: function(pageNumebr) {
-				
-				console.log(pageNumebr);
 
-			}
-		});
-	}
-
-
-	// 
+	// 添加用户
 	$('form').myVerification({
 		checkAll: false,
 		done: function(data, option) {
@@ -49,5 +34,7 @@ $(function() {
 		errHide: function(ele) {
 			ele.parents('form').prev('.error-info').removeClass('show')
 		}		
-	})
-})
+	});
+
+});
+
