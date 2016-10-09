@@ -914,7 +914,7 @@ var myPrompt = {
 		// show 
 		setTimeout(function() {
 			$('.prompt-box').addClass('show').find('input').focus()
-		}, 0)
+		}, 20)
 
 		if (typeof this.event === 'function') this.event()
 
