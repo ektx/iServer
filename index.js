@@ -5,7 +5,7 @@
 const program = require('commander');
 
 const setServer = require('./bin/serverSet');
-const version = '4.0.1';
+const version = '4.1.1';
 
 const n_browser = '-b, --browser [默认浏览器]';
 const i_browser = '开启服务器同时打开浏览器[chrome|firefox|ie|opera]';
