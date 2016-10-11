@@ -1113,7 +1113,7 @@ exports.uploadUsrProFile = (req, res)=> {
 		msg: ''
 	};
 	// 最多上传 6 -1 = 5个
-	let maxCount = 6;
+	let maxCount = 21;
 	let hasCount = 0;
 
 	let storage = multer.diskStorage({
