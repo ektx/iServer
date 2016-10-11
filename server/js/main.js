@@ -174,8 +174,8 @@ $(function() {
 		var _form = $(this).parents('form');
 		var _files = '';
 
-		if (this.files.length > 5) {
-			alert('最多上传文件数为 5');
+		if (this.files.length > 20) {
+			alert('最多上传文件数为 20');
 			return;
 		}
 
