@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<%- include('parts/head', {host: host, title: '邮件服务器', css: ['/server/css/setting.css']}) %>
+<body>
+	
+	<%- include('parts/header', {host: host, usr: usrInfo, title: '邮件服务器', titurl: '/'+usrInfo.usr }) %>
+
+	<section class="main-body">
+
+
+		<section class="content">
+			
+			<form id="mySMTP" class="upload-form" method="post" enctype="multipart/form-data" action="/set/SMTP">
+
+				<dl>
+					<dt>HOST</dt>
+					<dd>
+						<input type="text" name="usr" value="<%= SMTP.host %>" required>
+					</dd>
+				</dl>
+
+				<dl>
+					<dt>端口</dt>
+					<dd>
+						<input type="text" name="usr" value="<%= SMTP.port %>" required>
+					</dd>
+				</dl>
+
+				<dl>
+					<dt>用户名</dt>
+					<dd>
+						<input type="text" name="name" value="<%= SMTP.usr %>" required>
+					</dd>
+				</dl>
+
+				<dl>
+					<dt>密码</dt>
+					<dd>
+						<input type="password" name="paswd" value="">
+						<span class="err-info"></span>
+					</dd>
+				</dl>
+
+				<dl>
+					<dd>
+						<button class="btn middle-btn green-btn" type="submit">
+							<span class="ico"></span>
+							<span class="name">保存修改</span>
+						</button>
+					</dd>
+				</dl>
+			</form>
+
+		</section>
+
+	</section>
+
+	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
+	<script src="<%= host %>/server/js/main.js"></script>
+	<script src="<%= host %>/server/js/myVerification-0.0.1.js"></script>
+	<script src="<%= host %>/server/js/setting.js"></script>
+	
+</body>
+</html>

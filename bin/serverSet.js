@@ -68,7 +68,7 @@ function getServerSet(options) {
 				options.sourceMap = false;
 			}
 
-			init(options);
+			main(options)
 
 		} else {
 
@@ -104,46 +104,12 @@ function getServerSet(options) {
 					options.sourceMap = answer.sourceMap;
 				}
 
-				init(options)
+				main(options)
 			})
 		}
 
 	})
 }
 
-function init(options) {
-	// 邮件服务器
-	let emailServerQuestions = [
-		{
-			type: 'input',
-			name: 'SMTP',
-			message: '邮件服务器:'
-		},
-		{
-			type: 'input',
-			name: 'usr',
-			message: '用户名:'
-		},
-		{
-			type: 'password',
-			name: 'pwd',
-			message: '密码:'
-		}
-	];
-
-	if (options.type === 'os') {
-		// 当使用服务器时,为服务器提供邮件的功能
-		inquirer.prompt(emailServerQuestions).then((answer)=> {
-
-			options.emailSer = answer;
-
-			main(options)
-		})
-	} else {
-		main(options)
-	}
-
-
-}
 
 module.exports = getServerSet

@@ -53,6 +53,7 @@ $(function() {
 			btnSattus( postData.btn, 'done', btnTxt)
 				
 		},
+		// 失去焦点时
 		verDone: function(data, ele, name){
 			if (name === 'pwd') {
 
@@ -219,6 +220,26 @@ $(function() {
 		})
 	});
 
+
+	$('#mySMTP').myVerification({
+		// 错误显示 
+		show: 'err',
+		always: function(postData) {
+			btnTxt = postData.btn.text();
+
+			btnSattus(postData.btn, 'loading', '提交中...')
+		},
+		done: function(data, postData) {
+			console.log(postData)
+
+
+			btnSattus( postData.btn, 'done', btnTxt)
+				
+		},
+		fail: function(err) {
+			console.log(err)
+		}
+	});
 
 
 });

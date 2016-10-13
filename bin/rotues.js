@@ -10,12 +10,15 @@ module.exports = (app, type) => {
 		return
 	});
 
+
 	if (type == "os") {
+
 		app.get('/', r.root)
 		app.get('/loginOut', r.loginOut)
 		app.get('/addUser', redirectCheckLoginUsr, r.addUser)
 		app.get('/session', r.session)
 		app.get('/addproject', r.addProject)
+		app.get('/SMTP', redirectCheckLoginUsr, r.setSMTP)
 		app.get('/set/profile', r.setProfile)
 		app.get('/set/passwd', r.getPasswdPage)
 		app.get('/users', redirectCheckLoginUsr, r.getUsers)
