@@ -56,7 +56,7 @@ exports.myproject_m = mongoose.model('myproject', _myproject);
 */
 const _server_SMTP = new Schema({
 	host: String,
-	port: String,
+	port: Number,
 	usr: String,
 	pwd: String
 }, {collection: 'SMTP', versionKey: false});

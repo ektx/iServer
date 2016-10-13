@@ -357,8 +357,9 @@ exports.setProfile = (req, res) => {
 	})
 }
 
+
 // 设置邮件服务器
-exports.setSMTP = (req, res) => {
+exports.getSMTP = (req, res) => {
 	
 	Schemas.SMTP_m.findOne(
 		{},
@@ -381,6 +382,34 @@ exports.setSMTP = (req, res) => {
 		}
 	) // End Schemas
 }
+
+exports.setSMTP = (req, res) => {
+	console.log(req.body);
+
+	if (isNaN(req.body.port)) {
+		res.send({
+			success: false,
+			msg: "端口应该是数字"
+		});
+		return;
+	}
+
+	Schemas.SMTP_m.create(req.body, (err, small)=> {
+		if (err) {
+			res.send({
+				success: false,
+				msg: '保存出错'
+			});
+			return;
+		};
+
+		res.send({
+			success: true,
+			msg: '成功!'
+		})
+	})
+}
+
 
 /*
 	更新个人信息

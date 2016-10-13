@@ -15,28 +15,28 @@
 				<dl>
 					<dt>HOST</dt>
 					<dd>
-						<input type="text" name="usr" value="<%= SMTP.host %>" required>
+						<input type="text" name="host" value="<%= SMTP.host %>" required>
 					</dd>
 				</dl>
 
 				<dl>
 					<dt>端口</dt>
 					<dd>
-						<input type="text" name="usr" value="<%= SMTP.port %>" required>
+						<input type="number" name="port" value="<%= SMTP.port %>" required>
 					</dd>
 				</dl>
 
 				<dl>
 					<dt>用户名</dt>
 					<dd>
-						<input type="text" name="name" value="<%= SMTP.usr %>" required>
+						<input type="text" name="usr" value="<%= SMTP.usr %>" required>
 					</dd>
 				</dl>
 
 				<dl>
 					<dt>密码</dt>
 					<dd>
-						<input type="password" name="paswd" value="">
+						<input type="password" name="pwd" value="" required>
 						<span class="err-info"></span>
 					</dd>
 				</dl>
@@ -45,7 +45,7 @@
 					<dd>
 						<button class="btn middle-btn green-btn" type="submit">
 							<span class="ico"></span>
-							<span class="name">保存修改</span>
+							<span class="name">保存</span>
 						</button>
 					</dd>
 				</dl>
