@@ -156,6 +156,23 @@ function outMinFile(outPath, minCss) {
 	});	
 };
 
+// 数组优化输出
+// ["@import url('parts/reset.css');"] => ["parts/reset.css"]
+function getCssArr(arr) {
+	var newArr = [];
+
+	for (var i of arr) {
+		var end = i.length - 1;
+		for (; end >= 0; end--) {
+			if (i[end] === "'" || i[end] === '"') break;
+		}
+
+		i = i.slice(13, end);
+		newArr.push(i)
+	}
+
+	return newArr;
+}
 
 exports.css = css;
 
