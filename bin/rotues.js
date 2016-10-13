@@ -18,7 +18,7 @@ module.exports = (app, type) => {
 		app.get('/addUser', redirectCheckLoginUsr, r.addUser)
 		app.get('/session', r.session)
 		app.get('/addproject', r.addProject)
-		app.get('/SMTP', redirectCheckLoginUsr, r.setSMTP)
+		app.get('/SMTP', redirectCheckLoginUsr, r.getSMTP)
 		app.get('/set/profile', r.setProfile)
 		app.get('/set/passwd', r.getPasswdPage)
 		app.get('/users', redirectCheckLoginUsr, r.getUsers)
@@ -43,6 +43,7 @@ module.exports = (app, type) => {
 		app.post('/addproject', checkLoginUsr, r.addProject_p)
 		app.post('/set/passwd', checkLoginUsr, r.updatePwd)
 		app.post('/set/profile', r.PSetProfile)
+		app.post('/set/SMTP', checkLoginUsr, r.setSMTP)
 		app.post('/create/myProDir', checkLoginUsr, r.createUsrProjectDirs)
 
 		app.delete('/deleteMyPro', checkLoginUsr, r.delMyPro)

@@ -230,8 +230,6 @@ $(function() {
 			btnSattus(postData.btn, 'loading', '提交中...')
 		},
 		done: function(data, postData) {
-			console.log(postData)
-
 
 			btnSattus( postData.btn, 'done', btnTxt)
 				
