@@ -44,3 +44,21 @@ const _myproject = new Schema({
 }, { collection: 'myproject', versionKey: false});
 
 exports.myproject_m = mongoose.model('myproject', _myproject);
+
+
+
+/*
+	SMTP 邮件服务器
+	---------------------------------------
+
+
+	文档: myproject
+*/
+const _server_SMTP = new Schema({
+	host: String,
+	port: String,
+	usr: String,
+	pwd: String
+}, {collection: 'SMTP', versionKey: false});
+
+exports.SMTP_m = mongoose.model('SMTP', _server_SMTP);

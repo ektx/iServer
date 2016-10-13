@@ -1,4 +1,3 @@
-
 function server(options) {
 
 	'use strict';

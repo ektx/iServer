@@ -343,22 +343,43 @@ exports.setProfile = (req, res) => {
 					return;
 				}
 
-				console.log(data)
 
-				res.render('profile', {
-					usrInfo: {
-						usr: data.account,
-						name: data.name,
-						email: data.email,
-						ico: data.ico
-					},
-					host: 'http://'+ req.headers.host,
-					askUsr: false
-				})
+				console.log(data)
+				let sendJSON = defaultHeader(req);
+
+				sendJSON.askUsr= false
+				sendJSON.usrInfo.email = data.email;
+
+				res.render('profile', sendJSON)
 				
 			}
 		) // End Schemas
 	})
+}
+
+// 设置邮件服务器
+exports.setSMTP = (req, res) => {
+	
+	Schemas.SMTP_m.findOne(
+		{},
+		(err, data)=> {
+			if (err) {
+				res.json({
+					"success": false,
+					"msg": "服务器错误"
+				})
+				return;
+			}
+
+			console.log(data);
+			let sendJSON = defaultHeader(req);
+			sendJSON.askUsr = false;
+			sendJSON.SMTP = !data ? {host:'',port:'',usr:''} : data;
+
+			res.render('SMTP', sendJSON)
+			
+		}
+	) // End Schemas
 }
 
 /*
@@ -1310,7 +1331,25 @@ function getPhysicalFilePath(url) {
 	return _url;
 }
 
+/*
+	网页头部统一返回内容
+	--------------------------------
+	1.用户设置
+	2.SMTP  -  setSMTP
+*/
+function defaultHeader(req) {
+	let session = req.session;
 
+	return {
+		usrInfo: { 
+			usr: session.act,
+			name: session.usr,
+			ico: session.ico,
+			pow: session.pow
+		},
+		host: req.secure?'https://':'http://'+ req.headers.host,
+	}
+}
 
 
 
