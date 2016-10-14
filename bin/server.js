@@ -32,9 +32,7 @@ module.exports = (req, res, options) => {
 			console.log('Not root Path:', copyPath)
 		}
 
-		let _type = 'make';
-
-		let dealwithFiles = generate(originalPath, copyPath, _type);
+		let dealwithFiles = generate(originalPath, copyPath);
 
 		if (dealwithFiles.length == 0) {
 			dealwithFiles.push('您本次没有修改任何文件')
