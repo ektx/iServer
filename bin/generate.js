@@ -201,9 +201,10 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 		// 如果是文件
 		if (_f.isFile()) {
 			var _fpath = false;
+			let fs_ext = path.extname(fileName)
 
 			// 模板转 HTML
-			if (path.extname(fileName) == '.ejs' || path.extname(fileName) == '.jade') {
+			if (fs_ext == '.ejs' || fs_ext == '.jade' || fs_ext == '.css') {
 			// console.log('changeModArr', changeModArr)
 				if (changeModArr.length > 0) {
 					
