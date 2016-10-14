@@ -14,19 +14,18 @@
 */
 
 
-var http = require('http');
-var path = require('path');
-var fs = require('fs');
-var ejs = require('ejs');
-var jade = require('jade');
+const http = require('http');
+const path = require('path');
+const fs = require('fs');
+const ejs = require('ejs');
+const jade = require('jade');
 
-var css = require('./css');
-var js = require('./jsmin');
+const css = require('./css');
+const js = require('./jsmin');
 
 var delaySend = [];
-var generateType = '';
 
-module.exports = function generate (originalPath, copyPath, _type) {
+module.exports = function generate (originalPath, copyPath) {
 	console.log('--------- GENERATE ---------')
 	console.log('originalPath:', originalPath)
 	console.log('copyPath:', copyPath)
@@ -39,7 +38,6 @@ module.exports = function generate (originalPath, copyPath, _type) {
 	, changeList  = []
 	, cachingModObj = {}
 
-	generateType = _type;
 
 	let mkdirs = function(toURL) {
 
@@ -223,10 +221,6 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 								break;
 							}
 
-							// else {
-							// 	console.log('不是变化的模板: ',changeMod)
-							// }
-							
 						}
 					}
 
@@ -237,7 +231,7 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 
 			// 判断要复制到的文件夹中是否已经有此文件了
 			try {
-				var _ff = fs.statSync(_fpath ? _fpath: _curl)
+				let _ff = fs.statSync(_fpath ? _fpath: _curl)
 
 				// 当前文件内容较新
 				if (_ff.mtime < _f.mtime) {
@@ -247,8 +241,7 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 					// 注：在强制下会覆盖生成
 					if (_ff.size > _f.size && 
 						path.extname(fileName) != '.ejs' && 
-						path.extname(fileName) != '.jade' && 
-						generateType == 'make'
+						path.extname(fileName) != '.jade'
 					) {
 						console.log(' ! - '+ fileName)
 						delaySend.push(' ! - '+ fileName)
@@ -263,11 +256,11 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 				// 生成区文件较新较大
 				else {
 					if (_ff.size > _f.size &&
+						path.extname(fileName) != '.css' && 
 						path.extname(fileName) != '.ejs' && 
 						path.extname(fileName) != '.jade' &&
 						path.extname(fileName) != '.html' &&
-						path.extname(fileName) != '.htm' &&
-						generateType === 'make'
+						path.extname(fileName) != '.htm'
 					) {
 						console.log(' @ - '+ fileName)
 						delaySend.push(' @ - '+ fileName)
