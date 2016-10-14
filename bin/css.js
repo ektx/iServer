@@ -62,7 +62,7 @@ function css(oldPath, outputPath) {
 
 								cssdate = cssdate.replace(/@charset\s('|")utf-8('|");/i, '');
 
-								outpouCss += cssdate;
+								outpouCss += '\n' + cssdate.trim();
 							}
 
 							// 输出
