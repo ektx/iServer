@@ -12,6 +12,7 @@ const rimraf = require('rimraf');
 const CExec = require('child_process').exec;
 
 const ifiles = require('./ifiles');
+const email = require('./email');
 
 
 const hasProject = (req, res, options) => {
@@ -360,6 +361,13 @@ exports.setProfile = (req, res) => {
 
 // 设置邮件服务器
 exports.getSMTP = (req, res) => {
+
+	// 过滤非管员用户
+	if (req.session.pow !== 'root') {
+
+		res.redirect('/');
+		return;
+	}
 	
 	Schemas.SMTP_m.findOne(
 		{},
@@ -394,19 +402,30 @@ exports.setSMTP = (req, res) => {
 		return;
 	}
 
-	Schemas.SMTP_m.create(req.body, (err, small)=> {
-		if (err) {
+	Schemas.SMTP_m.remove({}, (err, data)=>{
+		if(err) {
 			res.send({
 				success: false,
-				msg: '保存出错'
+				msg: '清空出错!'
 			});
-			return;
-		};
+			return
+		}
 
-		res.send({
-			success: true,
-			msg: '成功!'
+		Schemas.SMTP_m.create(req.body, (err, small)=> {
+			if (err) {
+				res.send({
+					success: false,
+					msg: '保存出错'
+				});
+				return;
+			};
+
+			res.send({
+				success: true,
+				msg: '成功!'
+			})
 		})
+		
 	})
 }
 
@@ -690,6 +709,19 @@ exports.signUp = (req, res)=> {
 			req.session.ico = ico;
 			req.session.usr = act;
 			req.session.pow = pow;
+
+			// 发送邮件
+			sendemail({
+				from: 'UED iServer',
+				to: req.body.email,
+				subject: '欢迎!',
+				text: '欢迎加入!',
+				html: '<style>h1,h3,p {color:#333}</style><h1>欢迎使用 iServer</h1><h3>以下是你注册信息,请妥善保管</h3>'+
+					  '<p><b>帐号:</b>'+ act +'</p>'+
+					  '<p><b>注册邮箱:</b>'+ req.body.email +'</p>'+
+					  '<p>你可以通过帐号登录系统!通过邮箱找回密码</p>'+
+					  '<br><p>UED 团队</p>'
+			})
 
 			// 跳转主页
 			res.send({
@@ -1296,6 +1328,44 @@ exports.getUsers = (req, res)=> {
 		);
 
 	}
+}
+
+/*
+	发送邮件测试
+	sendMsg:
+	{
+		from: 'UED <' +data.usr+'>', 		// 发件地址
+		to: '530675800@qq.com',		// 收件地址,多个可用','分隔
+		subject: 'Hello!',				// 主题
+		text: 'nodejs email test!',		// plaintext body
+		html: '<h1>Nodejs email</h1>'	// 邮件内容
+	}
+*/
+function sendemail(sendMsg) {
+
+	Schemas.SMTP_m.findOne(
+		{},
+		(err, data)=> {
+			if (err) {
+				console.log(err);
+				return;
+			}
+
+			sendMsg.from = sendMsg.from +'<'+data.usr+'>';
+
+			console.log(sendMsg)
+			email({
+				host: data.host,
+				port: data.port,
+				auth: {
+					user: data.usr,
+					pass: data.pwd
+				}
+			},
+			sendMsg
+			)
+		}
+	)
 }
 
 /*
