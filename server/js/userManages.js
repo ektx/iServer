@@ -81,6 +81,7 @@ function getUserList(page) {
 			html += 	'</div><nav class="usr-manage-nav">';
 			html +=	'<a href="/'+_t.act+'" target="_blank">访问其主页</a>'
 			html +=	'<a href="/'+_t.act+'/set/passwd" target="_blank">密码重置</a>'
+			html += '<a href="#" target="_blank">发送邮件</a>'
 			html +=	'<a href="#">权限设置</a><hr class="split-line">'
 			html +=	'<a href="#">删除用户</a></nav></li>'
 		}
