@@ -168,7 +168,7 @@ $(function() {
 
 	})
 
-
+	// 上传项目文件功能
 	$('#toUploadProFiles').change(function() {
 		console.log(this.files.length)
 		var _form = $(this).parents('form');
@@ -190,10 +190,22 @@ $(function() {
 				}
 
 				// 刷新当前页面
-				location.reload()
+				setTimeout(function() {
+					location.reload()
+				}, 1100)
 			},
 			fail: function(err) {
 				console.error(err)
+			},
+			progress: function(per) {
+				var progressBar = $('.files-progress-bar-mod');
+
+				progressBar.css({
+					width: per * 100 + '%'
+				});
+				if (per === 1) {
+					progressBar.addClass('hide')
+				}
 			}
 		})
 		_form.submit()
