@@ -610,6 +610,23 @@ ul {
 	项目页面
 	============================================
 */
+
+/* 上传进度条*/
+.files-progress-bar-mod {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 3px;
+	width: 0;
+	background: #39f;
+	transition: width .3s ease;
+	z-index: 3000;
+}
+.files-progress-bar-mod.hide {
+	opacity: 0;
+	transition: opacity 1s;
+}
+
 .project-inner {
 	padding: 60px 20px 0;
 }
