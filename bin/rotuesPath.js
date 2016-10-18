@@ -1330,11 +1330,67 @@ exports.getUsers = (req, res)=> {
 	}
 }
 
+
+/*
+	找回密码功能
+*/
+exports.forgotPwd = (req, res) => {
+	let _email = req.body.email;
+
+	console.log(_email);
+
+	Schemas.usrs_m.find(
+		{email: _email},
+		(err, data)=> {
+			if (err) {
+				console.log(err);
+				return;
+			}
+
+			console.log(data);
+
+			if (data.length > 0) {
+				let newPwd = Math.random().toString(36).substring(2, 8);
+
+				Schemas.usrs_m.update(
+					{email: _email},
+					{$set: {reset: newPwd}},
+					(err, uD)=> {
+						if (err) {
+							console.log(err);
+							return;
+						}
+
+						let host = req.secure?'https://':'http://'+ req.headers.host;
+
+						sendemail({
+							from: 'UED',
+							to: req.body.email,
+							subject: '找回密码确认',
+							text: '请确认您要重置你的密码!',
+							html: '<h1>找回密码确认</h1>'+
+							      '<p>我们收到您要重置密码的需求,请点击下面的链接重置!</p>'+
+							      '<p><a href="'+host+'/resetPWD#'+newPwd+'">重置密码</a></p>'+
+							      '<p>新密码将在您重置后发送!注意查收!!</p>'+
+								  '<br><p>UED 团队</p>'
+						});
+
+						res.send({
+							success: true,
+							msg: 'OK'
+						})
+					}
+				)
+			}
+		}
+	)
+}
+
 /*
 	发送邮件测试
 	sendMsg:
 	{
-		from: 'UED <' +data.usr+'>', 		// 发件地址
+		from: 'UED', 		// 发件地址
 		to: '530675800@qq.com',		// 收件地址,多个可用','分隔
 		subject: 'Hello!',				// 主题
 		text: 'nodejs email test!',		// plaintext body
