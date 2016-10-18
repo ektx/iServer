@@ -9,6 +9,8 @@ const Schema = mongoose.Schema;
 	@pwd: 密码
 	@email: 邮箱
 	@ico: 头像
+	@power: 用户权限
+	@reset: 找回密码Code
 
 	文档: usrs
 */
@@ -18,7 +20,8 @@ const _usrs = new Schema({
 	pwd	   : String,
 	email  : String,
 	ico	   : String,
-	power  : String
+	power  : String,
+	reset  : String
 }, {collection: 'usrs', versionKey: false});
 
 exports.usrs_m = mongoose.model('usrs', _usrs);
