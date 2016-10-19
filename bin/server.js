@@ -69,9 +69,12 @@ module.exports = (req, res, options) => {
 			console.log('Suggest Path:'.white.bgYellow, _path)
 		}
 
+		// 处理路径乱码,解决URI加密问题,解决下载不了有空格命名的文件
+		_path = decodeURIComponent(_path);
+
 		fs.stat(_path, function(err, stats) {
 			if (err) {
-				console.log('No '.white.bgRed+' - '+_path)
+				console.log('Nox '.white.bgRed+' - '+_path)
 				
 				/* 
 					如果没有找到的文件

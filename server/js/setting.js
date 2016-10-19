@@ -156,7 +156,7 @@ $(function() {
 	function checkProName(type) {
 
 		var reslut = true;
-		var _name    = $('[name="pro-name"]');
+		var _name    = $('[name="name"]');
 		var _nameVal = $.trim(_name.val());
 		var _private = $('[name="private"]:checked').val();
 
@@ -182,43 +182,36 @@ $(function() {
 
 	}
 
-	$('[name="pro-name"]').blur(function() {
+	$('#add-project [name="name"]').blur(function() {
 		checkProName('blur')
 	})
 
-	$('#add-project').submit(function(e){
-		e.preventDefault();
-		var _name = $('[name="pro-name"]');
-		var _btn = $(this).find('.btn');
-		var _btnTxt = _btn.find('.name').text();
-		var getVal = checkProName();
-
-		if (!getVal) return;
-
-		btnSattus(_btn, 'loading', '加载中..') 
-
-		$.ajax({
-			url: '/addProject',
-			type: 'POST',
-			data: { name: getVal.name, private: getVal.private},
-			dataType: 'json'
-		})
-		.done(function(json){
+	/*
+		添加项目 提交时验证
+		--------------------------------
+	*/
+	$('#add-project').myVerification({
+		// 
+		show: 'err',
+		always: function(postData) {
+			btnTxt = postData.btn.text();
+			btnSattus(postData.btn, 'loading', '加载中..') 
+		},
+		done: function(json, postData) {
 			if (json.success) {
-				btnSattus(_btn, 'done', _btnTxt)
+				btnSattus(postData.btn, 'done', btnTxt)
 				setTimeout(function() {
 					location.href = json.msg;
 				}, 2000)
 			} else {
-				setErr(_name, json.msg);
-				btnSattus(_btn, 'normal', _btnTxt)
+				setErr($('[name="name"]'), json.msg);
+				btnSattus(postData.btn, 'normal', btnTxt)
 			}
-
-		})
-		.fail(function(err) {
-			setErr(_name, json.msg);
-		})
-	});
+		},
+		fail: function(err) {
+			console.log(err)
+		}
+	})
 
 
 	$('#mySMTP').myVerification({
@@ -248,6 +241,6 @@ $(function() {
 	-----------------------------------
 */
 function setErr(ele, info) {
-	ele.addClass('err').focus().next().text(info);
+	ele.focus().next().text(info).parent().addClass('err');
 }
 

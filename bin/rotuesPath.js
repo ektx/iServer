@@ -1407,19 +1407,23 @@ function sendemail(sendMsg) {
 				return;
 			}
 
-			sendMsg.from = sendMsg.from +'<'+data.usr+'>';
+			if (data) {
 
-			console.log(sendMsg)
-			email({
-				host: data.host,
-				port: data.port,
-				auth: {
-					user: data.usr,
-					pass: data.pwd
-				}
-			},
-			sendMsg
-			)
+				sendMsg.from = sendMsg.from +'<'+data.usr+'>';
+
+				email(
+					{
+						host: data.host,
+						port: data.port,
+						auth: {
+							user: data.usr,
+							pass: data.pwd
+						}
+					},
+					sendMsg
+				)
+				
+			}
 		}
 	)
 }
