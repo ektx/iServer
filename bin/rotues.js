@@ -18,6 +18,7 @@ module.exports = (app, type) => {
 		app.get('/addUser', redirectCheckLoginUsr, r.addUser)
 		app.get('/session', r.session)
 		app.get('/addproject', r.addProject)
+		app.get('/resetPWD', r.getResetPWD)
 		app.get('/SMTP', redirectCheckLoginUsr, r.getSMTP)
 		app.get('/set/profile', r.setProfile)
 		app.get('/set/passwd', r.getPasswdPage)
