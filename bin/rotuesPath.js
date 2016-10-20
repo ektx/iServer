@@ -605,7 +605,14 @@ exports.loginIn = (req, res) => {
 
 	let sendMsg = {};
 
-	Schemas.usrs_m.find({account: req.body.user}, (err, character) => {
+	Schemas.usrs_m.find(
+		{
+			$or: [
+				{account: req.body.user}, 
+				{email: req.body.user}
+			]
+		},
+		(err, character) => {
 
 		if ( character.length == 0 ) {
 			sendMsg = {
@@ -1333,11 +1340,12 @@ exports.getUsers = (req, res)=> {
 
 /*
 	找回密码功能
+	-----------------------------------
+	用户输入注册时的邮箱,我们会先发一份确认文件给用户
+	防止其它用户误写邮件造成非必要的操作
 */
 exports.forgotPwd = (req, res) => {
 	let _email = req.body.email;
-
-	console.log(_email);
 
 	let sendGetPwd = function() {
 		let newPwd = Math.random().toString(36).substring(2, 8);
@@ -1381,8 +1389,6 @@ exports.forgotPwd = (req, res) => {
 				return;
 			}
 
-			console.log(data);
-
 			if (data.length > 0) {
 				sendGetPwd()
 			}
@@ -1390,11 +1396,14 @@ exports.forgotPwd = (req, res) => {
 	)
 }
 
-
+/*
+	获取重置密码功能
+	-----------------------------
+	当用户从邮箱中点击了确认重置密码功能后,
+	后台自动生成一个随机的密码给用户,方便用户登录
+*/
 exports.getResetPWD = (req, res)=> {
 	let data = querystring.parse(url.parse(req.url).query);
-
-	console.log(data);
 
 	Schemas.usrs_m.find(
 		{email: data.email, reset: data.code},
