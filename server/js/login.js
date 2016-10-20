@@ -30,10 +30,15 @@ $(function() {
 			if (!data.success) {
 				option.this.prev('.error-info').addClass('show').text(data.msg)
 			} else {
-				if (location.hash && location.hash.length > 9) {
-					location.href = location.hash.substr(9)
+				// 忘记密码功能时，非跳转页面
+				if (option.url === '/forgotPwd') {
+					option.this.prev('.error-info').addClass('show').text(data.msg)
 				} else {
-					location.href = data.msg
+					if (location.hash && location.hash.length > 9) {
+						location.href = location.hash.substr(9)
+					} else {
+						location.href = data.msg
+					}
 				}
 			}
 		},

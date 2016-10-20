@@ -9,7 +9,7 @@ const server  = require('./server');
 const Schemas = require('./schemas');
 const mongoose = require('mongoose');
 const rimraf = require('rimraf');
-const CExec = require('child_process').exec;
+const querystring = require('querystring');
 
 const ifiles = require('./ifiles');
 const email = require('./email');
@@ -1339,6 +1339,40 @@ exports.forgotPwd = (req, res) => {
 
 	console.log(_email);
 
+	let sendGetPwd = function() {
+		let newPwd = Math.random().toString(36).substring(2, 8);
+
+		Schemas.usrs_m.update(
+			{email: _email},
+			{$set: {reset: newPwd}},
+			(err, uD)=> {
+				if (err) {
+					console.log(err);
+					return;
+				}
+
+				let host = req.secure?'https://':'http://'+ req.headers.host;
+
+				sendemail({
+					from: 'UED 帮助中心',
+					to: req.body.email,
+					subject: '找回密码确认',
+					text: '请确认您要重置你的密码!',
+					html: '<h1>找回密码确认</h1>'+
+					      '<p>我们收到您要重置密码的需求,请点击下面的链接重置!</p>'+
+					      '<p><a href="'+host+'/resetPWD?code='+newPwd+'&email='+_email+'">确认重置密码</a></p>'+
+					      '<p>新密码将在您<b>确认重置</b>后发送!注意查收!!</p>'+
+						  '<br><p>UED 团队</p>'
+				});
+
+				res.send({
+					success: true,
+					msg: '请查收您的邮件！'
+				})
+			}
+		)		
+	};
+
 	Schemas.usrs_m.find(
 		{email: _email},
 		(err, data)=> {
@@ -1350,37 +1384,59 @@ exports.forgotPwd = (req, res) => {
 			console.log(data);
 
 			if (data.length > 0) {
+				sendGetPwd()
+			}
+		}
+	)
+}
+
+
+exports.getResetPWD = (req, res)=> {
+	let data = querystring.parse(url.parse(req.url).query);
+
+	console.log(data);
+
+	Schemas.usrs_m.find(
+		{email: data.email, reset: data.code},
+		(err, json)=> {
+			if (err) {
+				console.log(err);
+				return;
+			}
+
+			if (json.length > 0) {
 				let newPwd = Math.random().toString(36).substring(2, 8);
 
 				Schemas.usrs_m.update(
-					{email: _email},
-					{$set: {reset: newPwd}},
-					(err, uD)=> {
+					{email: data.email, reset: data.code},
+					{$set: {pwd: newPwd}},
+					(err, uDate)=> {
 						if (err) {
 							console.log(err);
 							return;
 						}
 
-						let host = req.secure?'https://':'http://'+ req.headers.host;
-
 						sendemail({
-							from: 'UED',
-							to: req.body.email,
-							subject: '找回密码确认',
-							text: '请确认您要重置你的密码!',
-							html: '<h1>找回密码确认</h1>'+
-							      '<p>我们收到您要重置密码的需求,请点击下面的链接重置!</p>'+
-							      '<p><a href="'+host+'/resetPWD#'+newPwd+'">重置密码</a></p>'+
-							      '<p>新密码将在您重置后发送!注意查收!!</p>'+
+							from: 'UED 帮助中心',
+							to: data.email,
+							subject: '重置新密码',
+							text: '您的新密码是...',
+							html: '<h1>重置新密码</h1>'+
+							      '<p>您的新密码是:</p>'+
+							      '<p>'+newPwd+'</p>'+
+							      '<p>请妥善保管!</p>'+
 								  '<br><p>UED 团队</p>'
 						});
 
-						res.send({
-							success: true,
-							msg: 'OK'
-						})
+						res.redirect('/')
 					}
 				)
+
+			} else {
+				res.send({
+					success: false,
+					msg: '无法匹配到您的帐号!'
+				})
 			}
 		}
 	)
