@@ -21,8 +21,10 @@ $(function() {
 				// 更新项目名称或隐私
 				case '/updateProSettings':
 					var newName = postData.data.proName;
-					$('.os-header h1 a').text(newName).attr('href', '../'+newName+'/');
-					$('input[name="oldName"]').val(newName)
+					$('.os-header h1 a').text('设置-'+newName).attr('href', '../'+newName+'/');
+					$('input[name="oldName"]').val(newName);
+
+					if (data.success) $('#private-box').remove()
 
 					break;
 

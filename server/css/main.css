@@ -100,6 +100,11 @@ ul {
 .project-set-mod a {
 	display: block;
 	cursor: pointer;
+	font-size: 0;
+}
+.project-set-mod a svg {
+	margin: 3px;
+	vertical-align: middle;
 }
 .signUp {
 	margin-left: 15px;
@@ -154,7 +159,7 @@ ul {
 }
 
 .add-project-set {
-	padding: 0 10px;
+	padding-right: 10px;
 }
 .add-project-set:after {
 	content: '';
@@ -162,6 +167,7 @@ ul {
 	vertical-align: middle;
 	border: 3px solid transparent;
 	border-top-color: #333;
+	margin-top: 3px;
 }
 
 /* 圆角模块 --> */
