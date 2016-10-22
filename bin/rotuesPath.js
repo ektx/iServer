@@ -1060,12 +1060,13 @@ exports.updateProSettings = (req, res)=> {
 		proName: oldProName
 	})
 	.then( (status)=> {
-		if (newPrivate == 'true') {
-			if (status.isOpen) {
-				console.log('公开项目不可以收回!!')
-			} 
+		// 0 不公开项目
+		if ( status.isOpen ) {
+			console.log('公开项目不可以收回!!');
+			newPrivate = true;
 		} else {
 			updateJSON['project.$.private'] = false;
+			newPrivate = false;
 		}
 
 		updateJSON['project.$.name'] = newProName;
@@ -1073,9 +1074,10 @@ exports.updateProSettings = (req, res)=> {
 		// 通过抓包将公开的项目 private: false 改成自己的项目时 true
 		// 或是本来就是个人的项目,测试直接保存时
 		// 项目名称不变时,直接返回成功(不修改数据库)
-		console.log( oldProName == newProName)
-		if (oldProName === newProName && (newPrivate == status.isOpen?'false':'true')) {
-			console.log('No cchange! OK')
+		console.log( oldProName == newProName);
+
+		if (oldProName === newProName && newPrivate ) {
+			console.log('No change! OK!!')
 			res.send({
 				success: true,
 				msg: '保存成功!'
