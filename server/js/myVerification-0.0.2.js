@@ -218,6 +218,7 @@ $.fn.extend({
 				}
 
 			} else {
+
 				if (intFileSize > 0) {
 					data.append(_this.attr('name'), _val)
 
