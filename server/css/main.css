@@ -213,7 +213,6 @@ ul {
 	width: 800px;
 }
 .tab-title-box {
-	padding: 0 10px;
 	overflow: hidden;
 	border-bottom: 1px solid #eee;
 }
@@ -222,16 +221,27 @@ ul {
 	float: left;
 	font-size: 16px;
 	color: #777;
-	font-weight: 100;
+	font-weight: bold;
 	padding: 10px;
 	cursor: pointer;
 	border-bottom: 2px solid transparent
+}
+.tab-title-box li span {
+	font-size: 12px;
+	padding: 0 .5em;
+	margin-left: .3em;
+	background-color: #eee;
+	color: #666;
+	border-radius: 1em;
 }
 .tab-title-box li.current {
 	color: #39f;
 	border-color: #39f;
 }
-
+.tab-title-box li.current span {
+	background-color: #39f;
+	color: #fff;
+}
 .project-list-mod li {
 	font-size: 14px;
 	color: #666;
