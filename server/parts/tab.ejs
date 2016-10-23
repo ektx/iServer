@@ -1,8 +1,8 @@
 			<section class="tab-mod">
 				<ul class="tab-title-box">
-					<li class="current">项目</li>
-					<li>团队项目</li>
-					<li>Demo</li>
+					<li class="current">项目<span><%= pro.length %></span></li>
+					<!-- <li>团队项目</li> -->
+					<!-- <li>Demo</li> -->
 				</ul>
 
 				<div class="project-list-box">
@@ -28,7 +28,7 @@
 								创建于: <time title="<%= val.ctime %>"> -- </time>
 							</p>
 						</li>
-					<% }) %>
+						<% }) %>
 					<% } else { %>
 						<li>
 							<h3><a>还没有项目!</a></h3>
