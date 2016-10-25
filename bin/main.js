@@ -10,10 +10,6 @@ function server(options) {
 	const session = require('express-session');
 	const bodyParser = require('body-parser');
 	const colors  = require('colors');
-	// 压缩功能
-	const pack    = require('tar-pack').pack;
-	// 解压功能
-	const unpack  = require('tar-pack').unpack;
 	const mongoose = require('mongoose');
 	const iconv   = require('iconv-lite');
 
