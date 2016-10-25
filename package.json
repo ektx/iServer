@@ -23,7 +23,8 @@
   ],
   "bin": {
     "dev": "app.js",
-    "iserver": "index.js"
+    "iserver": "index.js",
+    "igit": "bin/git.js"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -38,9 +39,11 @@
     "mongoose": "^4.5.5",
     "multer": "^1.2.0",
     "nodemailer": "^2.6.4",
+    "progress": "^1.1.8",
     "pug": "^2.0.0-beta6",
     "rimraf": "^2.5.4",
     "socket.io": "*",
+    "superagent": "^2.3.0",
     "tar-pack": "^3.1.4",
     "tinify": "^1.3.0",
     "uglify": "^0.1.5",
