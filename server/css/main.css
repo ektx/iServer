@@ -208,9 +208,12 @@ ul {
 	background-color: #f5f5f5;
 }
 
+.content {
+	display: flex;
+}
 .tab-mod {
-	float: left;
-	width: 800px;
+	flex: 1;
+	padding-right: 15px;
 }
 .tab-title-box {
 	overflow: hidden;
