@@ -2,13 +2,28 @@
 
 const fs      = require('fs');
 const path	  = require('path');
+const url 	  = require('url');
 const pack    = require('tar-pack').pack;
 const unpack  = require('tar-pack').unpack;
 const request = require('superagent');
+const inquirer = require('inquirer');
 const progressBar = require('progress');
 const args = process.argv.splice(2);
 
 let projectName = args[1];
+
+let userInfo = 	[
+	{
+		type: 'input',
+		message: '帐号:',
+		name: 'UserName'
+	},
+	{
+		type: 'password',
+		message: '密码:',
+		name: 'Password'
+	}
+]
 
 console.log(args)
 
@@ -48,17 +63,33 @@ switch (args[0]) {
 			});
 
 			request
-				.post('http://localhost:3000/profiles')
+				.post('http://localhost:8000/igit/push')
 				.attach('avatar', fileStream)
 				.end((err, res)=>{
-					console.log(res.status)
+					if (!err && res.ok) {
+						fs.unlink(tarPath)
+					}
 				})
 		});
 
 		break;
 
 	case 'clone':
-		console.log('clone');
+
+		projectName = projectName.substr(0, projectName.lastIndexOf('/')) + '.igit';
+
+		request
+			.get(projectName)
+			.end((err, res)=>{
+				console.log(res.ok)
+			})
+
+
+
+		// inquirer.prompt(userInfo).then((answer)=>{
+		// 	console.log(JSON.stringify(answer, null, ' '))
+		// 	console.log('clone!');
+		// })
 		break;
 }
 

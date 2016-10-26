@@ -10,6 +10,8 @@ const Schemas = require('./schemas');
 const mongoose = require('mongoose');
 const rimraf = require('rimraf');
 const querystring = require('querystring');
+const pack    = require('tar-pack').pack;
+const unpack  = require('tar-pack').unpack;
 
 const ifiles = require('./ifiles');
 const email = require('./email');
@@ -39,6 +41,8 @@ const hasProject = (req, res, options) => {
 					} 
 					// 非本人访问隐私项目
 					else {
+						status.isOpen = 1;
+						reject(status)
 						ifiles.sendError(res, 423, '您无权访问此项目!!')
 					}
 				} else {
@@ -50,6 +54,7 @@ const hasProject = (req, res, options) => {
 			};
 
 			if (data.length == 0) {
+				reject(404);
 				ifiles.sendError(res, 404, '没有此项目!')
 				return;
 			}
@@ -245,20 +250,38 @@ exports.__USER = (req, res)=> {
 // 访问用户项目
 exports.usrProject = (req, res, next)=> {
 
-	console.log(':: Your asking User:', req.params.usr )
-	console.log(':: Your asking Her Project:', req.params.project || options.proName )
+	console.log(':: You asking User:', req.params.usr )
+	console.log(':: You asking Her Project:', req.params.project )
 
 	let realUrl  = req.url = req.url.replace('/f', '');	
 	let filePath = process.cwd()+ realUrl;
+	let getTar   = false;
 	
 	let gitProFiles = (status)=> {
 
 		let isFs = false;
+		console.log('sss', getTar, filePath)
 
 		try {
 			isFs = fs.statSync(filePath);
 		} catch (err) {
 			ifiles.sendError(res, 404, '没有发现此目录');
+			return;
+		}
+
+
+		if (getTar) {
+			// '打包文件啦...'
+
+			pack(filePath)
+				.pipe( fs.createWriteStream( path.join(filePath, req.params.project+'.tar.gz') ) )
+				.on('error', (err)=>{
+					console.log(err.stack)
+				})
+				.on('close', ()=>{
+					console.log('Done!');
+				})
+
 			return;
 		}
 
@@ -320,9 +343,19 @@ exports.usrProject = (req, res, next)=> {
 		})
 	}
 
+	if ( req.params.project.endsWith('.igit') ) {
+		console.log( 'SomeBody want get tar.gz ...' );
+		getTar = true;
+		filePath = filePath.replace('.igit', '')
+
+		req.params.project = req.params.project.replace('.igit', '')
+	}
+
 	hasProject(req, res).then( (status)=>{
+		console.log('++++',status)
 		gitProFiles(status) 
 	})
+	
 
 };
 
