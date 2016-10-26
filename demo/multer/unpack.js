@@ -1,5 +1,5 @@
-var express = require('express')
-var multer = require('multer')
+const express = require('express')
+const multer = require('multer')
 const fs = require('fs')
 const unpack  = require('tar-pack').unpack;
 
@@ -30,7 +30,7 @@ app.post('/profiles', upload.array('avatar', 5), (req, res, next)=> {
 
 	const rd = fs.createReadStream(__dirname + '/img/'+req.files[0].originalname);
 
-	rd.pipe(unpack(__dirname+'/package/', (err)=>{
+	rd.pipe(unpack(__dirname+'/package/Dev/', (err)=>{
 		if (err) console.log(err.stack);
 		else console.log('Done')
 	}))
