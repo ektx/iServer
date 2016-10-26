@@ -262,6 +262,12 @@ exports.usrProject = (req, res, next)=> {
 		let isFs = false;
 		console.log('sss', getTar, filePath)
 
+		// 约定访问文件夹是以 '/' 结尾,非此结尾的都是文件,进入文件系统
+		if (!filePath.endsWith('/')) {
+			server(req, res, {serverRootPath: process.cwd() });
+			return;
+		}
+
 		try {
 			isFs = fs.statSync(filePath);
 		} catch (err) {
