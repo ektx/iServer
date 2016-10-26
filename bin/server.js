@@ -74,7 +74,7 @@ module.exports = (req, res, options) => {
 
 		fs.stat(_path, function(err, stats) {
 			if (err) {
-				console.log('Nox '.white.bgRed+' - '+_path)
+				console.log('No '.white.bgRed+' - '+_path)
 				
 				/* 
 					如果没有找到的文件
