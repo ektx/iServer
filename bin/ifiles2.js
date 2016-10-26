@@ -229,6 +229,6 @@ function resHeaders(type) {
 	return {
 		'Content-Type': type+';charset="utf8"',
 		'x-xss-protection': '1; mode=block',
-		'Server': 'iServer 3.0 beta'
+		'Server': 'iServer 4'
 	}
 }
