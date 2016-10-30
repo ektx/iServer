@@ -116,11 +116,12 @@ exports.showDirecotry = (req, res, serverRootPath, reqPath) => {
 	@filePath: 文件路径
 */
 exports.sendFile = function(req, res, filePath) {
-
-	var stat = fs.statSync(filePath);
-	var total = stat.size;
+	
+	let stat = fs.statSync(filePath);
 
 	if (req.headers['range']) {
+
+		var total = stat.size;
 		var range = req.headers.range;
 		var parts = range.replace(/bytes=/, '').split('-');
         var partialstart = parts[0];
@@ -149,27 +150,42 @@ exports.sendFile = function(req, res, filePath) {
             res.writeHead(416, "Request Range Not Satisfiable");
             res.end();
         }
+
 	} else {
+		let lastModifed = stat.mtime.toUTCString();
 
-		var stream = fs.createReadStream(filePath);
+		let wh_opt = resHeaders( 
+				mime.lookup(
+					path.basename(filePath)
+				) 
+			);
+		wh_opt['Last-Modified'] = lastModifed;
 
-		stream.on('error', function() {
-			sendError(res, 505)
-		})
+		if (req.headers['if-modified-since'] && lastModifed == req.headers['if-modified-since'] ) {
+			res.writeHead(304, wh_opt);
+			res.end()
+		} else {
 
-		// stream.on('data', function(chunk) {
-		// 	console.log(chunk)
-		// })
+			let stream = fs.createReadStream(filePath);
 
-		mime.define({
-			'text/css': ['scss']
-		})
+			stream.on('error', function() {
+				sendError(res, 505)
+			})
 
-		res.writeHead(
-			200,
-			{'Content-Type': mime.lookup(path.basename(filePath)) + '; charset=UTF-8'}
-		)
-		stream.pipe(res);
+			// stream.on('data', function(chunk) {
+			// 	console.log(chunk)
+			// })
+
+			mime.define({
+				'text/css': ['scss']
+			});
+
+
+			res.writeHead( 200,	wh_opt )
+
+			stream.pipe(res);
+			
+		}
 	}
 
 }
@@ -216,15 +232,30 @@ function breadCrumbs(filePath) {
 
 /*
 	响应头
-	---------------------------------------
+	-----------------------------------------
+	@type {string} 文件类型,默认我们用 text/html
 */
 function resHeaders(type) {
 	type = type || 'text/html';
 
-	return {
+	let headerInfo = {
 		'Content-Type': type+';charset="utf8"',
 		'x-xss-protection': '1; mode=block',
 		'Server': 'iServer 4.0.0 beta'
+	};
+
+	let cacheType = ['javascript', 'css', 'jpeg', 'png', 'gif', 'x-markdown'];
+
+	if ( cacheType.includes( type.split('/')[1] ) ) {
+		let expires = new Date();
+		// 31536000 * 1000
+		expires.setTime(expires.getTime() + 31536000000);
+
+		headerInfo.Expires = expires.toUTCString();
+		// 缓存一年 60 * 60 * 24 * 365
+		headerInfo['Cache-Control'] = 'max-age=' + 31536000;
 	}
+
+	return headerInfo;
 }
 
