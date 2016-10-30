@@ -1,6 +1,10 @@
 			<section class="tab-mod">
 				<ul class="tab-title-box">
-					<li class="current">项目<span><%= pro.length %></span></li>
+				<li class="current">项目
+				<% if (pro.length){ %>
+					<span><%= pro.length %></span>
+				<% } %>
+				</li>
 					<!-- <li>团队项目</li> -->
 					<!-- <li>Demo</li> -->
 				</ul>
@@ -31,7 +35,7 @@
 						<% }) %>
 					<% } else { %>
 						<li>
-							<h3><a>还没有项目!</a></h3>
+							<h3><a href="/addproject">添加项目>></a></h3>
 						</li>
 					<% } %>
 					</ul>
