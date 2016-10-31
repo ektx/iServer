@@ -75,21 +75,45 @@ switch (args[0]) {
 		break;
 
 	case 'clone':
-
+		let name = path.basename( decodeURIComponent(projectName));
+		let tarFile = process.cwd()+ '/' + name +'.tar.gz';
 		projectName = projectName.substr(0, projectName.lastIndexOf('/')) + '.igit';
 
-		request
+		let ws = fs.createWriteStream( tarFile );
+
+		let req = request
 			.get(projectName)
 			.end((err, res)=>{
-				console.log(res.ok)
+				console.log(res)
+			});
+
+		req.pipe(ws);
+
+		req.on('response', (res)=>{
+
+			if (!res.ok) {
+				console.log(res.error)
+				return;
+			}
+
+			let loadingIco = 0;
+			let loadingIcoArr = ['-', '\\', '|', '/', '-', '\\', '|', '/']
+
+			res
+			.on('data', (chunk)=>{
+				progressStatus(loadingIcoArr[loadingIco] + ' Downloading');
+				loadingIco++;
+				if (loadingIco == 8) loadingIco = 0;
+			})
+			.on('end',()=>{
+				progressStatus('OK Download\n');
+
+				progressStatus('Unpack Files...')
+				unPackPro(tarFile, process.cwd() + '/' + name );
 			})
 
+		})
 
-
-		// inquirer.prompt(userInfo).then((answer)=>{
-		// 	console.log(JSON.stringify(answer, null, ' '))
-		// 	console.log('clone!');
-		// })
 		break;
 }
 
@@ -105,4 +129,23 @@ function packPro(callback) {
 			console.log('Done!');
 			callback()
 		})
+}
+
+
+function unPackPro(readStr, savePath, callback) {
+	let rd = fs.createReadStream(readStr);
+	rd.pipe( unpack(savePath, (err)=>{
+			if (err) console.log(err.stack);
+			else {
+				progressStatus('Unpacked!');
+				if (callback) callback()
+			}
+		}) )
+}
+
+
+function progressStatus(outinput) {
+	process.stdout.clearLine();
+	process.stdout.cursorTo(0)
+	process.stdout.write(outinput);
 }
