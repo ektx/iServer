@@ -262,12 +262,6 @@ exports.usrProject = (req, res, next)=> {
 		let isFs = false;
 		console.log('sss', getTar, filePath)
 
-		// 约定访问文件夹是以 '/' 结尾,非此结尾的都是文件,进入文件系统
-		if (!filePath.endsWith('/')) {
-			server(req, res, {serverRootPath: process.cwd() });
-			return;
-		}
-
 		try {
 			isFs = fs.statSync(filePath);
 		} catch (err) {
@@ -275,21 +269,29 @@ exports.usrProject = (req, res, next)=> {
 			return;
 		}
 
-
+		// 打包文件,提供下载
 		if (getTar) {
-			// '打包文件啦...'
+
+			res.writeHead(200, 'ok')
 
 			pack(filePath)
-				.pipe( fs.createWriteStream( path.join(filePath, req.params.project+'.tar.gz') ) )
 				.on('error', (err)=>{
 					console.log(err.stack)
 				})
 				.on('close', ()=>{
 					console.log('Done!');
 				})
+				.pipe( res )
 
 			return;
 		}
+
+		// 约定访问文件夹是以 '/' 结尾,非此结尾的都是文件,进入文件系统
+		if (!filePath.endsWith('/')) {
+			server(req, res, {serverRootPath: process.cwd() });
+			return;
+		}
+
 
 		// 如果是文件,只接读取
 		if ( isFs.isFile() ) {
