@@ -962,7 +962,7 @@ exports.addProject_p = (req, res)=> {
 
 			res.send({
 				success: true,
-				msg: "/"+req.session.act+"/"+_proName
+				msg: "/"+req.session.act+"/"+_proName+"/"
 			})
 		})
 	}
