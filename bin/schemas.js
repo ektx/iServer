@@ -28,9 +28,9 @@ exports.usrs_m = mongoose.model('usrs', _usrs);
 
 
 /*
-	用户项目
+	用户项目[old]
 	---------------------------------------
-
+	未来项目不在使用此方式保存
 
 	文档: myproject
 */
@@ -48,6 +48,21 @@ const _myproject = new Schema({
 
 exports.myproject_m = mongoose.model('myproject', _myproject);
 
+
+/*
+	项目[new]
+	---------------------------------------
+	未来项目将采用此保存
+
+	文档: project
+*/
+const _project = new Schema({
+	name: String,
+	ctime: String,
+	utime: String,
+	private: Boolean
+}, { collection: 'project', versionKey: false});
+exports.project_m = mongoose.model('project', _project);
 
 
 /*

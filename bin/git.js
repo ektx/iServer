@@ -77,42 +77,110 @@ switch (args[0]) {
 	case 'clone':
 		let name = path.basename( decodeURIComponent(projectName));
 		let tarFile = process.cwd()+ '/' + name +'.tar.gz';
-		projectName = projectName.substr(0, projectName.lastIndexOf('/')) + '.igit';
+		let url = projectName.substr(0, projectName.lastIndexOf('/'));
 
 		let ws = fs.createWriteStream( tarFile );
 
-		let req = request
-			.get(projectName)
-			.end((err, res)=>{
-				console.log(res)
-			});
+		/*
+			克隆项目文件
+			--------------------------------
+			@url {string} 下载项目的地址
+		*/
+		let getStream = (url)=> {
 
-		req.pipe(ws);
+			let stream = request.get( url )
 
-		req.on('response', (res)=>{
+			stream.pipe(ws);
 
-			if (!res.ok) {
-				console.log(res.error)
-				return;
-			}
+			stream.on('response', (res)=>{
 
-			let loadingIco = 0;
-			let loadingIcoArr = ['-', '\\', '|', '/', '-', '\\', '|', '/']
+				if (!res.ok) {
+					console.log(res.error);
+					return;
+				}
 
-			res
-			.on('data', (chunk)=>{
-				progressStatus(loadingIcoArr[loadingIco] + ' Downloading');
-				loadingIco++;
-				if (loadingIco == 8) loadingIco = 0;
+				let loadingIco = 0;
+				let loadingIcoArr = ['-', '\\', '|', '/', '-', '\\', '|', '/']
+
+				res
+				.on('data', (chunk)=>{
+					progressStatus(loadingIcoArr[loadingIco] + ' Downloading');
+					loadingIco++;
+					if (loadingIco == 8) loadingIco = 0;
+				})
+				.on('end',()=>{
+
+					if (res.ok) {
+						progressStatus('OK Download\n');
+						progressStatus('Unpack Files...')
+						
+						// 解压完成之后,删除下载包
+						unPackPro(tarFile, process.cwd() + '/' + name , ()=>{
+							fs.unlink(tarFile)
+						});
+					} else {
+						// 删除下载包
+						fs.unlink(tarFile)
+					}
+
+				})
+
 			})
-			.on('end',()=>{
-				progressStatus('OK Download\n');
+		}
 
-				progressStatus('Unpack Files...')
-				unPackPro(tarFile, process.cwd() + '/' + name );
-			})
+		// 请求项目,如果项目不要密码的则自动下载下来
+		let getMyProject = (path)=> {
+			
+			let req = request
+				.get( path )
+				.end( (err, res)=> {
+					if (!err && res.ok) {
+						console.log(res.body);
 
-		})
+						if (!res.body.success) return;
+
+						// 需要密码的项目
+						if (res.body.pwd) {
+
+							// 输入用户名于密码
+							inquirer.prompt([
+								{
+									type: 'input',
+									name: 'name',
+									message: '姓名:'
+								},
+								{
+									type: 'password',
+									name: 'pwd',
+									message: '密码:'
+								}
+							]).then((answer)=>{
+								
+								let streamURL = url + '.igit?p='+ answer.pwd+'&u='+answer.name;
+
+								// 添加密码后再次提交确认
+								getMyProject( streamURL );
+
+							})
+
+						} 
+						// 公开或认证过项目
+						else {
+							let _url = url + '.stream';
+							if (res.body.stream) {
+								_url += '?p='+res.body.stream;
+							}
+							getStream(_url)
+						}
+
+					}
+				}) // end()
+
+		};
+
+
+		getMyProject(url + '.igit')
+
 
 		break;
 }
@@ -137,7 +205,7 @@ function unPackPro(readStr, savePath, callback) {
 	rd.pipe( unpack(savePath, (err)=>{
 			if (err) console.log(err.stack);
 			else {
-				progressStatus('Unpacked!');
+				progressStatus('Unpacked!\n');
 				if (callback) callback()
 			}
 		}) )

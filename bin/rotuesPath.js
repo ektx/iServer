@@ -19,14 +19,16 @@ const email = require('./email');
 
 const hasProject = (req, res, options) => {
 
-	let usr = req.params.usr || options.usr;
+	options = options || {usr: null, proName: null};
+
+	let usr = options.usr || req.params.usr;
 
 	let p = new Promise(function(resolve, reject) {
 		// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
 		Schemas.myproject_m.aggregate([
 			{$match: {usr: usr }},
 			{$unwind: '$project'},
-			{$match: {'project.name': req.params.project || options.proName }}
+			{$match: {'project.name': options.proName || req.params.project }}
 		], (err, data)=> {
 			if (err) { console.log(err); return }
 
@@ -257,6 +259,7 @@ exports.usrProject = (req, res, next)=> {
 	let filePath = process.cwd()+ realUrl;
 	let getTar   = false;
 	
+
 	let gitProFiles = (status)=> {
 
 		let isFs = false;
@@ -274,6 +277,7 @@ exports.usrProject = (req, res, next)=> {
 
 			res.writeHead(200, 'ok')
 
+			// 打包
 			pack(filePath)
 				.on('error', (err)=>{
 					console.log(err.stack)
@@ -351,18 +355,124 @@ exports.usrProject = (req, res, next)=> {
 		})
 	}
 
+	// 1. 验证
 	if ( req.params.project.endsWith('.igit') ) {
-		console.log( 'SomeBody want get tar.gz ...' );
-		getTar = true;
-		filePath = filePath.replace('.igit', '')
+		let req_usr = querystring.parse(url.parse(req.url).query);
+		req.params.project = req.params.project.replace(/\.igit(\?.*)?/i, '');
 
-		req.params.project = req.params.project.replace('.igit', '')
+		console.log( '1.SomeBody want get tar.gz ...' , req.params.project, req_usr);
+
+		if (req_usr && req_usr.p) {
+
+			let callback = (data)=>{
+				// 用户密码判断
+				if (data.pwd === req_usr.p) {
+					// 密码正确,返回密码用于下次下载需求使用
+					res.send({
+						success: true,
+						stream: req_usr.p
+					})
+				} else {
+					// 密码错误
+					res.send({
+						success: true,
+						msg: '密码错误!请稍重新输入!!',
+						pwd: true
+					})
+				}
+			}
+
+			getUserInfo({account: req.params.usr}, callback, (err)=>{
+				res.send("Get usrInfo error!")
+			});
+
+		} else {
+
+			Schemas.project_m.findOne(
+				{usr: req.params.usr, 'name': req.params.project},
+				(err, data)=>{
+					if (err) {
+						res.send({
+							msg: "请求项目时出现错误!请稍候再试!"
+						})
+						return;
+					}
+
+					// 是否有此项目存在
+					if (data) {
+
+						// 如果项目是个人项目,要求用户输入密码
+						if (data.private) {
+							res.send({
+								success: true,
+								msg: '请先确认用户信息:',
+								pwd: true
+							})
+						} else {
+							// stream 表示不需要密码的公开项目
+							res.send({
+								success: true,
+								stream: false
+							})
+						}
+					} else {
+						res.send({
+							success: false,
+							msg: '不存在此项目,请确认后再试!'
+						})
+					}
+				}
+			)
+		}
+
+	} 
+	// 2.下载
+	else if (req.params.project.endsWith('.stream') ) {
+		console.log( '2.SomeBody will get tar.gz ...' );
+
+		let req_usr = querystring.parse(url.parse(req.url).query);
+		filePath = filePath.replace(/\?.+/, '');
+		req.params.project = req.params.project.replace('.stream', '');
+
+		// 文件下载格式化
+		let toDownTar = ()=>{
+			filePath = filePath.replace(/\.stream(\?.*)?/, '/');
+			getTar   = true;
+			gitProFiles();
+		}
+
+		// 对于公开的项目,直接下载
+		if (!req_usr.p) {
+			toDownTar()
+		} else {
+			// 取得个人信息,验证当前用户是否可以下载项目
+			getUserInfo(
+				{account: req.params.usr, pwd: req_usr.p}, 
+				(data)=>{
+					// 密码正确时下载
+					if (data.pwd === req_usr.p) toDownTar() 
+					else {
+						res.send('Error!')
+					}
+
+				}, 
+				(err)=>{
+					res.send("Get usrInfo error!")
+				}
+			);
+		}
+
+
+
 	}
+	// 正常浏览器访问项目
+	else {
 
-	hasProject(req, res).then( (status)=>{
-		console.log('++++',status)
-		gitProFiles(status) 
-	})
+		hasProject(req, res).then( (status)=>{
+			gitProFiles(status) 
+		})
+		
+	}
 	
 
 };
@@ -1618,5 +1728,18 @@ function defaultHeader(req) {
 	}
 }
 
+function getUserInfo(match, done, fail){
+	Schemas.usrs_m.findOne(
+		match,
+		(err, data)=> {
+			if (err) {
+				console.log(err);
+				if (fail) fail(err);
+				return;
+			}
 
+			done(data)
+		}
+	)
+}
 
