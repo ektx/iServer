@@ -94,10 +94,16 @@ function getHTML(files, filePath) {
 	@reqPath: 请求路径
 */
 exports.showDirecotry = (req, res, serverRootPath, reqPath) => {
-	let _filePath = path.join(serverRootPath, reqPath)
+	let _filePath = decodeURIComponent(path.join(serverRootPath, reqPath))
 
-	fs.readdir(_filePath, function(err, files) {
-		var html = getHTML(files, _filePath)
+	fs.readdir(_filePath, (err, files)=> {
+		if (err) {
+			console.log(err);
+			res.send('Show Directory Error!');
+			return;
+		}
+
+		let html = getHTML(files, _filePath)
 		res.writeHead(200, resHeaders());
 
 		html += '<h5>共有 '+ files.length + ' 个文件!</h5>';
