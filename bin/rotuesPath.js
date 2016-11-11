@@ -268,12 +268,11 @@ exports.usrProject = (req, res, next)=> {
 		try {
 			isFs = fs.statSync(filePath);
 		} catch (err) {
-			ifiles.sendError(res, 404, '没有发现此目录');
-			return;
+			console.log(err)
 		}
 
 		// 打包文件,提供下载
-		if (getTar) {
+		if (getTar && isFs) {
 
 			res.writeHead(200, 'ok')
 
