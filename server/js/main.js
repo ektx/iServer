@@ -81,9 +81,16 @@ $(function() {
 						var SumEle = $('.pro-fileSize');
 						var oldSum = parseInt(SumEle.text().match(/\d+/)[0]) -1;
 
-						SumEle.text('共有 '+oldSum+' 个文件')
+						if (oldSum) {
 
-						$(contextmenuObj.target.parentNode).hide()
+							SumEle.text('共有 '+oldSum+' 个文件')
+
+							$(contextmenuObj.target.parentNode).hide()
+							
+						} else {
+							location.reload()
+						}
+
 					} else {
 						alert(data.msg)
 					}
@@ -102,7 +109,8 @@ $(function() {
 	});
 
 	// 头部菜单 -- 上传代码
-	$('#hd-toUploadProFile').click(function(e) {
+	// 新项目添加上传文件 -- 上传代码
+	$('#hd-toUploadProFile, .project-list button').click(function(e) {
 		e.preventDefault();
 		$('#toUploadProFiles').trigger('click');
 	});
