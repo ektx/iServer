@@ -545,6 +545,21 @@ ul {
 	stroke-width: 24px;
 }
 
+.tbtn {
+	display: inline-block;
+	font-size: 1em;
+	color: #09f;
+	outline: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	background-color: transparent;
+	cursor: pointer;
+	transition: border .3s ease;
+}
+.tbtn:hover {
+	border-bottom-color: #09f;
+}
+
 .circle-z {
 	fill:none;
 	stroke: #ccc;
