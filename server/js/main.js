@@ -364,17 +364,39 @@ function statusBar(options) {
 		return _html
 	}
 
-	var createBtns = function(id, btnArr) {
-		var _html = '<div class="status-btns">';
-		var _fun = {};
+	var closeBar = function(ele) {
+		_bar = ele.parents('.status-bar-box');
+
+		_bar.addClass('hide-status-bar');
+
+		_bar.height( _bar.height() )
+
+		setTimeout(function() {
+			_bar.css({
+				height: 0,
+				padding: 0
+			})
+		}, 300)
+
+		setTimeout(function() {
+			_bar.remove()
+		}, 800)
+	}
+
+	var createBtns = function(btnArr) {
+		var _html = $('<div class="status-btns"></div>');
+
 		for (var i = 0, l = btnArr.length; i < l; i++) {
-			_html += '<button>' + btnArr[i].name + '</button>'
+			var _btn = $('<button>' + btnArr[i].name + '</button>');
 
-			_fun[btnArr[i].name] = btnArr[i].fun;
+			var callback = btnArr[i].fun;
+
+			_btn.click(function() {
+				callback();
+				closeBar($(this))
+			})
+			_html.append(_btn);
 		}
-
-		statusBarFun['statusBarNo'+id] = _fun
-		_html += '</div>'
 
 		return _html;
 	}
@@ -393,7 +415,6 @@ function statusBar(options) {
 				}
 			]
 		};
-		var id = +new Date(); 
 
 		option = extendObj(option, options);
 		// 支持只要一个按钮功能
@@ -401,49 +422,22 @@ function statusBar(options) {
 
 		options = option;
 
-		if (!window.statusBarFun) {
-			window.statusBarFun = {};
-		}
-
-		var HTML = '<div id="statusBarNo'+id+'" class="status-bar-box"><div class="status-bar-inner show-status-bar">';
+		var HTML = $('<div class="status-bar-inner show-status-bar"></div>');
 		var mainBox = $('#status-bar-mod');
 
-		HTML += createIcon(options.ico);
-		HTML += createBody(options.title, options.msg);
-		HTML += createBtns(id, options.btns);
-		HTML += '</div></div>'
+		HTML.append(
+			createIcon(options.ico), 
+			createBody(options.title, options.msg),
+			createBtns(options.btns)
+		);
+
+		HTML = $('<div class="status-bar-box"></div>').append(HTML);
 
 		if ( mainBox.length === 1) {
 			mainBox.append(HTML)
 		} else {
-			$('body').append('<aside id="status-bar-mod" class="status-bar-mod">' + HTML + '</div>');
 
-			// 绑定事件
-			$('#status-bar-mod').on('click', 'button', function(e) {
-				var _ = $(this);
-				var _p = _.parents('.status-bar-box')
-				var _id = _p.attr('id');
-				var _name = this.innerText;
-				var _H =  _p.height();
-				var _isFun = statusBarFun[_id][_name]
-
-				console.log(_H)
-				_p.height(_H)
-
-				if (typeof _isFun === 'function') _isFun()
-				_p.addClass('hide-status-bar')
-
-				setTimeout(function() {
-					_p.css({
-						height: 0,
-						padding: 0
-					})
-				}, 300)
-
-				setTimeout(function() {
-					_p.remove()
-				}, 800)
-			})
+			$('<aside id="status-bar-mod" class="status-bar-mod">').append( HTML ).appendTo('body')
 		}
 	}
 
