@@ -42,6 +42,7 @@
     "progress": "^1.1.8",
     "pug": "^2.0.0-beta6",
     "rimraf": "^2.5.4",
+    "shelljs": "^0.7.5",
     "socket.io": "*",
     "superagent": "^2.3.0",
     "tar-pack": "^3.1.4",
