@@ -25,51 +25,41 @@ const hasProject = (req, res, options) => {
 
 	let p = new Promise(function(resolve, reject) {
 		// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
-		Schemas.myproject_m.aggregate([
-			{$match: {usr: usr }},
-			{$unwind: '$project'},
-			{$match: {'project.name': options.proName || req.params.project }}
-		], (err, data)=> {
-			if (err) { console.log(err); return }
 
-			// 归属状态
-			let isOpen = (status)=> {
-				// 项目状态
-				if (data[0].project.private) {
-					// 是本人访问隐私项目
-					if (status.isMaster) {
-						status.isOpen = 0;
-						resolve(status)
-					} 
-					// 非本人访问隐私项目
-					else {
-						status.isOpen = 1;
-						reject(status)
-						ifiles.sendError(res, 423, '您无权访问此项目!!')
+		Schemas.project_m.find(
+			{
+				usr: usr,
+				name: options.proName || req.params.project
+			},
+			(err, data)=> {
+				if (err) console.log(err);
+
+				if (data.length) {
+
+					let status = {};
+
+					if (req.session.act && req.session.act == usr) {
+						status.isMaster = 1
+					} else {
+						status.isMaster = 0
 					}
-				} else {
-					// 访问公开项目
-					status.isOpen = 1;
+
+					if (data.private) {
+						status.open = 1
+					} else {
+						status.open = 0
+					}
+
 					resolve(status)
+
+				} else {
+					console.log('没有此项目!!');
+					reject(404, '没有此项目!!')
 				}
-
-			};
-
-			if (data.length == 0) {
-				reject(404);
-				ifiles.sendError(res, 404, '没有此项目!')
-				return;
 			}
+		)
 
-			if (req.session.act && req.session.act == usr) {
-				// isMaster: 1 这个项目只有自己可以看
-				isOpen({ isMaster: 1})
-			} else {
-				isOpen({ isMaster: 0})
-				// 423 当前资源被锁定
-			}
 
-		})
 	});
 
 	return p;
@@ -190,26 +180,15 @@ exports.usrHome = (req, res, next)=> {
 
 			// 非用户本人访问时
 			if (req.params.usr !== req.session.act) {
-				Schemas.myproject_m.aggregate([
-						{$match: {
-							'usr': req.params.usr
-						}},
-						{$unwind: '$project'},
-						{$match: {
-							'project.private': false
-						}},
-						{$sort: {
-							'project.ctime': -1
-						}},
-						{$group: {
-							_id: '$usr',
-							project: {$push: '$project'}
-						}}
-					],
+	
+				Schemas.project_m.find(
+					{
+						usr: req.params.usr,
+						private: false
+					},
 					(err, data)=> {
-
 						if (data.length > 0) {
-							sendMsg(req, res, usrData, data[0].project)
+							sendMsg(req, res, usrData, data.reverse())
 						} else {
 							sendMsg(req, res, usrData, false)
 						}
@@ -218,19 +197,11 @@ exports.usrHome = (req, res, next)=> {
 			}
 			// 如果是用户本人访问个人中心
 			else {
-				Schemas.myproject_m.findOne(
+				Schemas.project_m.find(
 					{usr : req.params.usr},
 					(err, data)=> {
 
-						if (!data) {
-							data = false
-						} else {
-							data = data.project;
-
-							data.reverse();
-						}
-
-						sendMsg(req, res, usrData, data)
+						sendMsg(req, res, usrData, data.reverse())
 					}
 				);
 			}
@@ -269,6 +240,8 @@ exports.usrProject = (req, res, next)=> {
 			isFs = fs.statSync(filePath);
 		} catch (err) {
 			console.log(err)
+
+			if (!getTar) res.send('404 没有此目录!')
 		}
 
 		// 打包文件,提供下载
@@ -469,6 +442,8 @@ exports.usrProject = (req, res, next)=> {
 
 		hasProject(req, res).then( (status)=>{
 			gitProFiles(status) 
+		}, (reject)=>{
+			res.send('404')
 		})
 		
 	}
@@ -1042,7 +1017,18 @@ exports.getUserList = (req, res) => {
 	-------------------------------------
 */
 exports.addProject = (req, res) => {
-	goToPage(req, res, 'addProject')
+
+	let options = defaultHeader(req);
+	let type = url.parse(req.url).query;
+
+	if (type === 'git') {
+		options.title = "创建 Git 项目";
+	} else {
+		options.title = "创建项目";
+	}
+	options.type = url.parse(req.url).query;
+
+	res.render('addProject', options)
 }
 
 /*
@@ -1055,7 +1041,7 @@ exports.addProject_p = (req, res)=> {
 	let _private = req.body.private;
 
 	console.log(req.body.name, req.body.private);
-		console.log('usr project path:')
+	console.log('usr project path:')
 
 	let sendMsg = (err, errInfo)=> {
 		if (err) {
@@ -1092,59 +1078,26 @@ exports.addProject_p = (req, res)=> {
 		return;
 	}
 
-	// 更新数据 
-	let updatePro = () => {
-		Schemas.myproject_m.update(
-			{usr: req.session.act},
-			{$push: {
-				'project': {
-					name: _proName,
-					private: _private,
-					ctime: new Date().toISOString()
-				}
-			}},
-			{_id: false},
-			(err, data)=> {
-				sendMsg(err, "项目创建失败!请稍候再试!!")
-			}
-		)
-	};
-
-	// 第一次时,创建添加
-	let insertUsrAndPro = () => {
-		Schemas.myproject_m.create(
+	// 验证保存数据的方法
+	let toSaveProject = ()=> {
+		Schemas.project_m.create(
 		{
 			usr: req.session.act,
-			project: {
-				name: _proName,
-				private: _private,
-				ctime: new Date().toISOString()
-			}
+			name: _proName,
+			private: _private,
+			ctime: new Date().toISOString()
 		}, 
 		(err, data) => {
 			sendMsg(err, "项目创建失败!请稍候再试!!")
 		})
 	}
 
-	// 验证保存数据的方法
-	let toSaveProject = ()=> {
-		Schemas.myproject_m.find({usr: req.session.act}, (err, data)=>{
-			if (err) {
-				res.end('Find usr Err!');
-				return
-			}
-
-			if (data.length > 0) {
-				updatePro()
-			} else {
-				insertUsrAndPro()
-			}
-		})
-	}
-
 	// 查看项目是否已经存在
-	Schemas.myproject_m.findOne(
-		{usr: req.session.act, 'project.name': _proName},
+	Schemas.project_m.findOne(
+		{
+			usr: req.session.act, 
+			name: _proName
+		},
 		(err, data)=> {
 			if (err) {
 				console.log(err);
@@ -1219,12 +1172,12 @@ exports.updateProSettings = (req, res)=> {
 			if (newPrivate && newPrivate === 'true') {
 				newPrivate = true;
 			} else {
-				updateJSON['project.$.private'] = false;
+				updateJSON.private = false;
 				newPrivate = false;
 			}
 		}
 
-		updateJSON['project.$.name'] = newProName;
+		updateJSON.name = newProName;
 
 		if (oldProName === newProName && newPrivate ) {
 			console.log('No change! OK!!')
@@ -1251,8 +1204,11 @@ exports.updateProSettings = (req, res)=> {
 			})
 		}
 
-		Schemas.myproject_m.update(
-			{usr: req.session.act, 'project.name': oldProName},
+		Schemas.project_m.update(
+			{
+				usr: req.session.act, 
+				name: oldProName
+			},
 			{$set: updateJSON },
 			(err, data)=> {
 				console.log(data)

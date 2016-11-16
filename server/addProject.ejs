@@ -2,8 +2,8 @@
 <html lang="zh">
 	<%- include('parts/head', {host: host, title: usrInfo.usr, css: ['/server/css/setting.css']}) %>
 <body>
-	
-	<%- include('parts/header', {host: host, usr: usrInfo, title: '创建项目', 'titurl': usrInfo.usr}) %>
+	<%= type %>
+	<%- include('parts/header', {host: host, usr: usrInfo, title: title, 'titurl': usrInfo.usr}) %>
 
 	<section class="main-body">
 
@@ -11,7 +11,17 @@
 		<section class="content">
 			
 			<form id="add-project" class="upload-form" method="post" enctype="multipart/form-data" accept="/addProject">
-
+				
+				<% if (type == 'git') { %>
+				<dl>
+					<dt>Git 项目地址</dt>
+					<dd>
+						<input type="text" name="name" autofocus="" required="" placeholder="http://">
+						<span class="err-info"></span>
+					</dd>
+				</dl>
+				<input type="hidden" value="git" name="type">
+				<% } else { %>
 				<dl>
 					<dt>项目名称</dt>
 					<dd>
@@ -19,6 +29,7 @@
 						<span class="err-info"></span>
 					</dd>
 				</dl>
+				<% } %>
 
 				<dl>
 					<dt>隐私</dt>
