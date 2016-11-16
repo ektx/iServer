@@ -53,14 +53,24 @@ exports.myproject_m = mongoose.model('myproject', _myproject);
 	项目[new]
 	---------------------------------------
 	未来项目将采用此保存
+	@usr: 用户
+	@name: 项目名称
+	@ctime: 创建时间
+	@utime: 更新时间
+	@private: 隐私
+	@type: 类型(为normal|git)
+	@url: git项目时的克隆地址
 
 	文档: project
 */
 const _project = new Schema({
+	usr: String,
 	name: String,
 	ctime: String,
 	utime: String,
-	private: Boolean
+	private: Boolean,
+	type: String,
+	url: String
 }, { collection: 'project', versionKey: false});
 exports.project_m = mongoose.model('project', _project);
 
