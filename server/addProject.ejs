@@ -12,16 +12,6 @@
 			
 			<form id="add-project" class="upload-form" method="post" enctype="multipart/form-data" accept="/addProject">
 				
-				<% if (type == 'git') { %>
-				<dl>
-					<dt>Git 项目地址</dt>
-					<dd>
-						<input type="text" name="name" autofocus="" required="" placeholder="http://">
-						<span class="err-info"></span>
-					</dd>
-				</dl>
-				<input type="hidden" value="git" name="type">
-				<% } else { %>
 				<dl>
 					<dt>项目名称</dt>
 					<dd>
@@ -29,6 +19,17 @@
 						<span class="err-info"></span>
 					</dd>
 				</dl>
+				<% if (type == 'git') { %>
+				<dl>
+					<dt>Git 项目地址</dt>
+					<dd>
+						<input type="text" name="git" required="" placeholder="http://">
+						<span class="err-info"></span>
+					</dd>
+				</dl>
+				<input type="hidden" value="git" name="type">
+				<% } else { %>
+				<input type="hidden" value="normal" name="type">
 				<% } %>
 
 				<dl>
@@ -57,7 +58,7 @@
 	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
 	<script src="<%= host %>/server/js/main.js"></script>
 	<script src="<%= host %>/server/js/myVerification-0.0.2.js"></script>
-	<script src="<%= host %>/server/js/setting.js"></script>
+	<script src="<%= host %>/server/js/addPro.js"></script>
 	
 </body>
 </html>
