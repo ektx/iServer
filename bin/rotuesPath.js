@@ -13,6 +13,8 @@ const querystring = require('querystring');
 const pack    = require('tar-pack').pack;
 const unpack  = require('tar-pack').unpack;
 
+require('shelljs/global');
+
 const ifiles = require('./ifiles');
 const email = require('./email');
 
@@ -1039,9 +1041,11 @@ exports.addProject_p = (req, res)=> {
 
 	let _proName = req.body.name;
 	let _private = req.body.private;
+	let _type    = req.body.type;
+	let _url     = req.body.url;
 
-	console.log(req.body.name, req.body.private);
-	console.log('usr project path:')
+	console.log(req.body);
+	console.log('usr project path:');
 
 	let sendMsg = (err, errInfo)=> {
 		if (err) {

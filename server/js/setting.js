@@ -185,7 +185,7 @@ $(function() {
 	}
 
 	$('#add-project [name="name"]').blur(function() {
-		checkProName('blur')
+		// checkProName('blur')
 	})
 
 	/*
