@@ -1042,9 +1042,9 @@ exports.addProject_p = (req, res)=> {
 	let _proName = req.body.name;
 	let _private = req.body.private;
 	let _type    = req.body.type;
-	let _url     = req.body.url;
+	let _url     = req.body.git;
 
-	console.log(req.body);
+	console.log('====> ',req.body);
 	console.log('usr project path:');
 
 	let sendMsg = (err, errInfo)=> {
@@ -1056,13 +1056,38 @@ exports.addProject_p = (req, res)=> {
 			return;
 		}
 
-		// 生成项目目录
-		fs.mkdir(path.join(process.cwd(), req.session.act, _proName), (err, i)=>{
+		let proPath = path.join(process.cwd(), req.session.act, _proName);
 
-			res.send({
-				success: true,
-				msg: "/"+req.session.act+"/"+_proName+"/"
-			})
+		// 生成项目目录
+		fs.mkdir(proPath, (err, i)=>{
+
+			if (_type === 'git') {
+
+				let clonePath = 'git clone '+ _url +' '+proPath;
+				console.log(clonePath);
+
+				if (exec(clonePath).code !== 0) {
+					echo('Error! Git clone failed');
+
+					res.send({
+						success: false,
+						msg: 'Git项目失败!请在项目设置中重新设置!'
+					})
+				} else {
+					echo('Git clone done.')
+
+					res.send({
+						success: true,
+						msg: "/"+req.session.act+"/"+_proName+"/"
+					})
+				}
+			} else {
+
+				res.send({
+					success: true,
+					msg: "/"+req.session.act+"/"+_proName+"/"
+				})
+			}
 		})
 	}
 
@@ -1089,10 +1114,14 @@ exports.addProject_p = (req, res)=> {
 			usr: req.session.act,
 			name: _proName,
 			private: _private,
-			ctime: new Date().toISOString()
+			ctime: new Date().toISOString(),
+			type: _type,
+			url: _url
 		}, 
 		(err, data) => {
+
 			sendMsg(err, "项目创建失败!请稍候再试!!")
+			
 		})
 	}
 
