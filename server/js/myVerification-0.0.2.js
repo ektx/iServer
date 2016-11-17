@@ -114,6 +114,8 @@ $.fn.extend({
 					it.next().hide()
 				}
 			}
+
+			it.parents('form').find('[type="submit"]').removeAttr('disabled')
 		}
 
 

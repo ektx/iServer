@@ -135,7 +135,7 @@ exports.session = (req, res) => {
 // 访问用户
 exports.usrHome = (req, res, next)=> {
 
-	console.log(':: Your asking ', req.params.usr );
+	console.log(':: You asking ', req.params.usr );
 	console.log(req.headers.host)
 	console.log(req.url)
 	let fields = {_id:0, project: 1};
@@ -161,7 +161,11 @@ exports.usrHome = (req, res, next)=> {
 
 	let sendMsg = (req, res, usrData, proData)=> {
 		console.log( usrData, proData)
-							
+
+		if (!proData.length) {
+			proData = false;
+		}
+
 		res.render('demo', {
 			usrInfo: { 
 				usr: req.session.usr,
@@ -187,11 +191,7 @@ exports.usrHome = (req, res, next)=> {
 						private: false
 					},
 					(err, data)=> {
-						if (data.length > 0) {
-							sendMsg(req, res, usrData, data.reverse())
-						} else {
-							sendMsg(req, res, usrData, false)
-						}
+						sendMsg(req, res, usrData, data.reverse())
 					}
 				)
 			}
@@ -1223,6 +1223,7 @@ exports.updateProSettings = (req, res)=> {
 	})
 }
 
+
 /*
 	删除个人项目
 	==========================================
@@ -1231,46 +1232,46 @@ exports.updateProSettings = (req, res)=> {
 exports.delMyPro = (req, res)=> {
 	let oldProName = req.body.proName;
 
-	Schemas.myproject_m.update(
-		{usr: req.session.act, 'project.name': oldProName},
-		{$pull: {
-			'project': {
-				'name': oldProName
+	Schemas.project_m.remove(
+		{
+			usr: req.session.act,
+			name: oldProName
+		},
+		(err, data)=> {
+			if (err) {
+				res.send(err);
+				return;
 			}
-		}},
-		(err, data)=>{
-		if (err) {
-			console.log(err);
-			return
-		}
 
-		if (data) {
+			console.log(data);
 
-			rimraf( path.join(process.cwd(), req.session.act, oldProName), (err, data)=> {
-			
-				if (err) {
-					console.log(err);
+			if (data) {
+
+				rimraf( path.join(process.cwd(), req.session.act, oldProName), (err, data)=> {
+				
+					if (err) {
+						console.log(err);
+						res.send({
+							success: false,
+							msg: '无法物理删除项目,请联系管理员!'
+						})
+						return;
+					}
+
 					res.send({
-						success: false,
-						msg: '无法物理删除项目'
+						success: true,
+						msg: '项目已经删除!'
 					})
-					return;
-				}
 
-				res.send({
-					success: true,
-					msg: '项目已经删除!'
 				})
-
-			})
-
-		} else {
-			res.send({
-				success: false,
-				msg: 'No! Something was error!'
-			})
+			} else {
+				res.send({
+					success: false,
+					msg: 'No! Something was error!'
+				})
+			}
 		}
-	})
+	)
 }
 
 
