@@ -243,7 +243,10 @@ exports.usrProject = (req, res, next)=> {
 		} catch (err) {
 			console.log(err)
 
-			if (!getTar) res.send('404 没有此目录!')
+			if (!getTar) {
+				res.send('404 没有此目录!'); 
+				return;
+			}
 		}
 
 		// 打包文件,提供下载
