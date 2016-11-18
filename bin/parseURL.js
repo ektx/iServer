@@ -2,7 +2,7 @@ const iconv = require('iconv-lite');
 
 // IE 8 下出现乱码时检测方法:
 // 1. 查看请求路径是否有中文
-// 2.如果是中文,看看地址栏有没有被自动解析成了 GBK 编码,
+// 2. 如果是中文,看看地址栏有没有被自动解析成了 GBK 编码,
 //   如果是,那就改成未解析的中文请求
 
 
@@ -10,7 +10,7 @@ function parseURL (req, res, next) {
 	let decodeURL = '';
 	
 	try {
-		decodeURL = decodeURIComponent(req.originalUrl)
+		decodeURL = decodeURI(req.originalUrl)
 	} catch(e) {
 		
 		let convertUrl = (url)=> {
