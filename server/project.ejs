@@ -27,8 +27,12 @@
 				<% } %>
 			<% }) %>
 			
-			<% if (!files.length && proStatus.isMaster) { %>
-				<p>没有文件! <button class="tbtn">上传文件</button></p>
+			<% if ( !files.length ) { %>
+			<p>没有文件!
+				<% if (proStatus.isMaster) { %>
+				 <button class="tbtn">上传文件</button>
+				<% } %>
+			</p>
 			<% } %>
 		</ul>
 
