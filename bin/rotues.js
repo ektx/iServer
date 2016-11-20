@@ -23,6 +23,7 @@ module.exports = (app, type) => {
 		app.get('/set/profile', r.setProfile)
 		app.get('/set/passwd', r.getPasswdPage)
 		app.get('/users', redirectCheckLoginUsr, r.getUsers)
+		app.get('/pro/refreshgit', checkLoginUsr, r.refreshGitProject)
 	}
 
 	app.get('/server/*', r.server)
