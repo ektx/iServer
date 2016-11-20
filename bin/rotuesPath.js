@@ -18,7 +18,11 @@ require('shelljs/global');
 const ifiles = require('./ifiles');
 const email = require('./email');
 
-
+/*
+	是否有项目的权限与功能
+	-----------------------------
+	返回用户与项目的关系和项目的信息
+*/
 const hasProject = (req, res, options) => {
 
 	options = options || {usr: null, proName: null};
@@ -28,7 +32,7 @@ const hasProject = (req, res, options) => {
 	let p = new Promise(function(resolve, reject) {
 		// 如果只有一个/时,也就是 '/用户名' 时进入用户中心
 
-		Schemas.project_m.find(
+		Schemas.project_m.findOne(
 			{
 				usr: usr,
 				name: options.proName || req.params.project
@@ -36,7 +40,7 @@ const hasProject = (req, res, options) => {
 			(err, data)=> {
 				if (err) console.log(err);
 
-				if (data.length) {
+				if (data) {
 
 					let status = {};
 
@@ -52,11 +56,17 @@ const hasProject = (req, res, options) => {
 						status.open = 0
 					}
 
-					resolve(status)
+					// 返回状态和数据
+					resolve({
+						data: data, 
+						status: status
+					})
 
 				} else {
-					console.log('没有此项目!!');
-					reject(404, '没有此项目!!')
+					reject({
+						status: 404, 
+						data: '没有此项目!!'
+					})
 				}
 			}
 		)
@@ -233,7 +243,8 @@ exports.usrProject = (req, res, next)=> {
 	let getTar   = false;
 	
 
-	let gitProFiles = (status)=> {
+	let gitProFiles = (status, projectInfo)=> {
+
 
 		let isFs = false;
 		console.log('sss', getTar, filePath)
@@ -308,22 +319,16 @@ exports.usrProject = (req, res, next)=> {
 				}
 			}
 
-			let usrInfo = false;
 			let breadArr = realUrl.split('/');
-			realUrl.endsWith('/') ? breadArr.pop() : breadArr;
+			let defHead  = defaultHeader(req);
 
-			if (req.session.act) {
-				usrInfo = {
-					usr: req.session.act,
-					ico: req.session.ico,
-					pow: req.session.pow
-				}
-			}
+			realUrl.endsWith('/') ? breadArr.pop() : breadArr;
 
 			res.render('../server/project', {
 				files: fileArr,
-				host: req.secure?'https://':'http://'+ req.headers.host,
-				usrInfo: usrInfo,
+				projectInfo: projectInfo,
+				host: defHead.host,
+				usrInfo: defHead.usrInfo || false,
 				proStatus: status,
 				title: req.params.project,
 				titurl: '/'+req.params.usr+'/'+req.params.project+'/',
@@ -445,8 +450,10 @@ exports.usrProject = (req, res, next)=> {
 	// 正常浏览器访问项目
 	else {
 
-		hasProject(req, res).then( (status)=>{
-			gitProFiles(status) 
+		hasProject(req, res).then( (options)=>{
+		console.log(options.status, options.data)
+
+			gitProFiles(options.status, options.data) 
 		}, (reject)=>{
 			res.send('404')
 		})
@@ -725,7 +732,7 @@ exports.updatePwd = (req, res)=> {
 exports.loginOut = (req, res)=> {
 	req.session.destroy((err)=>{
 		if (err) throw err;
-		res.redirect('/')
+		res.redirect(req.headers.referer)
 	})
 };
 
@@ -1159,7 +1166,10 @@ exports.addProject_p = (req, res)=> {
 */
 exports.proSettings = (req, res)=> {
 
-	hasProject(req, res).then((status)=>{
+	hasProject(req, res).then((options)=>{
+		let status = options.status;
+		let defHead = defaultHeader(req);
+
 		console.log('This people have the project!', status)
 
 		if (!status.isMaster) {
@@ -1168,12 +1178,8 @@ exports.proSettings = (req, res)=> {
 		}
 
 		res.render('../server/proSettings', {
-			host: req.secure?'https://':'http://'+ req.headers.host,
-			usrInfo: { 
-				usr: req.session.act,
-				name: req.session.usr,
-				ico: req.session.ico
-			},
+			host: defHead.host,
+			usrInfo: defHead.usrInfo,
 			proStatus: status,
 			title: req.params.project,
 			titurl: '../'+req.params.project+'/'
@@ -1199,7 +1205,8 @@ exports.updateProSettings = (req, res)=> {
 		usr: req.session.act, 
 		proName: oldProName
 	})
-	.then( (status)=> {
+	.then( (options)=> {
+		let status = options.status;
 		// 0 不公开项目
 		if ( status.isOpen ) {
 			msg = '公开项目不可以收回!!';
@@ -1703,10 +1710,14 @@ function getPhysicalFilePath(url) {
 /*
 	网页头部统一返回内容
 	--------------------------------
-	1.用户设置
-	2.SMTP  -  setSMTP
 */
 function defaultHeader(req) {
+
+	if (!req) {
+		console.log('You Need give "req" ');
+		req = {};
+	}
+
 	let session = req.session;
 
 	return {
@@ -1720,6 +1731,10 @@ function defaultHeader(req) {
 	}
 }
 
+/*
+	返回用户信息
+	---------------------------------
+*/
 function getUserInfo(match, done, fail){
 	Schemas.usrs_m.findOne(
 		match,
@@ -1730,7 +1745,7 @@ function getUserInfo(match, done, fail){
 				return;
 			}
 
-			done(data)
+			if (done) done(data)
 		}
 	)
 }
