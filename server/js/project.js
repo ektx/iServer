@@ -77,7 +77,70 @@ $(function() {
 		$(this).text( moment($(this).attr('title')).fromNow() )
 	});
 
-	// 
+	
+	// 上传项目文件功能
+	$('#toUploadProFiles').change(function() {
+		console.log(this.files.length)
+		var _form = $(this).parents('form');
+		var _files = '';
+
+		if (this.files.length > 20) {
+			alert('最多上传文件数为 20');
+			return;
+		}
+
+		_files = this.files;
+		
+		_form.myVerification({
+			done: function(data) {
+				console.log(data, _files)
+
+				for (var i = 0, l= _files.length; i < l; i++) {
+					console.log(_files[i].name)
+				}
+
+				// 刷新当前页面
+				setTimeout(function() {
+					location.reload()
+				}, 1100)
+			},
+			fail: function(err) {
+				console.error(err)
+			},
+			progress: function(per) {
+				var progressBar = $('.files-progress-bar-mod');
+
+				progressBar.css({
+					width: per * 100 + '%'
+				});
+				if (per === 1) {
+					progressBar.addClass('hide')
+				}
+			}
+		})
+		_form.submit()
+	});
+
+
+	// 更新代码功能
+	$('.my-git-refresh').click(function() {
+		$.ajax({
+			url: '/pro/refreshgit',
+			type: 'get'
+		})
+		.done(function(data){
+			if (data.success) {
+				location.reload()
+			} else {
+				if (data.href) {
+					location.href = '/'
+				}
+			}
+		})
+		.fail(function(err) {
+			console.log(err)
+		})
+	})
 
 	
 })

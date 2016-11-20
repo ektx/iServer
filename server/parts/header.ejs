@@ -20,11 +20,15 @@
 
 				<div class="usr-hd-list">
 					<ul>
+						<% if (project.type === 'git') { %>
+						<a class="my-git-refresh">更新代码</a>
+						<% } else { %>
 						<a id="hd-toUploadProFile">上传文件</a>
 						<a id="hd-toCreateDir">新建目录</a>
-						<a href="<%= titurl %>settings">项目设置</a>
 						<!-- <hr /> -->
 						<!-- <a href="">下载代码</a> -->
+						<% } %>
+						<a href="<%= titurl %>settings">项目设置</a>
 					</ul>
 				</div>
 			</li>

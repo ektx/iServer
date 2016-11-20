@@ -2,8 +2,10 @@
 <html lang="zh">
 	<%- include('parts/head', {host: host, title: title, css: []}) %>
 <body>
-	<%- include('parts/header', {usr: usrInfo, titurl: titurl, proSet: proStatus}) %>
-	
+	<%- include('parts/header', {usr: usrInfo, titurl: titurl, proSet: proStatus, project: projectInfo}) %>
+
+	<% var isGit = projectInfo.type === 'git' %>
+
 	<main class="project-inner">
 		
 		<header>
@@ -20,6 +22,9 @@
 
 		<ul class="project-list">
 			<% files.forEach((val)=> { %>
+
+				<% if(isGit && val.name == '.git') return ;%>
+					
 				<% if(val.type == 'file') { %>
 			<li><svg aria-hidden="true"  height="16" version="1.1" viewBox="0 0 12 16" width="14"><path d="M6 5H2V4h4v1zM2 8h7V7H2v1zm0 2h7V9H2v1zm0 2h7v-1H2v1zm10-7.5V14c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V2c0-.55.45-1 1-1h7.5L12 4.5zM11 5L8 2H1v12h10V5z"></path></svg><a href="<%= url + val.name %>"><%= val.name %></a></li>
 				<%} else {%>
@@ -28,15 +33,28 @@
 			<% }) %>
 			
 			<% if ( !files.length ) { %>
-			<p>没有文件!
-				<% if (proStatus.isMaster) { %>
-				 <button class="tbtn">上传文件</button>
+				<% if (isGit) { %>
+					<% if (proStatus.isMaster) { %>
+						<p>Git 拉取失败!请在项目设置中重新拉取!</p>
+					<%} else {%>
+						<p>此 Git 项目尚无代码可以查看!</p>
+					<% } %>
+				<% } else { %>
+					<p>没有文件!
+						<% if (proStatus.isMaster) { %>
+						 <button class="tbtn">上传文件</button>
+						<% } %>
+					</p>
 				<% } %>
-			</p>
 			<% } %>
 		</ul>
 
-		<p class="pro-fileSize">共有 <%= files.length %> 个文件</p>
+		<p class="pro-fileSize">共有 
+		<% if( isGit ){ %>
+			<%= files.length -1 %>
+		<% } else { %>
+			<%= files.length %>
+		<% } %> 个文件</p>
 
 		<footer>Powered by <a href="https://github.com/ektx/iServer/">iServer 4</a></footer>
 	</main>
@@ -50,10 +68,15 @@
 	</div>
 
 	<nav id="my-contextmenu-nav">
-		<a id="my-contextnav-open">打开</a>
+		<a id="my-contextnav-open">查看</a>
+		<% if ( isGit ) { %> 
+		<hr class="split-line">
+		<a class="my-git-refresh">更新代码</a>
+		<% } else { %>
 		<a id="my-contextnav-del">删除</a>
 		<hr class="split-line">
 		<a id="my-contextnav-upload">上传文件</a>
+		<% } %>
 	</nav>
 
 	<form id="toUploadFile" action="/uploadProFiles" method="post" enctype="multipart/form-data">
@@ -69,7 +92,7 @@
 	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
 	<script src="<%= host %>/server/js/main.js"></script>
 	<script src="<%= host %>/server/js/myVerification-0.0.2.js"></script>
-	<script src="<%= host %>/server/js/usrCenter.js"></script>
+	<script src="<%= host %>/server/js/project.js"></script>
 
 </body>
 </html>

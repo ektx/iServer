@@ -1180,6 +1180,7 @@ exports.proSettings = (req, res)=> {
 		res.render('../server/proSettings', {
 			host: defHead.host,
 			usrInfo: defHead.usrInfo,
+			project: options.data,
 			proStatus: status,
 			title: req.params.project,
 			titurl: '../'+req.params.project+'/'
@@ -1601,6 +1602,32 @@ exports.getResetPWD = (req, res)=> {
 			}
 		}
 	)
+}
+
+
+/*
+	刷新 Git 项目代码
+	-----------------------------
+	当用户从邮箱中点击了确认重置密码功能后,
+	后台自动生成一个随机的密码给用户,方便用户登录
+*/
+exports.refreshGitProject = (req, res)=> {
+	let _gitDir = url.parse(req.headers.referer).pathname;
+
+	let _proPath = path.join(process.cwd(), _gitDir);
+	console.log('---->',_proPath)
+
+	if (exec('git --work-tree='+_proPath+' --git-dir='+_proPath +'/.git pull ').code !== 0) {
+		res.send({
+			success: false,
+			msg: 'update failed!'
+		})
+	} else {
+		res.send({
+			success: true,
+			msg: 'Already up-to-date.'
+		})
+	}
 }
 
 /*
