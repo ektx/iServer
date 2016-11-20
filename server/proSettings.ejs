@@ -4,65 +4,101 @@
 <body>
 	<%- include('parts/header', {host: host, usr: usrInfo, title: '设置-'+title, titurl: titurl, project: project }) %>
 
+	<% isGit = project.type === 'git' %>
+<%= project %>
 	<section class="main-body">
 
-
 		<section class="content">
-			
-			<form id="renamePro" class="upload-form" method="post" enctype="multipart/form-data" action="/updateProSettings" novalidate>
 
-				<dl>
-					<dt>项目名称</dt>
-					<dd>
-						<input type="hidden" name="oldName" value="<%= title %>">
-						<input type="text" name="proName" value="<%= title %>" required>
-						<span class="err-info"></span>
-					</dd>
-				</dl>
+			<aside class="pro-aside-set">
+				<ul>
+					<li class="current" data-form="renamePro">基础设置</li>
+
+					<% if (isGit) { %>
+					<li data-form="updategit">Git设置</li>
+					<% } %>
+					<li data-form="delPro">删除项目</li>
+				</ul>
+			</aside>
+
+			<div class="pro-body-set">
+				<form id="renamePro" class="upload-form" method="post" enctype="multipart/form-data" action="/updateProSettings" novalidate>
+
+					<dl>
+						<dt>项目名称</dt>
+						<dd>
+							<input type="hidden" name="oldName" value="<%= title %>">
+							<input type="text" name="proName" value="<%= title %>" required>
+							<span class="err-info"></span>
+						</dd>
+					</dl>
+					
+					<% if (!proStatus.isOpen) {%>
+					<dl id="private-box">
+						<dt>隐私</dt>
+						<dd>
+							<label><input type="radio" name="private" value="false">公开 所有访问项目者匀可见</label>			
+							<br />
+							<label><input type="radio" name="private" checked="" value="true">个人 只有我自己可以查看</label>			
+							<span class="err-info"></span>
+						</dd>
+					</dl>
+					<% }%>
+
+					<dl>
+						<dd>
+							<button class="btn middle-btn green-btn" type="submit">
+								<span class="ico"></span>
+								<span class="name">保存修改</span>
+							</button>
+						</dd>
+					</dl>
+				</form>
 				
-				<% if (!proStatus.isOpen) {%>
-				<dl id="private-box">
-					<dt>隐私</dt>
-					<dd>
-						<label><input type="radio" name="private" value="false">公开 所有访问项目者匀可见</label>			
-						<br />
-						<label><input type="radio" name="private" checked="" value="true">个人 只有我自己可以查看</label>			
-						<span class="err-info"></span>
-					</dd>
-				</dl>
-				<% }%>
+				<% if (isGit) { %>
+				<form id="updategit" class="upload-form" action="/updateProGitRemote" style="display: none">
+					<dl>
+						<dt>Git 地址更新</dt>
+						<dd>
+							<input type="hidden" name="oldName" value="<%= title %>">
+							<input type="text" name="proUrl" value="<%= project.url %>" required>
+							<span class="err-info"></span>
+						</dd>
+					</dl>
+					<dl>
+						<dd>
+							<button class="btn middle-btn green-btn" type="submit">
+								<span class="ico"></span>
+								<span class="name">保存修改</span>
+							</button>
+						</dd>
+					</dl>
+				</form>
+				<% } %>
 
-				<dl>
-					<dd>
-						<button class="btn middle-btn green-btn" type="submit">
-							<span class="ico"></span>
-							<span class="name">保存修改</span>
-						</button>
-					</dd>
-				</dl>
-			</form>
+				<form id="delPro" class="upload-form" method="delete" enctype="multipart/form-data" action="/deleteMyPro" style="display: none">
 
-			<form id="delPro" class="upload-form" method="delete" enctype="multipart/form-data" action="/deleteMyPro" novalidate>
+					<dl>
+						<dt>删除项目</dt>
+						<dd>
+							<p>注意,项目删除之后将无法恢复!</p>
+							<input type="hidden" name="proOldName" value="<%= title %>">
+							<input type="text" name="proName" value="" placeholder="确认项目名称" required sameAs="proOldName">
+							<span class="err-info"></span>
+						</dd>
+					</dl>
 
-				<dl>
-					<dt>删除项目</dt>
-					<dd>
-						<p>注意,项目删除之后将无法恢复!</p>
-						<input type="hidden" name="proOldName" value="<%= title %>">
-						<input type="text" name="proName" value="" placeholder="确认项目名称" required sameAs="proOldName">
-						<span class="err-info"></span>
-					</dd>
-				</dl>
-
-				<dl>
-					<dd>
-						<button class="btn middle-btn red-btn" type="submit">
-							<span class="ico"></span>
-							<span class="name">删除</span>
-						</button>
-					</dd>
-				</dl>
-			</form>
+					<dl>
+						<dd>
+							<button class="btn middle-btn red-btn" type="submit">
+								<span class="ico"></span>
+								<span class="name">删除</span>
+							</button>
+						</dd>
+					</dl>
+				</form>
+			</div>
+			
 		</section>
 
 	</section>

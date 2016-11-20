@@ -1080,8 +1080,8 @@ exports.addProject_p = (req, res)=> {
 					echo('Error! Git clone failed');
 
 					res.send({
-						success: false,
-						msg: 'Git项目失败!请在项目设置中重新设置!'
+						success: true,
+						msg: "/"+req.session.act+"/"+_proName+"/"
 					})
 				} else {
 					echo('Git clone done.')

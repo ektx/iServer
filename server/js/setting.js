@@ -234,6 +234,20 @@ $(function() {
 		}
 	});
 
+	/*
+		项目设置菜单切换
+	*/
+	$('.pro-aside-set li').click(function(){
+		var _ = $(this);
+		var _cls = 'current';
+		var _form = _.data().form;
+
+		if (_.hasClass(_cls)) return;
+
+		_.addClass('current').siblings().removeClass();
+		$('#'+_form).show().siblings().hide()
+	})
+
 
 });
 

@@ -119,3 +119,37 @@ input:disabled {
 	opacity: 0;
 	cursor: pointer;
 }
+
+/* 项目设置 新加菜单与功能优化 */
+.pro-aside-set {
+	width: 150px;
+	float: left;
+	padding: 5px 0;
+	font-size: .87em;
+	line-height: 1.6em;
+	box-sizing: border-box;
+}
+.pro-aside-set li {
+	padding: 0 15px;
+	line-height: 2em;
+	color: #aaa;
+	cursor: pointer;
+	border-left: 5px solid #fff;
+}
+.pro-aside-set li:hover {
+	color: #666;
+}
+.pro-aside-set li.current {
+	border-left-color: #333;
+	color: #333;
+}
+.pro-body-set {
+	vertical-align: top;
+	overflow: hidden;
+	margin: 0 20px 0 0;
+	padding: 0 0 0 10px;
+}
+
+.pro-body-set .upload-form {
+	max-width: 100%;
+}
