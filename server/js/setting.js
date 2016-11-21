@@ -7,7 +7,7 @@ $(function() {
 
 	// 提交个人信息
 	var btnTxt = '';
-	$('#profile, #passwd, #renamePro, #delPro').myVerification({
+	$('#profile, #passwd, #base, #del').myVerification({
 		show: 'err',
 		always: function(postData) {
 			btnTxt = postData.btn.text();
@@ -234,6 +234,7 @@ $(function() {
 		}
 	});
 
+
 	/*
 		项目设置菜单切换
 	*/
@@ -246,7 +247,26 @@ $(function() {
 
 		_.addClass('current').siblings().removeClass();
 		$('#'+_form).show().siblings().hide()
+
+		location.hash = 'type='+ _form;
 	})
+
+
+	// 如果是项目设置页面,
+	// 根据 hash 来定位表单
+	if ( /(\/\w+){2}\/settings/.test(location.pathname) ) {
+		var type = location.hash.match(/type=(\w+)/);
+
+		type = type ? type[1] : '';
+
+		switch (type) {
+			case 'git':
+			case 'del': break;
+			default: type = 'base';
+		}
+
+		$('[data-form="'+ type +'"]').click();
+	}
 
 
 });

@@ -1166,26 +1166,31 @@ exports.addProject_p = (req, res)=> {
 */
 exports.proSettings = (req, res)=> {
 
-	hasProject(req, res).then((options)=>{
-		let status = options.status;
-		let defHead = defaultHeader(req);
+	hasProject(req, res).then(
+		(options)=>{
+			let status = options.status;
+			let defHead = defaultHeader(req);
 
-		console.log('This people have the project!', status)
+			console.log('This people have the project!', status)
 
-		if (!status.isMaster) {
-			res.redirect('/'+req.params.usr+'/'+req.params.project)
-			return;
+			if (!status.isMaster) {
+				res.redirect('/'+req.params.usr+'/'+req.params.project)
+				return;
+			}
+
+			res.render('../server/proSettings', {
+				host: defHead.host,
+				usrInfo: defHead.usrInfo,
+				project: options.data,
+				proStatus: status,
+				title: req.params.project,
+				titurl: '../'+req.params.project+'/'
+			})
+		},
+		(failed)=> {
+			res.send('404')
 		}
-
-		res.render('../server/proSettings', {
-			host: defHead.host,
-			usrInfo: defHead.usrInfo,
-			project: options.data,
-			proStatus: status,
-			title: req.params.project,
-			titurl: '../'+req.params.project+'/'
-		})
-	})
+	)
 }
 
 /*

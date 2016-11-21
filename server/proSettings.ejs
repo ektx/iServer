@@ -5,24 +5,24 @@
 	<%- include('parts/header', {host: host, usr: usrInfo, title: '设置-'+title, titurl: titurl, project: project }) %>
 
 	<% isGit = project.type === 'git' %>
-<%= project %>
+
 	<section class="main-body">
 
 		<section class="content">
 
 			<aside class="pro-aside-set">
 				<ul>
-					<li class="current" data-form="renamePro">基础设置</li>
+					<li data-form="base">基础设置</li>
 
 					<% if (isGit) { %>
-					<li data-form="updategit">Git设置</li>
+					<li data-form="git">Git设置</li>
 					<% } %>
-					<li data-form="delPro">删除项目</li>
+					<li data-form="del">删除项目</li>
 				</ul>
 			</aside>
 
 			<div class="pro-body-set">
-				<form id="renamePro" class="upload-form" method="post" enctype="multipart/form-data" action="/updateProSettings" novalidate>
+				<form id="base" class="upload-form" method="post" enctype="multipart/form-data" action="/updateProSettings" style="display: none;">
 
 					<dl>
 						<dt>项目名称</dt>
@@ -56,7 +56,7 @@
 				</form>
 				
 				<% if (isGit) { %>
-				<form id="updategit" class="upload-form" action="/updateProGitRemote" style="display: none">
+				<form id="git" class="upload-form" action="/updateProGitRemote" style="display: none">
 					<dl>
 						<dt>Git 地址更新</dt>
 						<dd>
@@ -76,7 +76,7 @@
 				</form>
 				<% } %>
 
-				<form id="delPro" class="upload-form" method="delete" enctype="multipart/form-data" action="/deleteMyPro" style="display: none">
+				<form id="del" class="upload-form" method="delete" enctype="multipart/form-data" action="/deleteMyPro" style="display: none">
 
 					<dl>
 						<dt>删除项目</dt>
