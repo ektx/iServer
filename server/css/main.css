@@ -12,9 +12,10 @@ hr, button {
 body {
 	-webkit-font-smoothing: subpixel-antialiased;
 	-moz-osx-font-smoothing: grayscale;
-}
-button, body, input {
 	font-family: "Microsoft Yahei","SimHei","Hiragino Sans GB","Helvetica Neue",sans-serif,Arial;
+}
+button, input {
+	font: inherit;
 }
 li {
 	list-style: none;
@@ -232,7 +233,7 @@ ul {
 }
 .tab-title-box li span {
 	font-size: 12px;
-	padding: 0 .5em;
+	padding: .2em .5em;
 	margin-left: .3em;
 	background-color: #eee;
 	color: #666;
