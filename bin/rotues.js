@@ -47,6 +47,7 @@ module.exports = (app, type) => {
 		app.post('/set/profile', r.PSetProfile)
 		app.post('/set/SMTP', checkLoginUsr, r.setSMTP)
 		app.post('/create/myProDir', checkLoginUsr, r.createUsrProjectDirs)
+		app.post('/updateProGitRemote', checkLoginUsr, r.updateProjectGitRemote)
 
 		app.delete('/deleteMyPro', checkLoginUsr, r.delMyPro)
 		app.delete('/myPro/file', checkLoginUsr, r.delMyProFile)
