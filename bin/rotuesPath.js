@@ -22,6 +22,9 @@ const email = require('./email');
 	是否有项目的权限与功能
 	-----------------------------
 	返回用户与项目的关系和项目的信息
+	options:
+	@usr {string} 用户
+	@proName {string} 项目名称
 */
 const hasProject = (req, res, options) => {
 
@@ -1633,6 +1636,51 @@ exports.refreshGitProject = (req, res)=> {
 			msg: 'Already up-to-date.'
 		})
 	}
+}
+
+/*
+	更新 Git 项目目录
+	---------------------------------
+*/
+exports.updateProjectGitRemote = (req, res)=> {
+	hasProject(req, res, {
+		usr: req.session.act,
+		proName: req.body.oldName
+	}).then(
+		(options)=> {
+			console.log('Git:', options);
+
+			if (options.status.isMaster) {
+				Schemas.project_m.update(
+					{
+						usr: req.session.act,
+						name: req.body.oldName
+					},
+					{$set: {
+						url: req.body.proUrl
+					}},
+					(err, data)=> {
+						if (err) {
+							res.send({
+								success: false,
+								msg: '更新 Git Url 失败!请联系管理员!'
+							});
+							return;
+						}
+
+						res.send({
+							success: true,
+							msg: 'Git 更新成功!'
+						})
+					}
+				)
+			}
+		},
+		(failed)=> {
+			console.log("Git :", failed);
+			res.send(404)
+		}
+	)
 }
 
 /*

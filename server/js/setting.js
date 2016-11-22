@@ -7,7 +7,7 @@ $(function() {
 
 	// 提交个人信息
 	var btnTxt = '';
-	$('#profile, #passwd, #base, #del').myVerification({
+	$('#profile, #passwd, #base, #git, #del').myVerification({
 		show: 'err',
 		always: function(postData) {
 			btnTxt = postData.btn.text();
