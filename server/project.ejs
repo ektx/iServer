@@ -35,7 +35,7 @@
 			<% if ( !files.length ) { %>
 				<% if (isGit) { %>
 					<% if (proStatus.isMaster) { %>
-						<p>Git 拉取失败!请在项目设置中重新拉取!</p>
+						<p>Git 拉取失败! <span class="my-git-refresh tbtn">重新拉取!<span></p>
 					<%} else {%>
 						<p>此 Git 项目尚无代码可以查看!</p>
 					<% } %>
