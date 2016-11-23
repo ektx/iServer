@@ -135,6 +135,12 @@ $(function() {
 				if (data.href) {
 					location.href = '/'
 				}
+
+					statusBar({
+						ico: 'warn',
+						title: 'Git 更新失败!',
+						msg: data.msg
+					})
 			}
 		})
 		.fail(function(err) {

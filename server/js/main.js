@@ -350,7 +350,7 @@ function statusBar(options) {
 			var callback = btnArr[i].fun;
 
 			_btn.click(function() {
-				callback();
+				if (callback) callback();
 				closeBar($(this))
 			})
 			_html.append(_btn);
@@ -376,7 +376,7 @@ function statusBar(options) {
 
 		option = extendObj(option, options);
 		// 支持只要一个按钮功能
-		if (options.btns.length === 1) option.btns.pop();
+		if (options.btns && options.btns.length === 1) option.btns.pop();
 
 		options = option;
 
