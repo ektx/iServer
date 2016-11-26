@@ -5,7 +5,8 @@
 const program = require('commander');
 
 const setServer = require('./bin/serverSet');
-const version = '4.1.1';
+const osInfo  = require('./package');
+const version = osInfo.version;
 
 const n_browser = '-b, --browser [默认浏览器]';
 const i_browser = '开启服务器同时打开浏览器[chrome|firefox|ie|opera]';
@@ -38,16 +39,10 @@ program
 program
 	.command('os')
 	.description('启动系统服务器')
-	.option(n_browser, i_browser)
-	.option(n_port, i_port)
-	.option(n_set, i_set)
 	.action((options)=> {
 
 		setServer({
 			type: 'os',
-			browser: !options.browser ? false : options.browser,
-			set: !options.set ? false : true,
-			port: isNaN(options.port) ? 8000 : options.port,
 			version: version
 		})
 

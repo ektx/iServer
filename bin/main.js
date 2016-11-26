@@ -39,7 +39,7 @@ function server(options) {
 
 		app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
-		mongoose.connect(options.dbURL + options.db);
+		mongoose.connect(options.db);
 		mongoose.set('debug', true);
 		
 		let db = mongoose.connection;
@@ -62,7 +62,7 @@ function server(options) {
 	// 主服务
 	app.listen(options.port, function() {
 
-		if (options.browser) {
+		if (options.type === 'tool' && options.browser) {
 	    	
 	    	let openURL = 'http://'+getIPs().IPv4.public + ':' + options.port;
 

@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 
 const main = require('./main');
+const osInfo = require('../os.config');
 
 function getServerSet(options) {
 
@@ -37,78 +38,32 @@ function getServerSet(options) {
 		}
 	];
 
-	let OSSettingQuestions = [
-		{
-			type: 'input',
-			name: 'db',
-			message: 'Mongodb数据库:',
-			default: ()=> {
-				return 'iserver'
-			}
-		}, 
-		{
-			type: 'input',
-			name: 'dbURL',
-			message: 'Mongodb数据库地址:',
-			default: ()=> {
-				return 'mongodb://localhost/'
-			}
-		}
-	];
 
-	inquirer.prompt(defaultQuestions).then((answer)=> {
+	if (options.type === 'os') {
+		osInfo.type = 'os';
+		osInfo.version = options.version
 
-		if (answer.defSet === 'Yes') {
+		main(osInfo)
+	} else {
 
-			if (options.type === 'os') {
-				options.db = 'iserver';
-				options.dbURL = 'mongodb://localhost/';
+		inquirer.prompt(defaultQuestions).then((answer)=> {
+
+			if (answer.defSet === 'No') {
+
+				inquirer.prompt(toolSettingQuestions).then((answer)=> {
+					console.log(answer)
+					main(options)
+				})
+
 			} else {
 				options.compression = ['Css', 'JavaScript'];
 				options.sourceMap = false;
+				main(options)
 			}
 
-			main(options)
+		})
+	}
 
-		} else {
-
-			// 如果是服务器时,使用服务器的设置
-			if (options.type === 'os') {
-				toolSettingQuestions = OSSettingQuestions;	
-			};
-
-			toolSettingQuestions.unshift({
-				type: 'input',
-				name: 'port',
-				message: '端口号:',
-				default: ()=>{
-					return 8000
-				},
-				validate: (val)=> {
-					let pass = /^[0-9]*$/.test(val);
-
-					if (pass) return true;
-
-					return '请输入数字!'
-				}
-			})
-
-			inquirer.prompt(toolSettingQuestions).then((answer)=> {
-				options.port = answer.port;
-
-				if (options.type === 'os') {
-					options.db = answer.db;
-					options.dbURL = answer.dbURL;
-				} else {
-					options.compression = answer.compression;
-					options.sourceMap = answer.sourceMap;
-				}
-
-				main(options)
-			})
-		}
-
-	})
 }
 
 
