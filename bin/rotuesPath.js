@@ -1326,14 +1326,18 @@ exports.delMyPro = (req, res)=> {
 	)
 }
 
+/*
+	删除文件
+	-----------------------------------------
 
+*/
 exports.delMyProFile = (req, res)=> {
 	let filePath = getPhysicalFilePath(req.body.file);
 	let user = filePath[0];
 
 	if ( user === req.session.act ) {
 
-		rimraf( path.join(process.cwd(),filePath.join('/')), (err)=>{
+		rimraf( decodeURI(path.join(process.cwd(),filePath.join('/'))), (err)=>{
 			if (!err) {
 				res.send({
 					success: true,
@@ -1780,7 +1784,7 @@ function goToPage(req, res, page) {
 	/ektx/NX/iservers/
 */
 function getPhysicalFilePath(url) {
-	let _url = decodeURIComponent(url).split('/')
+	let _url = decodeURI(url).split('/')
 	_url.shift();
 	_url.splice(2,1);
 
