@@ -23,7 +23,6 @@ module.exports = (app, type) => {
 		app.get('/set/profile', r.setProfile)
 		app.get('/set/passwd', r.getPasswdPage)
 		app.get('/users', redirectCheckLoginUsr, r.getUsers)
-		app.get('/pro/refreshgit', checkLoginUsr, r.refreshGitProject)
 	}
 
 	app.get('/server/*', r.server)
@@ -47,6 +46,7 @@ module.exports = (app, type) => {
 		app.post('/set/profile', r.PSetProfile)
 		app.post('/set/SMTP', checkLoginUsr, r.setSMTP)
 		app.post('/create/myProDir', checkLoginUsr, r.createUsrProjectDirs)
+		app.post('/pro/refreshgit', checkLoginUsr, r.refreshGitProject)
 		app.post('/updateProGitRemote', checkLoginUsr, r.updateProjectGitRemote)
 
 		app.delete('/deleteMyPro', checkLoginUsr, r.delMyPro)
