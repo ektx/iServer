@@ -126,7 +126,11 @@ $(function() {
 	$('.my-git-refresh').click(function() {
 		$.ajax({
 			url: '/pro/refreshgit',
-			type: 'get'
+			type: 'post',
+			dataType: 'json',
+			data: {
+				name: $('h1').text().trim()
+			}
 		})
 		.done(function(data){
 			if (data.success) {
