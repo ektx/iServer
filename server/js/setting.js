@@ -254,7 +254,7 @@ $(function() {
 
 	// 如果是项目设置页面,
 	// 根据 hash 来定位表单
-	if ( /(\/\w+){2}\/settings/.test(location.pathname) ) {
+	if ( decodeURI(/(\/\w+){2}\/settings/.test(location.pathname)) ) {
 		var type = location.hash.match(/type=(\w+)/);
 
 		type = type ? type[1] : '';
