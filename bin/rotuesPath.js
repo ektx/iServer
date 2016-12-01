@@ -1326,14 +1326,18 @@ exports.delMyPro = (req, res)=> {
 	)
 }
 
+/*
+	删除文件
+	-----------------------------------------
 
+*/
 exports.delMyProFile = (req, res)=> {
 	let filePath = getPhysicalFilePath(req.body.file);
 	let user = filePath[0];
 
 	if ( user === req.session.act ) {
 
-		rimraf( path.join(process.cwd(),filePath.join('/')), (err)=>{
+		rimraf( decodeURI(path.join(process.cwd(),filePath.join('/'))), (err)=>{
 			if (!err) {
 				res.send({
 					success: true,
@@ -1616,26 +1620,48 @@ exports.getResetPWD = (req, res)=> {
 /*
 	刷新 Git 项目代码
 	-----------------------------
-	当用户从邮箱中点击了确认重置密码功能后,
-	后台自动生成一个随机的密码给用户,方便用户登录
 */
 exports.refreshGitProject = (req, res)=> {
-	let _gitDir = url.parse(req.headers.referer).pathname;
 
-	let _proPath = path.join(process.cwd(), _gitDir);
-	console.log('---->',_proPath)
+	Schemas.project_m.findOne(
+		{
+			usr: req.session.act,
+			name: req.body.name
+		},
+		(err, data)=> {
+			if (err) {
+				res.send({
+					success: false,
+					msg: '没有发现相关数据!'
+				});
+				return;
+			}
 
-	if (exec('git --work-tree='+_proPath+' --git-dir='+_proPath +'/.git pull ').code !== 0) {
-		res.send({
-			success: false,
-			msg: 'update failed!'
-		})
-	} else {
-		res.send({
-			success: true,
-			msg: 'Already up-to-date.'
-		})
-	}
+			let _gitDir = decodeURI(url.parse(req.headers.referer).pathname);
+			let _proPath = path.join(process.cwd(), _gitDir);
+			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath;
+
+			if (_proPath.endsWith('/')) {
+				_url += '.git pull ';
+			} else {
+				_url += '/.git pull ';
+			}
+
+			if (exec(_url).code !== 0) {
+				res.send({
+					success: false,
+					msg: 'update failed!'
+				})
+			} else {
+				res.send({
+					success: true,
+					msg: 'Already up-to-date.'
+				})
+			}
+			
+		}
+	)
+
 }
 
 /*
@@ -1780,7 +1806,7 @@ function goToPage(req, res, page) {
 	/ektx/NX/iservers/
 */
 function getPhysicalFilePath(url) {
-	let _url = decodeURIComponent(url).split('/')
+	let _url = decodeURI(url).split('/')
 	_url.shift();
 	_url.splice(2,1);
 

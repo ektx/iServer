@@ -1,6 +1,6 @@
 {
   "name": "iservers",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "author": {
     "name": "ektx",
     "email": "530675800@qq.com"
@@ -41,6 +41,7 @@
     "nodemailer": "^2.6.4",
     "progress": "^1.1.8",
     "pug": "^2.0.0-beta6",
+    "redis": "^2.6.3",
     "rimraf": "^2.5.4",
     "shelljs": "^0.7.5",
     "socket.io": "*",
