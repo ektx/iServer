@@ -1637,9 +1637,9 @@ exports.refreshGitProject = (req, res)=> {
 				return;
 			}
 
-			let _gitDir = decodeURI(url.parse(req.headers.referer).pathname);
-			let _proPath = path.join(process.cwd(), _gitDir);
+			let _proPath = path.join(process.cwd(), req.session.act, req.body.name);
 			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath;
+			let _runCode = '';
 
 			if (_proPath.endsWith('/')) {
 				_url += '.git pull ';
@@ -1647,17 +1647,29 @@ exports.refreshGitProject = (req, res)=> {
 				_url += '/.git pull ';
 			}
 
-			if (exec(_url).code !== 0) {
-				res.send({
-					success: false,
-					msg: 'update failed!'
-				})
+			_runCode = exec(_url);
+
+			// 如果运行失败
+			if (_runCode.code) {
+				if ( _runCode !== 0) {
+					res.send({
+						success: false,
+						msg: 'update failed!'
+					})
+				} else {
+					res.send({
+						success: true,
+						msg: 'Already up-to-date.'
+					})
+				}
+				
 			} else {
 				res.send({
-					success: true,
-					msg: 'Already up-to-date.'
+					success: false,
+					msg: _gitDir
 				})
 			}
+
 			
 		}
 	)
