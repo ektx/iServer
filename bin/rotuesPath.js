@@ -1651,28 +1651,18 @@ exports.refreshGitProject = (req, res)=> {
 
 			console.log('>>>', _url, _runCode)
 
-			// 如果运行失败
-			if (_runCode.code) {
-				if ( _runCode !== 0) {
-					res.send({
-						success: false,
-						msg: 'update failed!'
-					})
-				} else {
-					res.send({
-						success: true,
-						msg: 'Already up-to-date.'
-					})
-				}
-				
-			} else {
+			if ( _runCode !== 0) {
 				res.send({
 					success: false,
-					msg: '更新失败!'
+					msg: 'update failed!'
+				})
+			} else {
+				res.send({
+					success: true,
+					msg: 'Already up-to-date.'
 				})
 			}
-
-			
+				
 		}
 	)
 
