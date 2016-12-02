@@ -1651,7 +1651,7 @@ exports.refreshGitProject = (req, res)=> {
 
 			console.log('>>>', _url, _runCode)
 
-			if ( _runCode !== 0) {
+			if ( _runCode.code !== 0) {
 				res.send({
 					success: false,
 					msg: 'update failed!'
