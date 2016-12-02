@@ -1649,6 +1649,8 @@ exports.refreshGitProject = (req, res)=> {
 
 			_runCode = exec(_url);
 
+			console.log('>>>', _url, _runCode)
+
 			// 如果运行失败
 			if (_runCode.code) {
 				if ( _runCode !== 0) {
@@ -1666,7 +1668,7 @@ exports.refreshGitProject = (req, res)=> {
 			} else {
 				res.send({
 					success: false,
-					msg: _gitDir
+					msg: '更新失败!'
 				})
 			}
 
