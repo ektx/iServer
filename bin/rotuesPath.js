@@ -1072,36 +1072,48 @@ exports.addProject_p = (req, res)=> {
 		let proPath = path.join(process.cwd(), req.session.act, _proName);
 
 		// 生成项目目录
-		fs.mkdir(proPath, (err, i)=>{
+		let isMK = fs.mkdirSync(proPath);
 
-			if (_type === 'git') {
+		if (!isMK) {
+		
+			res.send({
+				success: true,
+				msg: "/"+req.session.act+"/"+_proName+"/"
+			})
+			return;
+		};
 
-				let clonePath = 'git clone '+ _url +' '+proPath;
-				console.log(clonePath);
+		console.log('will git..');
+		let __status = true,
+			__msg = '';
 
-				if (exec(clonePath).code !== 0) {
-					echo('Error! Git clone failed');
+		if (_type === 'git') {
 
-					res.send({
-						success: true,
-						msg: "/"+req.session.act+"/"+_proName+"/"
-					})
-				} else {
-					echo('Git clone done.')
 
-					res.send({
-						success: true,
-						msg: "/"+req.session.act+"/"+_proName+"/"
-					})
-				}
-			} else {
+			let clonePath = exec('git clone '+ _url +' '+proPath);
+			console.log(clonePath);
 
-				res.send({
-					success: true,
-					msg: "/"+req.session.act+"/"+_proName+"/"
-				})
+			switch (clonePath.code) {
+				case 0:
+					__msg = "/"+req.session.act+"/"+_proName+"/";
+					break;
+
+				case 128:
+					__status = false;
+					__msg = 'Could not read from remote repository.';
+					break;
+
+				default:
+					__status = false;
+					__msg = 'Error! Git clone failed';
+				
 			}
-		})
+
+			res.send({
+				success: __status,
+				msg: __msg
+			})
+		}
 	}
 
 	// 验证值是否正常
