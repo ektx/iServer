@@ -1072,36 +1072,54 @@ exports.addProject_p = (req, res)=> {
 		let proPath = path.join(process.cwd(), req.session.act, _proName);
 
 		// 生成项目目录
-		fs.mkdir(proPath, (err, i)=>{
+		// let isMK = fs.mkdirSync(proPath);
 
-			if (_type === 'git') {
+		// if (!isMK) {
+		
+		// 	res.send({
+		// 		success: true,
+		// 		msg: "/"+req.session.act+"/"+_proName+"/"
+		// 	})
+		// 	return;
+		// };
 
-				let clonePath = 'git clone '+ _url +' '+proPath;
-				console.log(clonePath);
+		console.log('will git..');
+		let __status = true,
+			__msg = '';
 
-				if (exec(clonePath).code !== 0) {
-					echo('Error! Git clone failed');
+		if (_type === 'git') {
 
-					res.send({
-						success: true,
-						msg: "/"+req.session.act+"/"+_proName+"/"
-					})
-				} else {
-					echo('Git clone done.')
 
-					res.send({
-						success: true,
-						msg: "/"+req.session.act+"/"+_proName+"/"
-					})
-				}
-			} else {
+			let clonePath = exec('git clone '+ _url +' '+proPath);
+			console.log(clonePath);
 
-				res.send({
-					success: true,
-					msg: "/"+req.session.act+"/"+_proName+"/"
-				})
+			switch (clonePath.code) {
+				case 0:
+					__msg = "/"+req.session.act+"/"+_proName+"/";
+					break;
+
+				case 128:
+					__status = false;
+					__msg = 'Could not read from remote repository.';
+					break;
+
+				default:
+					__status = false;
+					__msg = 'Error! Git clone failed';
+				
 			}
-		})
+
+			if (!__status) {
+				res.send({
+					success: __status,
+					msg: __msg
+				});
+				return;
+			}
+
+			toSaveProject(__msg);
+
+		}
 	}
 
 	// 验证值是否正常
@@ -1121,7 +1139,7 @@ exports.addProject_p = (req, res)=> {
 	}
 
 	// 验证保存数据的方法
-	let toSaveProject = ()=> {
+	let toSaveProject = (path)=> {
 		Schemas.project_m.create(
 		{
 			usr: req.session.act,
@@ -1132,8 +1150,11 @@ exports.addProject_p = (req, res)=> {
 			url: _url
 		}, 
 		(err, data) => {
-
-			sendMsg(err, "项目创建失败!请稍候再试!!")
+			
+			res.send({
+				success: true,
+				msg: path
+			})
 			
 		})
 	}
@@ -1152,7 +1173,8 @@ exports.addProject_p = (req, res)=> {
 			}
 
 			if (!data) {
-				toSaveProject();
+				// toSaveProject();
+				sendMsg()
 			} else {
 				res.send({
 					success: false,
@@ -1637,9 +1659,9 @@ exports.refreshGitProject = (req, res)=> {
 				return;
 			}
 
-			let _proPath = path.join(process.cwd(), req.session.act, req.body.name);
+			let _gitDir = decodeURI(url.parse(req.headers.referer).pathname);
+			let _proPath = path.join(process.cwd(), _gitDir);
 			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath;
-			let _runCode = '';
 
 			if (_proPath.endsWith('/')) {
 				_url += '.git pull ';
@@ -1647,11 +1669,7 @@ exports.refreshGitProject = (req, res)=> {
 				_url += '/.git pull ';
 			}
 
-			_runCode = exec(_url);
-
-			console.log('>>>', _url, _runCode)
-
-			if ( _runCode.code !== 0) {
+			if (exec(_url).code !== 0) {
 				res.send({
 					success: false,
 					msg: 'update failed!'
@@ -1662,7 +1680,7 @@ exports.refreshGitProject = (req, res)=> {
 					msg: 'Already up-to-date.'
 				})
 			}
-				
+			
 		}
 	)
 
