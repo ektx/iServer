@@ -1649,9 +1649,9 @@ exports.refreshGitProject = (req, res)=> {
 				return;
 			}
 
-			let _gitDir = decodeURI(url.parse(req.headers.referer).pathname);
-			let _proPath = path.join(process.cwd(), _gitDir);
+			let _proPath = path.join(process.cwd(), req.session.act, req.body.name);
 			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath;
+			let _runCode = '';
 
 			if (_proPath.endsWith('/')) {
 				_url += '.git pull ';
@@ -1659,7 +1659,11 @@ exports.refreshGitProject = (req, res)=> {
 				_url += '/.git pull ';
 			}
 
-			if (exec(_url).code !== 0) {
+			_runCode = exec(_url);
+
+			console.log('>>>', _url, _runCode)
+
+			if ( _runCode.code !== 0) {
 				res.send({
 					success: false,
 					msg: 'update failed!'
@@ -1670,7 +1674,7 @@ exports.refreshGitProject = (req, res)=> {
 					msg: 'Already up-to-date.'
 				})
 			}
-			
+				
 		}
 	)
 
