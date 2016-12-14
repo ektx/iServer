@@ -92,7 +92,11 @@ module.exports = function generate (originalPath, copyPath) {
 	----------------------------------
 */
 function readFile(originalPath, cPath, delaySend, changeModArr, cachingModObj) {
-	var filesArr = fs.readdirSync(originalPath);
+
+	// 如果目录是以 . 开头的,不进行复制和生成
+	if ( /\/\.\w+/.test(originalPath) ) return;
+
+	let filesArr = fs.readdirSync(originalPath);
 
 	for (let i = 0, len = filesArr.length; i < len; i++) {
 
@@ -147,7 +151,6 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 
 	var includePath = function(type, url, cache) {
 
-
 		var returnARR = []
 
 		var str = fs.readFileSync(url, 'utf8');
@@ -198,6 +201,16 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 	try {
 		// 判断文件上否存在
 		var _f = fs.statSync(_url)
+
+
+		/*
+			过滤以下内容:
+			----------------------------------
+			/parts   parts目录
+			.*		 以 . 命名的文件夹
+		*/
+		if ( /^(parts)|^\.\w+/i.test(fileName) ) return;
+
 		// 如果是文件
 		if (_f.isFile()) {
 			var _fpath = false;
@@ -277,10 +290,7 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 
 		// 是文件夹
 		else if (_f.isDirectory()) {
-			// 复制非组件的文件夹
-			if (fileName !== 'parts') {
-				createFolders(_url, _curl, delaySend, changeModArr, cachingModObj)
-			}
+			createFolders(_url, _curl, delaySend, changeModArr, cachingModObj)
 		}
 
 	} catch (err) {
