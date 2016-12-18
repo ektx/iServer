@@ -91,6 +91,7 @@ $(function() {
 				var _text = _.innerText;
 
 				_navHTML += '<a href="'+_href+'">查看</a>';
+				_navHTML += '<a id="my-contextnav-del">删除</a>';
 			} else {
 				// $('#my-contextnav-open, #my-contextnav-del').addClass('not-used')
 			}
@@ -99,7 +100,6 @@ $(function() {
 				_navHTML += '<hr class="split-line">';
 				_navHTML += '<a class="my-git-refresh">更新代码</a>';
 			} else {
-				_navHTML += '<a id="my-contextnav-del">删除</a>';
 				_navHTML += '<hr class="split-line">';
 				_navHTML += '<a id="my-contextnav-upload">上传文件</a>';
 			}
