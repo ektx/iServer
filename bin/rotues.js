@@ -52,8 +52,8 @@ module.exports = (app, type) => {
 		app.delete('/deleteMyPro', checkLoginUsr, r.delMyPro)
 		app.delete('/myPro/file', checkLoginUsr, r.delMyProFile)
 	} else {
-		app.get('*', r.getAll)
 		app.post('*', r.postAll)
+		app.get('*', r.getAll)
 	}
 
 }

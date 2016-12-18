@@ -241,7 +241,11 @@ exports.usrProject = (req, res, next)=> {
 	console.log(':: You asking User:', req.params.usr )
 	console.log(':: You asking Her Project:', req.params.project )
 
-	let realUrl  = req.url = req.url.replace('/f', '');	
+	// 保留原始地址,方便其它使用
+	let originURL = askURL = req.url.split('/');
+	originURL.splice(3,1);
+	// 修改请求地址和真实地址,为后面读取准备
+	let realUrl  = req.url = originURL.join('/');	
 	let filePath = process.cwd()+ realUrl;
 	let getTar   = false;
 	
@@ -250,7 +254,7 @@ exports.usrProject = (req, res, next)=> {
 
 
 		let isFs = false;
-		console.log('sss', getTar, filePath)
+		console.log('===>', getTar, filePath)
 
 		try {
 			isFs = fs.statSync(filePath);
@@ -281,16 +285,15 @@ exports.usrProject = (req, res, next)=> {
 			return;
 		}
 
-		// 约定访问文件夹是以 '/' 结尾,非此结尾的都是文件,进入文件系统
-		if (!filePath.endsWith('/')) {
-			server(req, res, {serverRootPath: process.cwd() });
-			return;
-		}
-
-
 		// 如果是文件,只接读取
 		if ( isFs.isFile() ) {
-			server(req, res, {serverRootPath: process.cwd() });
+			if (filePath.endsWith('.md')) {
+				res.render('md', {
+					path: askURL.replace('/f', '/viewcode')
+				})
+			} else {
+				server(req, res, {serverRootPath: process.cwd() });
+			}
 			return;
 		}
 
@@ -327,7 +330,7 @@ exports.usrProject = (req, res, next)=> {
 
 			realUrl.endsWith('/') ? breadArr.pop() : breadArr;
 
-			res.render('../server/project', {
+			res.render('project', {
 				files: fileArr,
 				projectInfo: projectInfo,
 				host: defHead.host,
@@ -1071,18 +1074,6 @@ exports.addProject_p = (req, res)=> {
 
 		let proPath = path.join(process.cwd(), req.session.act, _proName);
 
-		// 生成项目目录
-		// let isMK = fs.mkdirSync(proPath);
-
-		// if (!isMK) {
-		
-		// 	res.send({
-		// 		success: true,
-		// 		msg: "/"+req.session.act+"/"+_proName+"/"
-		// 	})
-		// 	return;
-		// };
-
 		console.log('will git..');
 		let __status = true,
 			__msg = '';
@@ -1119,6 +1110,24 @@ exports.addProject_p = (req, res)=> {
 
 			toSaveProject(__msg);
 
+		} else {
+			let isMK;
+			// 生成项目目录
+			try {
+				isMK = fs.mkdirSync(proPath);
+			} catch (err) {
+				res.send({
+					success: false,
+					msg: '项目文件夹已经存在!'
+				})
+				return;
+			}
+
+			if (!isMK) {
+			
+				toSaveProject(__msg);
+				
+			} 
 		}
 	}
 
