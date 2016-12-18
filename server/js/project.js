@@ -81,16 +81,37 @@ $(function() {
 		if (e.target.tagName !== 'HTML' && (e.target.parentNode.className === 'project-list' || e.target.parentNode.parentNode.className === 'project-list')) {
 
 			var navmenu = document.getElementById('my-contextmenu-nav');
+			var isGit   = document.getElementById('isgitpro');
+			var _navHTML = '';
+
 			if (e.target.tagName === 'A' && navmenu) {
-				$('#my-contextnav-open, #my-contextnav-del').removeClass('not-used')
+				// $('#my-contextnav-open, #my-contextnav-del').removeClass('not-used')
+				var _ = e.target;
+				var _href = _.pathname;
+				var _text = _.innerText;
+
+				_navHTML += '<a href="'+_href+'">查看</a>';
 			} else {
-				$('#my-contextnav-open, #my-contextnav-del').addClass('not-used')
+				// $('#my-contextnav-open, #my-contextnav-del').addClass('not-used')
 			}
+
+			if (isGit) {
+				_navHTML += '<hr class="split-line">';
+				_navHTML += '<a class="my-git-refresh">更新代码</a>';
+			} else {
+				_navHTML += '<a id="my-contextnav-del">删除</a>';
+				_navHTML += '<hr class="split-line">';
+				_navHTML += '<a id="my-contextnav-upload">上传文件</a>';
+			}
+
 
 			contextmenuObj = e;
 
 			if (navmenu) {
 				e.preventDefault();
+				
+				navmenu.innerHTML = _navHTML;
+				
 				navmenu.style.left = e.clientX + 'px';
 				navmenu.style.top = e.clientY + 'px';
 				navmenu.style.visibility = 'visible';			
@@ -111,9 +132,9 @@ $(function() {
 	$('#my-contextmenu-nav').on('click', 'a', function(e) {
 		switch (this.id) {
 			// 打开新标签
-			case 'my-contextnav-open':
-				window.open(contextmenuObj.target.href);
-				break;
+			// case 'my-contextnav-open':
+				// window.open(contextmenuObj.target.href);
+				// break;
 
 			// 删除文件或文件夹
 			case 'my-contextnav-del':
