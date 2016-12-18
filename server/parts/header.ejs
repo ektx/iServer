@@ -5,6 +5,7 @@
 		<% } else { %>
 		<a href="<%= titurl %>"><%= title %></a>
 		<% } %>
+		<% if (typeof isG !== 'undefined' && isG) { %> <span>Git</span> <% } %>
 		</h1>
 		<ul class="usr-hd-info-mod">
 			<% if (usr.usr) { %>

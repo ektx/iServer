@@ -60,7 +60,7 @@ ul {
 .simple-pagination .active {
 	color: #333;
 }
-/* <<< 分页样式功能 */
+/* <----分页样式功能 */
 
 .os-header {
 	display: -webkit-flex;
@@ -87,6 +87,17 @@ ul {
 }
 .os-header h1 a {
 	color: #333;
+}
+.os-header h1 span {
+	padding: 1px 6px;
+	color: #fff;
+	font-size: 12px;
+	line-height: 1em;
+	font-weight: normal;
+	vertical-align: super;
+	border: none;
+	border-radius: 3px;
+	background: #ddd;
 }
 
 .usr-hd-info-mod {

@@ -19,94 +19,12 @@ $(function() {
 	});
 
 
-	var contextmenuObj = '';
-	
-	// 右键自定义菜单
-	document.addEventListener('contextmenu', function(e) {
-
-		// 自定义菜单显示功能
-		if (e.target.tagName !== 'HTML' && (e.target.parentNode.className === 'project-list' || e.target.parentNode.parentNode.className === 'project-list')) {
-
-			var navmenu = document.getElementById('my-contextmenu-nav');
-
-			if (e.target.tagName === 'A' && navmenu) {
-				$('#my-contextnav-open, #my-contextnav-del').removeClass('not-used')
-			} else {
-				$('#my-contextnav-open, #my-contextnav-del').addClass('not-used')
-			}
-
-			contextmenuObj = e;
-
-			if (navmenu) {
-				e.preventDefault();
-				navmenu.style.left = e.clientX + 'px';
-				navmenu.style.top = e.clientY + 'px';
-				navmenu.style.visibility = 'visible';			
-			}
-
-		} else {
-			// 隐藏自定义菜单
-			hideContextMenu()
-		}
-
-	})
-
 	// DOM click事件
 	document.documentElement.addEventListener('click', function() {
 		// 隐藏自定义菜单
 		hideContextMenu();
 	});
 
-	/*
-		自定义菜单功能
-		---------------------------------
-	*/
-	$('#my-contextmenu-nav').on('click', 'a', function(e) {
-		switch (this.id) {
-			// 打开新标签
-			case 'my-contextnav-open':
-				window.open(contextmenuObj.target.href);
-				break;
-
-			// 删除文件或文件夹
-			case 'my-contextnav-del':
-				$.ajax({
-					url: '/myPro/file',
-					type: 'delete',
-					data: { file: contextmenuObj.target.pathname },
-					dataType: 'json'
-				})
-				.done(function(data) {
-					if (data.success) {
-						var SumEle = $('.pro-fileSize');
-						var oldSum = parseInt(SumEle.text().match(/\d+/)[0]) -1;
-
-						if (oldSum) {
-
-							SumEle.text('共有 '+oldSum+' 个文件')
-
-							$(contextmenuObj.target.parentNode).hide()
-							
-						} else {
-							location.reload()
-						}
-
-					} else {
-						alert(data.msg)
-					}
-				})
-				.fail(function(err) {
-
-				});
-
-				break;
-
-			// 上传文件功能
-			case 'my-contextnav-upload':
-				$('#toUploadProFiles').trigger('click');
-				break;
-		}
-	});
 
 	// 头部菜单 -- 上传代码
 	// 新项目添加上传文件 -- 上传代码
