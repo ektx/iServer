@@ -242,7 +242,7 @@ exports.usrProject = (req, res, next)=> {
 	console.log(':: You asking Her Project:', req.params.project )
 
 	// 保留原始地址,方便其它使用
-	let originURL = askURL = req.url.split('/');
+	let originURL = req.url.split('/');
 	originURL.splice(3,1);
 	// 修改请求地址和真实地址,为后面读取准备
 	let realUrl  = req.url = originURL.join('/');	
@@ -289,7 +289,7 @@ exports.usrProject = (req, res, next)=> {
 		if ( isFs.isFile() ) {
 			if (filePath.endsWith('.md')) {
 				res.render('md', {
-					path: askURL.replace('/f', '/viewcode')
+					path: '/viewmd'+realUrl
 				})
 			} else {
 				server(req, res, {serverRootPath: process.cwd() });
@@ -1739,6 +1739,24 @@ exports.updateProjectGitRemote = (req, res)=> {
 		}
 	)
 }
+
+
+/*
+	查看源代码
+	------------------------------------
+	目前只有对 md 文件
+*/
+exports.vieworigincode = (req, res)=> {
+	console.log(req.body);
+
+	if (req.body.type === 'md') {
+		server(req, res, {
+			serverRootPath: process.cwd(), 
+			path: req.body.file.replace('/viewmd', '') 
+		});
+	}
+}
+
 
 /*
 	发送邮件测试
