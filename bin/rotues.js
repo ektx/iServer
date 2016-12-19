@@ -34,6 +34,7 @@ module.exports = (app, type) => {
 		app.get(['/:usr/:project', '/:usr/:project/f/*'], r.usrProject)
 	
 		app.post('/loginIn', r.loginIn)
+		app.post('/vieworigincode', r.vieworigincode)
 		app.post('/signUp', r.signUp)
 		app.post('/forgotPwd', r.forgotPwd)
 		app.post('/addUser', checkLoginUsr, r.addUserPost)

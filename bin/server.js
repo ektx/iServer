@@ -11,7 +11,8 @@ const colors = require('colors');
 	---------------------------------------------
 */
 module.exports = (req, res, options) => {
-	let reqPath = req.path;
+	// 取用户设置的地址或是URL上的地址
+	let reqPath = options.path || req.path;
 	let rootPath = options.serverRootPath;
 	// type 是用户服务还是根服务
 	let isUsr = options.isUsr;
