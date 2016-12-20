@@ -53,27 +53,28 @@ module.exports = (req, res, options) => {
 
 		// 文件路径参数集
 		// 用来收集建议信息
-		var statsArr = arguments;
+		let statsArr = arguments;
 
 		// 生成建议路径
-		if (statsArr.length > 1) {
+		if (arguments.length > 1) {
 			// 对Js或Css的迷你文件建议
-			if (statsArr[1] === 'USE_MIN') {
+			if (arguments[1] === 'USE_MIN') {
 				_path = _path.replace(/\.min/i, '');
 			}
 			// 对HTML的文件
 			else {
 				// 修改文件名
-				var extName = path.extname(_path);
-				_path = _path.replace(extName, statsArr[1]);
+				let extName = path.extname(_path);
+				_path = _path.replace(extName, arguments[1]);
 			}
 			console.log('Suggest Path:'.white.bgYellow, _path)
 		}
 
-		// 处理路径乱码,解决URI加密问题,解决下载不了有空格命名的文件
+		// 处理路径乱码,解决URI加密问题及解决下载不了有空格命名的文件
 		_path = decodeURI(_path);
 
 		fs.stat(_path, function(err, stats) {
+			// 1. 文件不存在时，智能提供参考文件
 			if (err) {
 				console.log('No '.white.bgRed+' - '+_path)
 				
@@ -81,46 +82,30 @@ module.exports = (req, res, options) => {
 					如果没有找到的文件
 					则为用户推荐ejs或jade的模板文件
 					当然前提是在请求html的时候
-
-					目标是为了解决 
-					1.jQuery load请求时可以统一使用
-					/dome/page.html 的方法
-					2.导航上直接使用以html为后缀的文件跳转名
 				*/
-
 				// 文件后缀名是什么
-				var fileExtName = ''
+				let fileExtName = ''
 
-				// 当在原始请求时，参数只有地址
-				// 这时长度为1，我们取文件格式
-				// 判断是否满足以下建议形式的文件
-				if (statsArr.length == 1) {
+				// 原始请求时
+				if (arguments.length == 1) {
 					fileExtName = path.extname(_path)
 				} 
-				// 当是建议文件时，我们会增加2个参数进去
-				// 用来处理建议内容
+				// 处理建议内容
 				else {
-					// 如果当前是采用建议地址
-					// 如果建议文件扩展名是 jade,那就结束建议
-					// 只有为 ejs 建议时，才进行第2次建议
-					if (statsArr[1] !== '.ejs') {
+					if (arguments[1] !== '.ejs') {
 						// 取得建议文件的原始格式
-						fileExtName = statsArr[2]
+						fileExtName = arguments[2]
 					}
 				}
 
 				switch (fileExtName) {
-					// 在请求的HTML不存在时
-					// 我们先去尝试请求 ejs 模板文件
-					// 然后在 ejs 的模板也不存在时，尝试jade模板
-					// 如果您使用 jade 的比较多，可以修改下面文件
 					case '.html':
 
 						// 添加建议格式 ejs
 						let suggestExtName = '.ejs';
 
 						// 参数大于1时，这时建议已经在处理过 ejs 的建议了
-						if (statsArr.length > 1 && statsArr[1] !== '.jade') {
+						if (arguments.length > 1 && arguments[1] === '.ejs') {
 							suggestExtName = '.jade'
 						}
 
@@ -129,24 +114,25 @@ module.exports = (req, res, options) => {
 
 					case '.js':
 					case '.css':
-						if (path.basename(_path, '.js').indexOf('.min') > -1 || path.basename(_path, '.css').indexOf('.min') > -1) {
-							isStat(_path, 'USE_MIN', '.js')
+						if ( path.basename(_path, '.js').endsWith('.min') || 
+							path.basename(_path, '.css').endsWith('.min') ) {
+							
+							isStat(_path, 'USE_MIN', fileExtName)
 							return;
 						}
 
 				}
 
 				// 如果没有建议文件或建议文件也不存在
-				// 提示 404
 				ifiles.sendError(res, 404, 404)
 				return;
 			}
 
-			// 如果请求的文件存在
+			// 2.如果请求的文件存在
 			// 判断是文件还是文件夹
-			// 文件则显示内容
 			if (stats.isFile()) {
 
+				// 文件则显示内容
 				// 如果文件是ejs或是jade
 				// 我们渲染成页面输出，防止下载下来了
 				if (path.extname(_path) === '.ejs' || 
@@ -154,7 +140,11 @@ module.exports = (req, res, options) => {
 					res.render(_path);
 				} else {
 
-					ifiles.sendFile(req, res, _path)
+					if (options.fileCallback) {
+						options.fileCallback(_path)
+					} else {
+						ifiles.sendFile(req, res, _path)
+					}
 				}
 
 			} 
@@ -163,8 +153,14 @@ module.exports = (req, res, options) => {
 
 				if ( !reqPath.endsWith('/') ) {
 					reqPath += '/';
+				};
+
+				if (options.dirCallback) {
+					options.dirCallback(_path)
+				} else {
+					ifiles.showDirecotry(req, res, rootPath, reqPath)
 				}
-				ifiles.showDirecotry(req, res, rootPath, reqPath)
+
 			}
 		})
 
