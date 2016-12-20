@@ -1663,24 +1663,24 @@ exports.refreshGitProject = (req, res)=> {
 			let _gitDir = decodeURI( name );
 			let _proPath = path.join(process.cwd(), user, _gitDir);
 			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath+'/.git pull ';
-			let _run = '';
+			let _run = exec(_url);
 
-			try {
-				_run = exec(_url);
+			// try {
+			// 	_run = ;
 
-				console.log('L1671 ',_run)
-			} catch (err) {
+			// 	console.log('L1671 ',_run)
+			// } catch (err) {
+			// 	res.send({
+			// 		success: false,
+			// 		msg: 'Please try again!'
+			// 	});
+			// 	return;
+			// }
+
+			if (!_run ||  _run.code !== 0) {
 				res.send({
 					success: false,
-					msg: 'Please try again!'
-				});
-				return;
-			}
-
-			if (_run.code !== 0) {
-				res.send({
-					success: false,
-					msg: 'update failed!'
+					msg: 'update failed!'+ _run
 				})
 			} else {
 				res.send({
