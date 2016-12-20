@@ -3,7 +3,7 @@
 		<% if (typeof title === 'undefined') { %>
 		<p>iServers</p>
 		<% } else { %>
-		<a href="<%= titurl %>"><%= title %></a>
+		<a id="project-title" href="<%= titurl %>"><%= title %></a>
 		<% } %>
 		<% if (typeof isG !== 'undefined' && isG) { %> <span id="isgitpro">Git</span> <% } %>
 		</h1>
