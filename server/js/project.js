@@ -228,7 +228,7 @@ $(function() {
 
 
 	// 更新代码功能
-	$('.my-git-refresh').click(function() {
+	$('body').on('click', '.my-git-refresh', function() {
 		$.ajax({
 			url: '/pro/refreshgit',
 			type: 'post',

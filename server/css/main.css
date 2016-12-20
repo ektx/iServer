@@ -89,15 +89,19 @@ ul {
 	color: #333;
 }
 .os-header h1 span {
-	padding: 1px 6px;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
 	color: #fff;
+	text-align: center;
 	font-size: 12px;
-	line-height: 1em;
 	font-weight: normal;
 	vertical-align: super;
 	border: none;
-	border-radius: 3px;
-	background: #ddd;
+	border-radius: 100%;
+	background: #39f;
+	transform: scale(.7);
 }
 
 .usr-hd-info-mod {

@@ -2,7 +2,6 @@
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
-const child   = require('child_process');
 const colors  = require('colors');
 const multer  = require('multer');
 const imkdirs = require('imkdirs');
@@ -253,95 +252,74 @@ exports.usrProject = (req, res, next)=> {
 
 	let gitProFiles = (status, projectInfo)=> {
 
-
-		let isFs = false;
 		console.log('===>', getTar, filePath)
 
-		try {
-			isFs = fs.statSync(filePath);
-		} catch (err) {
-			console.log(err)
-
-			if (!getTar) {
-				res.send('404 没有此目录!'); 
-				return;
-			}
-		}
-
-		// 打包文件,提供下载
-		if (getTar && isFs) {
-
-			res.writeHead(200, 'ok')
-
-			// 打包
-			pack(filePath)
-				.on('error', (err)=>{
-					console.log(err.stack)
-				})
-				.on('close', ()=>{
-					console.log('Done!');
-				})
-				.pipe( res )
-
-			return;
-		}
-
-		// 如果是文件,只接读取
-		if ( isFs.isFile() ) {
-			if (filePath.endsWith('.md')) {
+		// 文件回调操作
+		let fileCallback = function(file) {
+			if ( file.endsWith('.md') ) {
 				res.render('md', {
 					path: '/viewmd'+realUrl
 				})
 			} else {
-				server(req, res, {serverRootPath: process.cwd() });
+				ifiles.sendFile(req, res, file)
 			}
-			return;
 		}
 
-		// 对目录文件时
-		fs.readdir(filePath, (err, files)=> {
+		// 目录回调操作
+		let dirCallback = function(filePath) {
+			// 对目录文件时
+			fs.readdir(filePath, (err, files)=> {
 
-			// 防止访问文件夹时,系统崩溃
-			if (!filePath.endsWith('/')) filePath += '/';
+				// 防止访问文件夹时,系统崩溃
+				if (!filePath.endsWith('/')) filePath += '/';
 
-			if (err) {
-				console.log(err); 
-				return;
-			}
-
-			let fileArr = [];
-			for (let f = 0, l = files.length; f < l; f++) {
-				let stat = fs.statSync(filePath + files[f]);
-
-				if (stat.isDirectory()) {
-					fileArr.push({
-						type: 'dir',
-						name: files[f]
-					})
-				} else {
-					fileArr.push({
-						type: 'file',
-						name: files[f]
-					})
+				if (err) {
+					console.log(307, err); 
+					return;
 				}
-			}
 
-			let breadArr = realUrl.split('/');
-			let defHead  = defaultHeader(req);
+				let fileArr = [];
+				for (let f = 0, l = files.length; f < l; f++) {
+					let stat = fs.statSync(filePath + files[f]);
 
-			realUrl.endsWith('/') ? breadArr.pop() : breadArr;
+					if (stat.isDirectory()) {
+						fileArr.push({
+							type: 'dir',
+							name: files[f]
+						})
+					} else {
+						fileArr.push({
+							type: 'file',
+							name: files[f]
+						})
+					}
+				}
 
-			res.render('project', {
-				files: fileArr,
-				projectInfo: projectInfo,
-				host: defHead.host,
-				usrInfo: defHead.usrInfo || false,
-				proStatus: status,
-				title: req.params.project,
-				titurl: '/'+req.params.usr+'/'+req.params.project+'/',
-				breadCrumbs: breadArr
+				let breadArr = realUrl.split('/');
+				let defHead  = defaultHeader(req);
+
+				realUrl.endsWith('/') ? breadArr.pop() : breadArr;
+
+				res.render('project', {
+					files: fileArr,
+					projectInfo: projectInfo,
+					host: defHead.host,
+					usrInfo: defHead.usrInfo || false,
+					proStatus: status,
+					title: req.params.project,
+					titurl: '/'+req.params.usr+'/'+req.params.project+'/',
+					breadCrumbs: breadArr
+				})
 			})
-		})
+		}
+
+		// 使用文件服务
+		server(req, res, {
+			serverRootPath: process.cwd(),
+			fileCallback: fileCallback, // 对文件操作
+			dirCallback: dirCallback 	// 对目录操作
+		});
+		
 	}
 
 	// 1. 验证
@@ -458,7 +436,6 @@ exports.usrProject = (req, res, next)=> {
 	else {
 
 		hasProject(req, res).then( (options)=>{
-		console.log(options.status, options.data)
 
 			gitProFiles(options.status, options.data) 
 		}, (reject)=>{
@@ -1666,10 +1643,13 @@ exports.getResetPWD = (req, res)=> {
 */
 exports.refreshGitProject = (req, res)=> {
 
+	let user = req.session.act,
+		name = req.body.name;
+
 	Schemas.project_m.findOne(
 		{
-			usr: req.session.act,
-			name: req.body.name
+			usr: user,
+			name: name
 		},
 		(err, data)=> {
 			if (err) {
@@ -1680,19 +1660,13 @@ exports.refreshGitProject = (req, res)=> {
 				return;
 			}
 
-			let _gitDir = decodeURI(url.parse(req.headers.referer).pathname);
-			let _proPath = path.join(process.cwd(), _gitDir);
-			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath;
+			let _gitDir = decodeURI( name );
+			let _proPath = path.join(process.cwd(), user, _gitDir);
+			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath+'/.git pull ';
 			let _run = '';
 
-			if (_proPath.endsWith('/')) {
-				_url += '.git pull ';
-			} else {
-				_url += '/.git pull ';
-			}
-
 			try {
-				_run = child.exec(_url)
+				_run = exec(_url)
 			} catch (err) {
 				res.send({
 					success: false,
