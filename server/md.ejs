@@ -45,7 +45,6 @@
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xmlhttp.send('type=md&file=<%= path %>');
 		xmlhttp.onreadystatechange = function() {
-			console.log(xmlhttp)
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				var converter = new showdown.Converter({ extensions: ['codehighlight']}),
 					html = converter.makeHtml(xmlhttp.response);
