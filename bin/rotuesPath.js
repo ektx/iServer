@@ -1082,7 +1082,18 @@ exports.addProject_p = (req, res)=> {
 		if (_type === 'git') {
 
 
-			let clonePath = exec('git clone '+ _url +' '+proPath);
+			let clonePath
+
+			try {
+				clonePath = exec('git clone '+ _url +' '+proPath);
+			} catch (err) {
+				res.send({
+					success: false,
+					msg: 'Clone Err!'+ err
+				});
+
+				return;
+			}
 			console.log(clonePath);
 
 			switch (clonePath.code) {
