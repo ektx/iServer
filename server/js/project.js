@@ -234,7 +234,7 @@ $(function() {
 			type: 'post',
 			dataType: 'json',
 			data: {
-				name: $('h1').text().trim()
+				name: $('#project-title').text().trim()
 			}
 		})
 		.done(function(data){
