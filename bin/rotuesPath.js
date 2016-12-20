@@ -1666,7 +1666,9 @@ exports.refreshGitProject = (req, res)=> {
 			let _run = '';
 
 			try {
-				_run = exec(_url)
+				_run = exec(_url);
+
+				console.log('L1671 ',_run)
 			} catch (err) {
 				res.send({
 					success: false,
