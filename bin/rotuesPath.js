@@ -2,6 +2,7 @@
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
+const child   = require('child_process');
 const colors  = require('colors');
 const multer  = require('multer');
 const imkdirs = require('imkdirs');
@@ -1671,6 +1672,7 @@ exports.refreshGitProject = (req, res)=> {
 			let _gitDir = decodeURI(url.parse(req.headers.referer).pathname);
 			let _proPath = path.join(process.cwd(), _gitDir);
 			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath;
+			let _run = '';
 
 			if (_proPath.endsWith('/')) {
 				_url += '.git pull ';
@@ -1678,7 +1680,17 @@ exports.refreshGitProject = (req, res)=> {
 				_url += '/.git pull ';
 			}
 
-			if (exec(_url).code !== 0) {
+			try {
+				_run = child.exec(_url)
+			} catch (err) {
+				res.send({
+					success: false,
+					msg: 'Please try again!'
+				});
+				return;
+			}
+
+			if (_run.code !== 0) {
 				res.send({
 					success: false,
 					msg: 'update failed!'
