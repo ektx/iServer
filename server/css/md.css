@@ -1,5 +1,28 @@
 @charset 'utf-8';
 
+body {
+	color: #333;
+	font: 16px "Microsoft Yahei","Hiragino Sans GB","Helvetica Neue",sans-serif,"SimHei",Arial;
+}
+
+body, section, div, p,
+h1,h2,h3,h4,h5,h6 {
+	margin: 0;
+	padding: 0;
+}
+
+h1,h2 {
+	padding: 10px 0;
+	border-bottom: 1px solid #ddd;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	margin: 18px 0;
+}
+
+h1 { font-size: 2rem }
+h2 { font-size: 1.5rem; }
+
 #inner {
 	max-width: 800px;
 	margin: 0 0 0 80px;
@@ -8,4 +31,7 @@
 code {
 	padding: 8px;
 	border-radius: 3px;
+}
+pre code {
+	background-color: transparent;
 }
