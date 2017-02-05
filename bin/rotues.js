@@ -21,7 +21,7 @@ module.exports = (app, type) => {
 		app.get('/resetPWD', r.getResetPWD)
 		app.get('/SMTP', redirectCheckLoginUsr, r.getSMTP)
 		app.get('/set/profile', r.setProfile)
-		app.get('/set/passwd', r.getPasswdPage)
+		app.get('/set/passwd', redirectCheckLoginUsr, r.getPasswdPage)
 		app.get('/users', redirectCheckLoginUsr, r.getUsers)
 	}
 

@@ -2,9 +2,11 @@ function server(options) {
 
 	'use strict';
 
-	const http    = require('http');
 	const fs      = require('fs');
+	const http    = require('http');
+	const http2   = require('spdy');
 	const path    = require('path');
+	const net     = require('net');
 	const express = require('express');
 	const session = require('express-session');
 	const bodyParser = require('body-parser');
@@ -19,6 +21,11 @@ function server(options) {
 	const parseURL  = require('./parseURL');
 	const app = express();
 	const io  = require('socket.io')(http);
+
+	const sslOptions = {
+		key: fs.readFileSync(path.join(__dirname, '../ssl/iserver.pem')),
+		cert: fs.readFileSync(path.join(__dirname, '../ssl/iserver-cert.pem'))
+	}
 
 	app.set('views', path.resolve(__dirname, '../server') )
 	app.set('view engine', 'ejs')
@@ -58,13 +65,31 @@ function server(options) {
 	// 使用路由
 	rotues(app, options.type);
 
+	// https & http port
+	let httpPort = options.port +1;
+	let httpsPort = options.port +2;
 
 	// 主服务
-	app.listen(options.port, function() {
+	net.createServer(netSocket=> {
+		netSocket.once('data', buf => {
+			let address = buf[0] === 22 ? httpsPort : httpPort;
+			let proxy = net.createConnection(address, ()=> {
+				proxy.write(buf);
+				netSocket.pipe(proxy).pipe(netSocket);
+			});
 
+			proxy.on('err', err => {
+				console.log(err)
+			})
+		});
+
+		netSocket.on('err', err => {
+			console.log(err)
+		})
+	}).listen(options.port, ()=> {
 		if (options.type === 'tool' && options.browser) {
-	    	
-	    	let openURL = 'http://'+getIPs().IPv4.public + ':' + options.port;
+		
+			let openURL = 'http://'+getIPs().IPv4.public + ':' + options.port;
 
 			open(openURL, options.browser)
 		}
@@ -80,11 +105,17 @@ function server(options) {
 
 		console.log(showInfo);
 
-	}).on('error', (err) => {
-		if (err.code === 'EADDRINUSE') {
-			console.log(options.port+ '端口已经被占位!请更换其它端口!')
+		http.createServer(app).listen(httpPort)
+		
+		http2.createServer(sslOptions, app).listen(httpsPort)
+
+	}).on('error', err=> {
+		if (err && err.code === 'EADDRINUSE') {
+			console.log(` ${options.port} 端口已经被占位!请更换其它端口! `.yellow.bgRed)
+			return;
 		}
 	});
+
 }
 
 

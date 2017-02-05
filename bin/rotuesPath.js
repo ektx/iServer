@@ -187,7 +187,6 @@ exports.usrHome = (req, res, next)=> {
 				ico: req.session.ico,
 				pow: req.session.pow
 			},
-			host: 'http://'+ req.headers.host,
 			askUsr: usrData,
 			project: proData
 		});
@@ -465,7 +464,6 @@ exports.setProfile = (req, res) => {
 					return;
 				}
 
-
 				console.log(data)
 				let sendJSON = defaultHeader(req);
 
@@ -637,7 +635,9 @@ exports.PSetProfile = (req, res)=> {
 	--------------------------------------
 */
 exports.getPasswdPage = (req, res) => {
-	goToPage(req, res, 'passwd')
+	debugLog(req, res);
+
+	res.render('passwd', defaultHeader(req));
 }
 
 
@@ -1829,23 +1829,6 @@ function debugLog (req, res) {
 }
 
 
-function goToPage(req, res, page) {
-
-	debugLog(req, res);
-
-	checkLoginForURL(req, res, ()=> {
-		res.render(page, {
-			usrInfo: { 
-				usr: req.session.act,
-				name: req.session.usr,
-				ico: req.session.ico
-			},
-			host: req.secure?'https://':'http://'+ req.headers.host,
-			askUsr: false
-		});
-	})	
-}
-
 /*
 	获取文件地物理地址
 	-----------------------------------------------------
@@ -1881,7 +1864,7 @@ function defaultHeader(req) {
 			ico: session.ico,
 			pow: session.pow
 		},
-		host: req.secure?'https://':'http://'+ req.headers.host,
+		host: (req.secure?'https://':'http://')+ req.headers.host,
 	}
 }
 
