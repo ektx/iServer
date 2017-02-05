@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh">
-	<%- include('parts/head', {host: host, title: usrInfo.usr, css: ['/server/css/setting.css']}) %>
+	<%- include('parts/head', {title: usrInfo.usr, css: ['/server/css/setting.css']}) %>
 <body>
 	
-	<%- include('parts/header', {host: host, usr: usrInfo, title: '个人中心', titurl: '/'+usrInfo.usr }) %>
+	<%- include('parts/header', {usr: usrInfo, title: '个人中心', titurl: '/'+usrInfo.usr }) %>
 
 	<section class="main-body">
-
 
 		<section class="content">
 
@@ -69,10 +68,10 @@
 
 	</section>
 
-	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
-	<script src="<%= host %>/server/js/main.js"></script>
-	<script src="<%= host %>/server/js/myVerification-0.0.1.js"></script>
-	<script src="<%= host %>/server/js/setting.js"></script>
+	<script src="/server/js/jquery-3.1.0.min.js"></script>
+	<script src="/server/js/main.js"></script>
+	<script src="/server/js/myVerification-0.0.1.js"></script>
+	<script src="/server/js/setting.js"></script>
 	
 </body>
 </html>

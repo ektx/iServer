@@ -16,6 +16,21 @@ function getServerSet(options) {
 
 	let toolSettingQuestions = [
 		{
+			type: 'input',
+			name: 'port',
+			message: 'Server port:',
+			default: ()=> {
+				return 8000
+			},
+			validate: val => {
+				let pass = /^[0-9]*$/.test(val);
+
+				if (pass) return true;
+
+				return 'Please type number'
+			}
+		},
+		{
 			type: 'checkbox',
 			name: 'compression',
 			message: '压缩以下那些格式文件:',
@@ -29,12 +44,10 @@ function getServerSet(options) {
 			]
 		},
 		{
-			type: 'confirm',
+			type: 'list',
 			name: 'sourceMap',
-			message: '是否使用JavaScript Source Map?',
-			default: ()=>{
-				return false
-			}
+			message: 'Use JavaScript Source Map ?',
+			choices: ['Yes', 'No']
 		}
 	];
 
@@ -51,7 +64,17 @@ function getServerSet(options) {
 			if (answer.defSet === 'No') {
 
 				inquirer.prompt(toolSettingQuestions).then((answer)=> {
-					console.log(answer)
+
+					// 翻译js map
+					if (answer.sourceMap === 'Yes') {
+						answer.sourceMap = true;
+					} else {
+						answer.sourceMap = false;
+					}
+
+					// 设置新端口
+					options.port = parseInt(answer.port);
+
 					main(options)
 				})
 
