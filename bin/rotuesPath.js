@@ -1052,12 +1052,12 @@ exports.addProject_p = (req, res)=> {
 
 		let proPath = path.join(process.cwd(), req.session.act, _proName);
 
-		console.log('will git..');
 		let __status = true,
 			__msg = '';
 
 		if (_type === 'git') {
 
+			console.log('will git..');
 
 			let clonePath
 
@@ -1114,6 +1114,7 @@ exports.addProject_p = (req, res)=> {
 
 			if (!isMK) {
 			
+				__msg = "/"+req.session.act+"/"+_proName+"/";
 				toSaveProject(__msg);
 				
 			} 
@@ -1513,7 +1514,6 @@ exports.getUsers = (req, res)=> {
 					title: '用户管理',
 					titurl: '/'+req.session.act,
 					admin: data,
-					host: req.secure?'https://':'http://'+ req.headers.host,
 					askUsr: false
 				});
 			}
