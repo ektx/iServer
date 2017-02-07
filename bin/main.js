@@ -106,12 +106,16 @@ function server(options) {
 
 		console.log(showInfo);
 
-		http.createServer(app).listen(httpPort)
+		http.createServer(app).listen(httpPort, ()=> {
+			console.log(`HTTP  辅助端口为: ${httpPort}`)
+		})
 		.on('error', err => {
 			serverErr(err, ` ${httpPort} http 辅助接口被占用!`)
 		})
 		
-		http2.createServer(sslOptions, app).listen(httpsPort)
+		http2.createServer(sslOptions, app).listen(httpsPort, ()=> {
+			console.log(`HTTPS 辅助端口为: ${httpsPort}`)
+		})
 		.on('error', err => {
 			serverErr(err, ` ${httpsPort} https 辅助接口被占用!`)
 		})
