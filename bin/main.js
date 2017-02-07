@@ -22,7 +22,10 @@ function server(options) {
 	const app = express();
 	const io  = require('socket.io')(http);
 
-	let mainPort, httpPort, httpsPort;
+	// https & http port
+	let	mainPort = options.port;
+	let	httpPort = options.http || options.port + 1;
+	let	httpsPort = options.https || options.port + 2;
 
 	const sslOptions = {
 		key: fs.readFileSync(path.join(__dirname, '../ssl/iserver.pem')),
@@ -59,19 +62,7 @@ function server(options) {
 			console.log('Mongodb OK!');
 		})
 
-		// https & http port
-		mainPort = options.port.main;
-		httpPort = options.port.http;
-		httpsPort = options.port.https;
-
-	} else {
-
-		// https & http port
-		mainPort = options.port;
-		httpPort = options.port +1;
-		httpsPort = options.port +2;
-		
-	}
+	} 
 
 	// GBK URL中文乱码问题
 	app.use(parseURL)
