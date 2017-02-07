@@ -6,7 +6,6 @@
     "email": "530675800@qq.com"
   },
   "description": "iojs/nodejs web server",
-  "main": "epp.js",
   "preferGlobal": true,
   "repository": {
     "type": "git",
@@ -23,7 +22,6 @@
     "mongodb"
   ],
   "bin": {
-    "dev": "app.js",
     "iserver": "index.js",
     "igit": "bin/git.js"
   },
