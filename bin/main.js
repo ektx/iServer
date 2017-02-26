@@ -84,7 +84,8 @@ function server(options) {
 			})
 		});
 
-		netSocket.on('err', err => {
+		netSocket.on('error', err => {
+			console.log('Sevrer error:')
 			console.log(err)
 		})
 	}).listen(mainPort, ()=> {
