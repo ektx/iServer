@@ -84,9 +84,9 @@ function server(options) {
 			})
 		});
 
+
 		netSocket.on('error', err => {
-			console.log('Sevrer error:')
-			console.log(err)
+			console.log('iserver error: '+err)
 		})
 	}).listen(mainPort, ()=> {
 		if (options.type === 'tool' && options.browser) {
