@@ -73,12 +73,27 @@ function server(options) {
 	// 主服务
 	net.createServer(netSocket=> {
 		netSocket.once('data', buf => {
-			let address = buf[0] === 22 ? httpsPort : httpPort;
+			// pause the socket
+			netSocket.pause();
+
+			// determine if this is an http(s) request
+			let byte = buf[0];
+
+			let address;
+
+			if (byte === 22) {
+				address = httpsPort;
+			} else if (32 < byte && byte < 127) {
+				address = httpPort;
+			}
+
 			let proxy = net.createConnection(address, ()=> {
 				proxy.write(buf);
 				netSocket.pipe(proxy).pipe(netSocket);
 			});
 
+			netSocket.resume();
+			
 			proxy.on('err', err => {
 				console.log(err)
 			})
