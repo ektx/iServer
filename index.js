@@ -30,7 +30,7 @@ program
 			type: 'tool',
 			browser: !options.browser ? false : options.browser,
 			set: !options.set ? false : true,
-			port: isNaN(options.port) ? 8000 : options.port,
+			port: isNaN(options.port) ? 8000 : parseInt(options.port),
 			version: version
 		})
 
