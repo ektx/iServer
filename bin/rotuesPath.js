@@ -2,6 +2,7 @@
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
+const http  = require('http');
 const colors  = require('colors');
 const multer  = require('multer');
 const imkdirs = require('imkdirs');
@@ -117,6 +118,31 @@ exports.server = (req, res) => {
 
 	server(req, res, {serverRootPath: __dirname.replace('bin', '') });
 };
+
+/*
+	添加简单的自定义跨域访问
+	------------------------
+	支持 GET
+*/
+exports.iproxy = (req, res) => {
+	let proxyUrl = req.url.substr(12);
+	console.log('%s $ %s', req.method.bgGreen.white,  proxyUrl);
+
+	// 当用户使用 htpps 想让服务器代理时,我们提醒他让开发配合使用相关技术方案
+	if (url.parse(proxyUrl).protocol === 'https:') {
+		res.send('Please Set: Access-Control-Allow-Origin:*, Help Link: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS')
+	} 
+	// 当用户使用的是 http 请求的后端时,我们可以简单的代理
+	else {
+
+		http.get(encodeURI(proxyUrl), (xres)=> {
+			xres.setEncoding('utf8');
+			xres.pipe(res);
+		})
+		
+	}
+
+}
 
 
 

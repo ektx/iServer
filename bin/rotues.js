@@ -26,6 +26,7 @@ module.exports = (app, type) => {
 	}
 
 	app.get('/server/*', r.server)
+	app.get('/iproxy-url=*', r.iproxy)
 
 	if (type == "os") {
 		app.get('/:usr', r.usrHome)
