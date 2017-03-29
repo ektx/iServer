@@ -29,3 +29,22 @@ npm uninstall -g iservers
 # 2.2 删除应用
 npm unlink
 ```
+
+
+## 使用代理服务器 iproxy-url=
+
+对于跨域请求,你可以在你请求时,添加 __前缀(iproxy-url=)__ 让服务器帮助你跨域:
+
+```javascript
+let url = 'your_ajax_url';
+let method = 'GET';
+let ajax = new XMLHttPRequest();
+ajax.open(method, `/iproxy-url=${url}`, true);
+ajax.onreadystatechange = ()=> {
+  if (this.readyState == 4 && this.status == 200) {
+    // this.responseText
+  }
+}
+
+```
+
