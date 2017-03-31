@@ -1,7 +1,7 @@
 /**
 * airPages v.0.1
 * 基于 simplePagination.js v1.6上修改
-
+	http://flaviusmatis.github.io/simplePagination.js/
   样式: airPages.css
 * 
 * 支持:
@@ -18,7 +18,7 @@
 				items: 1,
 				itemsOnPage: 1,
 				pages: 0,
-				displayedPages: 5,
+				displayedPages: 5, // 最多显示几页
 				edges: 1,  // 与首页或尾页间的分页个数
 				currentPage: 0,
 				hrefTextPrefix: '#page-',

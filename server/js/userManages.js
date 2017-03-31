@@ -58,12 +58,12 @@ function getUserList(page) {
 		var page = $('#my-user-pages');
 		if ( !page.hasClass('light-theme') ) {
 			page.pagination({
-				pages: data.count/10, // 假定有10页
+				items: data.count, // 假定有10页
+				itemsOnPage: 10,
 				prevText: '上一页',
 				nextText: '下一页',
 				onPageClick: function(pageNumebr) {
 					
-					console.log(pageNumebr);
 					getUserList(pageNumebr -1)
 
 				}
