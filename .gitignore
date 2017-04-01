@@ -10,3 +10,7 @@
 *version.json
 *tinify-cache.json
 *email.json
+
+yarn.lock
+
+yarn-error.log
