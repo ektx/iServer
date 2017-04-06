@@ -51,6 +51,9 @@ function server(options) {
 
 		app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
+		// parse application/json 
+		app.use(bodyParser.json())
+
 		mongoose.connect(options.db);
 		mongoose.set('debug', true);
 		
