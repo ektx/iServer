@@ -26,6 +26,7 @@
     "igit": "bin/git.js"
   },
   "dependencies": {
+    "async": "^2.3.0",
     "body-parser": "^1.17.1",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
