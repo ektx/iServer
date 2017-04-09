@@ -20,19 +20,20 @@ exports.API_usrHome = (req, res)=> {
 			{'account': askUsr },
 			{_id: 0, pwd: 0},
 			(err, data) => {
-				if (data) {
+
+				if (null == data) {
+					reject({
+						success: false,
+						data: {
+							msg: 'Not find user!'
+						}
+					})
+				} else {
 					resolve({
 						success: true,
 						data: {
 							usr: data.account,
 							pic: data.ico
-						}
-					})
-				} else {
-					reject({
-						success: false,
-						data: {
-							msg: 'Not find user!'
 						}
 					})
 				}
@@ -81,9 +82,9 @@ exports.API_usrHome = (req, res)=> {
 					}
 				)
 			}
+		},
+		(reject) => {
+			res.send(reject)
 		}
-	),
-	(reject) => {
-		res.send(reject)
-	}
+	)
 }

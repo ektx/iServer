@@ -30,7 +30,7 @@ module.exports = (app, type) => {
 	app.get('/iproxy-url=*', r.iproxy)
 
 	if (type == "os") {
-		app.get('/api/:usr', api_v1.API_usrHome)
+		app.get('/api/v1/:usr', api_v1.API_usrHome)
 		app.get('/:usr', r.usrHome)
 		app.get('/:usr/__USER/*', r.__USER)
 		app.get('/:usr/:project/settings', redirectCheckLoginUsr, r.proSettings)
