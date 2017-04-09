@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const r = require('./rotuesPath');
+const api_v1 = require('./API/V1/api');
 
 
 module.exports = (app, type) => {
@@ -29,6 +30,7 @@ module.exports = (app, type) => {
 	app.get('/iproxy-url=*', r.iproxy)
 
 	if (type == "os") {
+		app.get('/api/:usr', api_v1.API_usrHome)
 		app.get('/:usr', r.usrHome)
 		app.get('/:usr/__USER/*', r.__USER)
 		app.get('/:usr/:project/settings', redirectCheckLoginUsr, r.proSettings)
