@@ -179,7 +179,6 @@ exports.usrHome = (req, res, next)=> {
 	console.log(':: You asking ', req.params.usr );
 	console.log(req.headers.host)
 	console.log(req.url)
-	let fields = {_id:0, project: 1};
 
 	// 查看是否有此用户信息
 	let findAskUsr = new Promise((resolve, reject) => {
@@ -812,7 +811,7 @@ exports.signUp = (req, res)=> {
 	let act = req.body.user;
 	let ico = 'server/img/kings.png';
 	let pow = 'user'; // root admin user 
-	let filter = ['root', 'admin', 'help'];
+	let filter = ['root', 'admin', 'help', 'api', 'doc', 'server', 'version'];
 
 	// 过滤名称安全
 	if ( !/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/g.test(req.body.user) ) {
