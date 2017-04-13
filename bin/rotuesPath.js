@@ -2,12 +2,13 @@
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
+const http  = require('http');
 const colors  = require('colors');
 const multer  = require('multer');
 const imkdirs = require('imkdirs');
 const server  = require('./server');
 const Schemas = require('./schemas');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const rimraf = require('rimraf');
 const querystring = require('querystring');
 const pack    = require('tar-pack').pack;
@@ -118,6 +119,31 @@ exports.server = (req, res) => {
 	server(req, res, {serverRootPath: __dirname.replace('bin', '') });
 };
 
+/*
+	添加简单的自定义跨域访问
+	------------------------
+	支持 GET
+*/
+exports.iproxy = (req, res) => {
+	let proxyUrl = req.url.substr(12);
+	console.log('%s $ %s', req.method.bgGreen.white,  proxyUrl);
+
+	// 当用户使用 htpps 想让服务器代理时,我们提醒他让开发配合使用相关技术方案
+	if (url.parse(proxyUrl).protocol === 'https:') {
+		res.send('Please Set: Access-Control-Allow-Origin:*, Help Link: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS')
+	} 
+	// 当用户使用的是 http 请求的后端时,我们可以简单的代理
+	else {
+
+		http.get(encodeURI(proxyUrl), (xres)=> {
+			xres.setEncoding('utf8');
+			xres.pipe(res);
+		})
+		
+	}
+
+}
+
 
 
 // 所有 post * 请求
@@ -153,7 +179,6 @@ exports.usrHome = (req, res, next)=> {
 	console.log(':: You asking ', req.params.usr );
 	console.log(req.headers.host)
 	console.log(req.url)
-	let fields = {_id:0, project: 1};
 
 	// 查看是否有此用户信息
 	let findAskUsr = new Promise((resolve, reject) => {
@@ -187,7 +212,6 @@ exports.usrHome = (req, res, next)=> {
 				ico: req.session.ico,
 				pow: req.session.pow
 			},
-			host: 'http://'+ req.headers.host,
 			askUsr: usrData,
 			project: proData
 		});
@@ -465,7 +489,6 @@ exports.setProfile = (req, res) => {
 					return;
 				}
 
-
 				console.log(data)
 				let sendJSON = defaultHeader(req);
 
@@ -637,7 +660,9 @@ exports.PSetProfile = (req, res)=> {
 	--------------------------------------
 */
 exports.getPasswdPage = (req, res) => {
-	goToPage(req, res, 'passwd')
+	debugLog(req, res);
+
+	res.render('passwd', defaultHeader(req));
 }
 
 
@@ -786,7 +811,7 @@ exports.signUp = (req, res)=> {
 	let act = req.body.user;
 	let ico = 'server/img/kings.png';
 	let pow = 'user'; // root admin user 
-	let filter = ['root', 'admin', 'help'];
+	let filter = ['root', 'admin', 'help', 'api', 'doc', 'server', 'version'];
 
 	// 过滤名称安全
 	if ( !/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/g.test(req.body.user) ) {
@@ -1052,12 +1077,12 @@ exports.addProject_p = (req, res)=> {
 
 		let proPath = path.join(process.cwd(), req.session.act, _proName);
 
-		console.log('will git..');
 		let __status = true,
 			__msg = '';
 
 		if (_type === 'git') {
 
+			console.log('will git..');
 
 			let clonePath
 
@@ -1114,6 +1139,7 @@ exports.addProject_p = (req, res)=> {
 
 			if (!isMK) {
 			
+				__msg = "/"+req.session.act+"/"+_proName+"/";
 				toSaveProject(__msg);
 				
 			} 
@@ -1513,7 +1539,6 @@ exports.getUsers = (req, res)=> {
 					title: '用户管理',
 					titurl: '/'+req.session.act,
 					admin: data,
-					host: req.secure?'https://':'http://'+ req.headers.host,
 					askUsr: false
 				});
 			}
@@ -1829,23 +1854,6 @@ function debugLog (req, res) {
 }
 
 
-function goToPage(req, res, page) {
-
-	debugLog(req, res);
-
-	checkLoginForURL(req, res, ()=> {
-		res.render(page, {
-			usrInfo: { 
-				usr: req.session.act,
-				name: req.session.usr,
-				ico: req.session.ico
-			},
-			host: req.secure?'https://':'http://'+ req.headers.host,
-			askUsr: false
-		});
-	})	
-}
-
 /*
 	获取文件地物理地址
 	-----------------------------------------------------
@@ -1881,7 +1889,7 @@ function defaultHeader(req) {
 			ico: session.ico,
 			pow: session.pow
 		},
-		host: req.secure?'https://':'http://'+ req.headers.host,
+		host: (req.secure?'https://':'http://')+ req.headers.host,
 	}
 }
 

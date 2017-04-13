@@ -1,4 +1,6 @@
 {
 	"port": 8000,
+	"http": 8001,
+	"https": 8002,
 	"db": "mongodb://localhost/iserver"
 }

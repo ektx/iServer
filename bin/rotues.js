@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const r = require('./rotuesPath');
+const api_v1 = require('./API/V1/api');
 
 
 module.exports = (app, type) => {
@@ -21,13 +22,15 @@ module.exports = (app, type) => {
 		app.get('/resetPWD', r.getResetPWD)
 		app.get('/SMTP', redirectCheckLoginUsr, r.getSMTP)
 		app.get('/set/profile', r.setProfile)
-		app.get('/set/passwd', r.getPasswdPage)
+		app.get('/set/passwd', redirectCheckLoginUsr, r.getPasswdPage)
 		app.get('/users', redirectCheckLoginUsr, r.getUsers)
 	}
 
 	app.get('/server/*', r.server)
+	app.get('/iproxy-url=*', r.iproxy)
 
 	if (type == "os") {
+		app.get('/api/v1/:usr', api_v1.API_usrHome)
 		app.get('/:usr', r.usrHome)
 		app.get('/:usr/__USER/*', r.__USER)
 		app.get('/:usr/:project/settings', redirectCheckLoginUsr, r.proSettings)
