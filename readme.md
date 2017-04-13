@@ -1,21 +1,27 @@
-# iServer 4.0  
+# iServer 5.x  
 
 
 ## 功能说明:    
 
 ### 作为服务器使用
+__需要 Mongodb 数据库__
 
 * Node.js 多用户服务器 
 * 配合 git 服务器
+* 支持渲染模板文件, ejs或pug
+* 支持用户注册与登录及密码修改
+* 增加 api 接口
+  - 用户项目接口
 
 ### 作用本地静态服务器   
 
-* 让开发者使用 `ejs` 和 `jade` 来组件化开发自己的静态页面       
+* 让开发者使用 `ejs` 和 `pug` 来组件化开发自己的静态页面       
 * 支持样式的合并与压缩功能  
 * 生成文件及统计与输出 
 * 从命令行启动并打开浏览器  
 * 支持生成 `js` `source map`  
 * 支持min文件重向功能  
+* [增加代理跨域功能](https://github.com/ektx/iServer/tree/master/Doc#使用代理服务器-iproxy-url)
 
 
 ## 安装
