@@ -18,7 +18,7 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs');
-const jade = require('jade');
+const jade = require('pug');
 
 const css = require('./css');
 const js = require('./jsmin');

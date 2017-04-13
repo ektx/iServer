@@ -213,6 +213,7 @@ $.fn.extend({
 			if (_this.attr('type') === 'file') {
 				if(this.hasAttribute('multiple')) {
 					for(var i = 0, l= this.files.length; i < l; i++){
+						console.log(_this.attr('name'), this.files[i]);
 						data.append(_this.attr('name'), this.files[i]);
 					}
 				} else {
@@ -242,7 +243,6 @@ $.fn.extend({
 			}
 
 		}) // End each
-
 
 		if (event.type === 'submit' && !hasErr) {
 			ajaxOption.data = data;

@@ -178,15 +178,6 @@ exports.sendFile = function(req, res, filePath) {
 				sendError(res, 505)
 			})
 
-			// stream.on('data', function(chunk) {
-			// 	console.log(chunk)
-			// })
-
-			mime.define({
-				'text/css': ['scss']
-			});
-
-
 			res.writeHead( 200,	wh_opt )
 
 			stream.pipe(res);
@@ -245,9 +236,11 @@ function resHeaders(type) {
 	type = type || 'text/html';
 
 	let headerInfo = {
+		// 容许跨域请求 * 表示所有,你可以指定具体的域名可以访问
+		'Access-Control-Allow-Origin': '*',
 		'Content-Type': type+';charset="utf8"',
 		'x-xss-protection': '1; mode=block',
-		'Server': 'iServer 4.0.0 beta'
+		'Server': 'iServer 5.0.0 beta'
 	};
 
 	let cacheType = ['javascript', 'css', 'jpeg', 'png', 'gif', 'x-markdown'];

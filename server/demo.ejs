@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh">
-	<%- include('parts/head', {host: host, title: askUsr.usr, css: []}) %>
+	<%- include('parts/head', {title: askUsr.usr, css: []}) %>
 <body>
 	<%- include('parts/header', {usr: usrInfo}) %>
 
@@ -8,7 +8,7 @@
 
 		<section class="content demo-content">
 
-			<%- include('parts/aside', {host: host, usr: askUsr}) %>
+			<%- include('parts/aside', {usr: askUsr}) %>
 			<%- include('parts/tab', {pro: project, usr: askUsr.usr, isMaster: usrInfo}) %>
 
 		</section>
@@ -22,12 +22,12 @@
 			
 	</section>
 
-	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
-	<script src="<%= host %>/server/js/moment.js"></script>
-	<script src="<%= host %>/server/js/zh-cn.js"></script>
-	<script src="<%= host %>/server/js/main.js"></script>
-	<script src="<%= host %>/server/js/myVerification-0.0.1.js"></script>
-	<script src="<%= host %>/server/js/project.js"></script>
+	<script src="/server/js/jquery-3.1.0.min.js"></script>
+	<script src="/server/js/moment.js"></script>
+	<script src="/server/js/zh-cn.js"></script>
+	<script src="/server/js/main.js"></script>
+	<script src="/server/js/myVerification-0.0.1.js"></script>
+	<script src="/server/js/project.js"></script>
 	
 </body>
 </html>
