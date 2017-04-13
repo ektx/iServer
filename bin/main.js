@@ -41,7 +41,7 @@ function server(options) {
 		console.log('服务启动目录:', __dirname);
 
 		app.use(session({
-			secret: 'helloWorld!',
+			secret: 'hello iServer!',
 			resave: false,
 			saveUninitialized: true,
 			cookie: {
