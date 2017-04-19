@@ -52,7 +52,7 @@ function getHTML(files, filePath) {
 	body.push('<link rel="icon" type="image/x-icon" href="/server/favicon.png">')
 	body.push('<title>'+title+'</title>')
 	body.push('</head><body class="server-body">')
-	body.push('<h3>'+title+'</h3>')
+	body.push('<h3>'+title +'</h3>')
 	body.push('<ul>')
 
 	body.push(breadCrumbs(filePath));

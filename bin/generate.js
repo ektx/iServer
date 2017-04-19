@@ -22,13 +22,14 @@ const jade = require('pug');
 
 const css = require('./css');
 const js = require('./jsmin');
+const imkdirs = require('imkdirs');
 
-var delaySend = [];
+const delaySend = [];
 
 module.exports = function generate (originalPath, copyPath) {
 	console.log('--------- GENERATE ---------')
-	console.log('originalPath:', originalPath)
-	console.log('copyPath:', copyPath)
+	console.log('Original Path:', originalPath)
+	console.log('Save Path:', copyPath)
 	console.log('------- GENERATE End -------')
 
 	copyPath = path.normalize(copyPath);
@@ -38,49 +39,18 @@ module.exports = function generate (originalPath, copyPath) {
 	, changeList  = []
 	, cachingModObj = {}
 
-
-	let mkdirs = function(toURL) {
-
-		try {
-			var isMS = fs.mkdirSync(toURL)
-
-			if (!isMS) {
-				if(delayPath.length == 0) {
-					console.log('文件夹生成完成!')
-					delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
-
-					return;
-				}
-
-				// 反向调用地址列表
-				// 然后删除最初的那个
-				var _toPath = (delayPath.reverse())[0]
-				delayPath.shift()
-				mkdirs(_toPath)
-			}
-		} catch(err) {
-			// 返回错误为无法生成时
-			if (err.code === 'ENOENT') {
-
-				delayPath.push(toURL);
-				var _path = path.dirname(toURL)
-				mkdirs(_path)
-			}
-		}
-
-	}
-
 	// 遍历模板
 	changeModArr = getPartsList(originalPath);
 
 	// 指定生成目录判断,创建
 	try {
 		fs.statSync(copyPath);
+
 		delaySend = readFile(originalPath, copyPath, delaySend, changeModArr, cachingModObj)
 
 	} catch(err) {
-		console.log('not have dir:', copyPath);
-		mkdirs(copyPath)
+		console.log('Not has dir:', copyPath);
+		imkdirs( copyPath )
 	}
 
 	return delaySend
@@ -117,10 +87,10 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 
 	// @type 模板类型
 	// @str  模板内容
-	var getIncludeMod = function(type, str) {
+	let getIncludeMod = function(type, str) {
 
-		var includeArr = []
-		,	strArr = [];
+		let includeArr = [],
+		strArr = [];
 		
 		if (type == '.ejs') {
 			
@@ -149,19 +119,19 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 	}
 
 
-	var includePath = function(type, url, cache) {
+	let includePath = function(type, url, cache) {
 
-		var returnARR = []
+		let returnARR = []
 
-		var str = fs.readFileSync(url, 'utf8');
+		let str = fs.readFileSync(url, 'utf8');
 
-		var arr = getIncludeMod(type, str);
+		let arr = getIncludeMod(type, str);
 
 		if (arr.length > 0) {
 			// 遍历此模板
-			for (var innerMod of arr) {
+			for (let innerMod of arr) {
 
-				var innerModPath = path.join(path.dirname(url), innerMod)
+				let innerModPath = path.join(path.dirname(url), innerMod)
 				// console.log('innerModPath: ',innerModPath)
 				// console.log('innerModPath dirname: ',path.dirname(url))
 
@@ -173,15 +143,15 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 				} 
 				// 不在缓存模板中
 				else {
-					var innerArr = includePath(type, innerModPath, cache)
-					var outArr = []
+					let innerArr = includePath(type, innerModPath, cache)
+					let outArr = []
 
 					// 添加当前自身的完整路径
 					outArr.push(innerModPath)
 					cache[innerModPath] = []
 
 					// 添加内部包含的所有路径
-					for (var iA of innerArr) {
+					for (let iA of innerArr) {
 						outArr.push(iA)
 						cache[innerModPath].push(iA)
 					}
@@ -200,7 +170,7 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 
 	try {
 		// 判断文件上否存在
-		var _f = fs.statSync(_url)
+		let _f = fs.statSync(_url)
 
 
 		/*
@@ -212,24 +182,24 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 		if ( /^(parts)|^\.\w+/i.test(fileName) ) return;
 
 		// 如果是文件
-		if (_f.isFile()) {
-			var _fpath = false;
-			let fs_ext = path.extname(fileName)
+		if ( _f.isFile() ) {
+			var _fpath = _curl;
+			let fs_ext = path.extname( fileName )
 
 			// 模板转 HTML
-			if (fs_ext == '.ejs' || fs_ext == '.jade' || fs_ext == '.css') {
-			// console.log('changeModArr', changeModArr)
+			if ( ['.ejs', '.jade', '.css'].includes( fs_ext ) ) {
+			
+				// console.log('changeModArr', changeModArr)
 				if (changeModArr.length > 0) {
 					
-
-					var thisIncludeArr = includePath(path.extname(fileName), _url, cachingModObj)
+					let thisIncludeArr = includePath(path.extname(fileName), _url, cachingModObj)
 
 					if (thisIncludeArr.length > 0) {
 
-						for (var changeMod of thisIncludeArr) {
+						for (let changeMod of thisIncludeArr) {
 
 							if (inArray(changeMod, changeModArr) > -1) {
-								// console.log('变化的子模板是：', changeMod)
+								console.log('变化的子模板是：', changeMod)
 								
 								makeFiles(fileName, _url, _curl, delaySend)
 								break;
@@ -240,22 +210,26 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 
 				}
 
-				_fpath = getHTMLPath(fileName, _url, _curl);
+				if (['.ejs', '.jade'].includes( fs_ext)) {
+					_fpath = _curl.replace(/\.(ejs|jade)$/, '.html');
+				}
+
 			}
 
 			// 判断要复制到的文件夹中是否已经有此文件了
 			try {
-				let _ff = fs.statSync(_fpath ? _fpath: _curl)
+				let _ff = fs.statSync( _fpath )
 
 				// 当前文件内容较新
 				if (_ff.mtime < _f.mtime) {
+					console.log('UPDATE', _url, _curl)
 					// 如果文件不是ejs或jade的模板，则提示文件有冲突
 					// 冲突：模板的文件没有生成的文件大，可能是修改了生成文件或是模板文件删除内容太多
 					// 当前文件比生成区文件小（主要是非模板文件）
 					// 注：在强制下会覆盖生成
-					if (_ff.size > _f.size && 
-						path.extname(fileName) != '.ejs' && 
-						path.extname(fileName) != '.jade'
+					if (
+						_ff.size > _f.size && 
+						!['.ejs', '.jade'].includes( path.extname(fileName) ) 
 					) {
 						console.log(' ! - '+ fileName)
 						delaySend.push(' ! - '+ fileName)
@@ -267,20 +241,16 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 					}
 				} 
 
-				// 生成区文件较新较大
+				// 生成区文件较新
 				else {
-					if (_ff.size > _f.size &&
-						path.extname(fileName) != '.css' && 
-						path.extname(fileName) != '.ejs' && 
-						path.extname(fileName) != '.jade' &&
-						path.extname(fileName) != '.html' &&
-						path.extname(fileName) != '.htm'
-					) {
-						console.log(' @ - '+ fileName)
-						delaySend.push(' @ - '+ fileName)
-					}
+					// console.log('COPY IS NEW')
+					// if ( _ff.size > _f.size && !['.css', '.ejs', 'jade', 'html', 'htm'].includes( path.extname(filesname) ) ) {
+					// 	console.log(' @ - '+ fileName)
+					// 	delaySend.push(' @ - '+ fileName)
+					// }
 				}
 			} catch (err) {
+				console.log('HAVE A ERR: not a file,', _url, err)
 				// 如果不存在,则生成
 				makeFiles(fileName, _url, _curl, delaySend)
 				return;
