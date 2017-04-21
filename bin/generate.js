@@ -19,10 +19,13 @@ const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs');
 const jade = require('pug');
+const imkdirs = require('imkdirs');
+
+const beautify_html = require('js-beautify').html;
+
 
 const css = require('./css');
 const js = require('./jsmin');
-const imkdirs = require('imkdirs');
 
 const delaySend = [];
 
@@ -188,6 +191,10 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 
 			// 模板转 HTML
 			if ( ['.ejs', '.jade', '.css'].includes( fs_ext ) ) {
+
+				if (['.ejs', '.jade'].includes( fs_ext)) {
+					_fpath = _curl.replace(/\.(ejs|jade)$/, '.html');
+				}
 			
 				// console.log('changeModArr', changeModArr)
 				if (changeModArr.length > 0) {
@@ -201,17 +208,13 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 							if (inArray(changeMod, changeModArr) > -1) {
 								console.log('变化的子模板是：', changeMod)
 								
-								makeFiles(fileName, _url, _curl, delaySend)
+								makeFiles(fileName, _url, _fpath, delaySend)
 								break;
 							}
 
 						}
 					}
 
-				}
-
-				if (['.ejs', '.jade'].includes( fs_ext)) {
-					_fpath = _curl.replace(/\.(ejs|jade)$/, '.html');
 				}
 
 			}
@@ -232,12 +235,12 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 						!['.ejs', '.jade'].includes( path.extname(fileName) ) 
 					) {
 						console.log(' ! - '+ fileName)
-						delaySend.push(' ! - '+ fileName)
+						delaySend.push(' ! - '+ _fpath )
 					} 
 					// 模板文件不考虑大小问题
 					// 以模板为准生成
 					else {
-						makeFiles(fileName, _url, _curl, delaySend)
+						makeFiles(fileName, _url, _fpath, delaySend)
 					}
 				} 
 
@@ -250,9 +253,9 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 					// }
 				}
 			} catch (err) {
-				console.log('HAVE A ERR: not a file,', _url, err)
+				// console.log('HAVE A ERR: not a file,', _url, err)
 				// 如果不存在,则生成
-				makeFiles(fileName, _url, _curl, delaySend)
+				makeFiles(fileName, _url, _fpath, delaySend)
 				return;
 			}
 
@@ -274,19 +277,37 @@ function checkFile(fileName, _url, _curl, delaySend, changeModArr, cachingModObj
 // @_url 原始路径
 // @_curl 复制目标路径
 function outputs(fileName, _url, _curl) {
-	var html = '';
-
+	let html = '';
 
 	if (path.extname(fileName) == '.ejs') {
 
-		var read = fs.readFileSync(_url, 'utf8');
+		let read = fs.readFileSync(_url, 'utf8');
 
 		html = ejs.render(read, {filename: _url});
 	} else {
-		html = jade.renderFile(_url)
+		html = jade.renderFile( _url )
 	}
 
-	fs.writeFile(getHTMLPath(fileName, _url, _curl), html, {encodeing:'utf8'})
+	html = beautify_html( html, {
+		"indent_size":"1",
+		"indent_char":"\t",
+		"max_preserve_newlines":"-1",
+		"preserve_newlines":false,
+		"keep_array_indentation":false,
+		"break_chained_methods":false,
+		"indent_scripts":"keep",
+		"brace_style":"expand",
+		"space_before_conditional":false,
+		"unescape_strings":false,
+		"jslint_happy":false,
+		"end_with_newline": false,
+		"wrap_line_length":"0",
+		"indent_inner_html": true,
+		"comma_first":false,
+		"e4x":false
+	} )
+
+	fs.writeFile(_curl, html, {encodeing:'utf8'})
 
 }
 
@@ -315,6 +336,7 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 	delaySend.push(' U - ' + _curl+'\n')
 
 	var _extname = path.extname(fileName);
+	console.log('CSS :', _extname)
 
 	switch (_extname) {
 		// 如果文件是以 ejs 或是 jade 的类型
@@ -326,12 +348,12 @@ function makeFiles(fileName, _url, _curl, delaySend) {
 
 		// 如果是样式，且不是压缩过的样式
 		case '.css':
-			if (path.basename(fileName, '.css').indexOf('.min') === -1) {
+
+			if ( !fileName.endsWith('.min.css') ) {
 				console.log('NOT MIN CSS : ' + fileName)
 				// 样式以下划线命名的将要被忽略
 				if (path.basename(fileName).substr(0, 1) !== '_') {
-					// css.css(_url, _url);
-					css.css(_url, _curl);
+					css(_url, _curl);
 				}
 			} else {
 				// min 文件直接输出

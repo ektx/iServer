@@ -173,6 +173,5 @@ function getCssArr(arr) {
 
 	return newArr;
 }
-
-exports.css = css;
+module.exports = css;
 
