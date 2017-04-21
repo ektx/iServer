@@ -35,6 +35,7 @@
     "express-session": "^1.14.0",
     "imkdirs": "0.0.4",
     "inquirer": "^1.1.2",
+    "js-beautify": "^1.6.12",
     "mime": "^1.3.4",
     "mongoose": "^4.5.5",
     "multer": "^1.2.0",
