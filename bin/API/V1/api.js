@@ -78,7 +78,7 @@ exports.API_usrHome = (req, res)=> {
 				Schemas.project_m.find(
 					{usr: askUsr},
 					(err, proData) => {
-						sendMsg(req, res, data.data, proData.resolve())
+						sendMsg(req, res, data.data, proData.reverse())
 					}
 				)
 			}

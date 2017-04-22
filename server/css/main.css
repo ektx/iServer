@@ -90,18 +90,9 @@ ul {
 }
 .os-header h1 span {
 	display: inline-block;
-	width: 16px;
-	height: 16px;
+	width: 14px;
 	line-height: 16px;
-	color: #fff;
-	text-align: center;
-	font-size: 12px;
-	font-weight: normal;
 	vertical-align: super;
-	border: none;
-	border-radius: 100%;
-	background: #39f;
-	transform: scale(.7);
 }
 
 .usr-hd-info-mod {
@@ -262,9 +253,9 @@ ul {
 	background-color: #39f;
 	color: #fff;
 }
-.project-list-mod li {
+.project-list-mod > li {
 	font-size: 14px;
-	color: #666;
+	color: #999;
 	padding: 10px 0;
 	border-bottom: 1px solid #eee;
 }
@@ -272,9 +263,24 @@ ul {
 	width: 100%;
 	color: #39f;
 }
+
 .project-list-mod a:hover {
 	text-decoration: underline;
 }
+
+.project-type-mod {
+	float: right;
+}
+.project-type-mod li {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+}
+
+.git-ico {
+	fill: #f05134;
+}
+
 .project-list-mod h3 {
 	font-size: 20px;
 	font-weight: 100;
@@ -287,6 +293,15 @@ ul {
 .svg-private-box {
 	float: right;
 }
+
+.project-sub-info li {
+	display: inline-block;
+}
+.project-sub-info li:not(:last-child),
+.project-sub-info li:not(:empty) {
+	margin-right: 20px;
+}
+
 /* aside */
 .aside-box {
 	padding: 10px 30px;
