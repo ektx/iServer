@@ -3,12 +3,12 @@ const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const http  = require('http');
+const async = require('async');
 const colors  = require('colors');
 const multer  = require('multer');
 const imkdirs = require('imkdirs');
 const server  = require('./server');
 const Schemas = require('./schemas');
-// const mongoose = require('mongoose');
 const rimraf = require('rimraf');
 const querystring = require('querystring');
 const pack    = require('tar-pack').pack;
@@ -18,6 +18,8 @@ require('shelljs/global');
 
 const ifiles = require('./ifiles');
 const email = require('./email');
+
+const ProSet = require('./projectSet');
 
 /*
 	是否有项目的权限与功能
@@ -174,7 +176,7 @@ exports.session = (req, res) => {
 
 
 // 访问用户
-exports.usrHome = (req, res, next)=> {
+exports.usrHome = (req, res)=> {
 
 	console.log(':: You asking ', req.params.usr );
 	console.log(req.headers.host)
@@ -221,29 +223,27 @@ exports.usrHome = (req, res, next)=> {
 		// 存在用户时,查找此用户的项目
 		(usrData)=> {
 
+			let keyVal = {
+						usr: req.params.usr
+					};
+
 			// 非用户本人访问时
 			if (req.params.usr !== req.session.act) {
-	
-				Schemas.project_m.find(
-					{
-						usr: req.params.usr,
-						private: false
-					},
-					(err, data)=> {
-						sendMsg(req, res, usrData, data.reverse())
-					}
-				)
-			}
-			// 如果是用户本人访问个人中心
-			else {
-				Schemas.project_m.find(
-					{usr : req.params.usr},
-					(err, data)=> {
 
-						sendMsg(req, res, usrData, data.reverse())
-					}
-				);
+				keyVal.private = false;
 			}
+
+			ProSet.FindUsrProjects({
+				key: keyVal,
+				help: {
+					sort:{
+						ctime: 1
+					}
+				},
+				callback: (err, data)=> {
+					sendMsg(req, res, usrData, data.reverse())
+				}
+			})
 
 		},
 		// 不存在此用户时, 404
@@ -260,7 +260,7 @@ exports.__USER = (req, res)=> {
 
 
 // 访问用户项目
-exports.usrProject = (req, res, next)=> {
+exports.usrProject = (req, res)=> {
 
 	console.log(':: You asking User:', req.params.usr )
 	console.log(':: You asking Her Project:', req.params.project )
@@ -1408,6 +1408,7 @@ exports.delMyProFile = (req, res)=> {
 
 /* 上传个人项目文件 */
 exports.uploadUsrProFile = (req, res)=> {
+	console.log(req.body)
 	let hasErr = {
 		status: false,
 		msg: ''
@@ -1415,10 +1416,11 @@ exports.uploadUsrProFile = (req, res)=> {
 	// 最多上传 6 -1 = 5个
 	let maxCount = 21;
 	let hasCount = 0;
+	let projectPathArr = [];
 
 	let storage = multer.diskStorage({
 			destination: (req, file, cb)=> {
-				let projectPathArr = req.body.dir.split(',');
+				projectPathArr = req.body.dir.split(',');
 
 				if (projectPathArr[1] !== req.session.act ) {
 					hasErr.status = true;
@@ -1461,11 +1463,30 @@ exports.uploadUsrProFile = (req, res)=> {
 			})
 			return;
 		}
+		
+		// 更新项目的更新时间信息
+		ProSet.UpDataProInfo({
+			filter: {usr: req.session.act, name: projectPathArr.reverse()[0]},
+			set: {
+				utime: new Date().toISOString()
+			},
+			callback: (err, data) => {
+				if (err) {
+					res.send({
+						success: false,
+						msg: err
+					})
+					return;
+				}
 
-		res.send({
-			success: true,
-			msg: 'Success!'
+				res.send({
+					success: true,
+					msg: 'Success!'
+				})
+				
+			}
 		})
+
 
 	})
 }
@@ -1671,12 +1692,15 @@ exports.refreshGitProject = (req, res)=> {
 	let user = req.session.act,
 		name = req.body.name;
 
+	// 查寻当前用户是否有对应的项目
 	Schemas.project_m.findOne(
 		{
 			usr: user,
 			name: name
 		},
 		(err, data)=> {
+
+			// 没有项目时
 			if (err) {
 				res.send({
 					success: false,
@@ -1685,35 +1709,49 @@ exports.refreshGitProject = (req, res)=> {
 				return;
 			}
 
-			let _gitDir = decodeURI( name );
-			let _proPath = path.join(process.cwd(), user, _gitDir);
-			let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath+'/.git pull ';
-			let _run = exec(_url);
+			async.parallel([
+				// 更新数据
+				callback => {
+					let _gitDir = decodeURI( name );
+					let _proPath = path.join(process.cwd(), user, _gitDir);
+					let _url = 'git --work-tree='+_proPath+' --git-dir='+_proPath+'/.git pull ';
+					let _run = exec(_url);
 
-			// try {
-			// 	_run = ;
+					callback(null, _run)
+				},
+				// 更新时间
+				callback => {
+					ProSet.UpDataProInfo({
+						filter: {usr: user, name: name},
+						set: {
+							utime: new Date().toISOString()
+						},
+						callback: callback(err, data)
+					})
+				}
+			], (err, results) => {
+				
+				if (err) {
+					res.send({
+						success: false,
+						msg: 'update failed!' + err
+					})
+					return console.log(err);
+				}
 
-			// 	console.log('L1671 ',_run)
-			// } catch (err) {
-			// 	res.send({
-			// 		success: false,
-			// 		msg: 'Please try again!'
-			// 	});
-			// 	return;
-			// }
+				if (results[0].code === 0 && results[1] ) {
+					res.send({
+						success: true,
+						msg: 'Already up-to-date.'
+					})
+				} else {
+					res.send({
+						success: false,
+						msg: 'update failed!'+ results[0]
+					})
+				}
+			})
 
-			if (!_run ||  _run.code !== 0) {
-				res.send({
-					success: false,
-					msg: 'update failed!'+ _run
-				})
-			} else {
-				res.send({
-					success: true,
-					msg: 'Already up-to-date.'
-				})
-			}
-			
 		}
 	)
 
