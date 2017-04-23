@@ -49,7 +49,7 @@ function getHTML(files, filePath) {
 	body.push('<html><head><meta charset="utf-8">')
 	body.push('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">')
 	body.push('<link rel="stylesheet" type="text/css" href="/server/css/layout.css">')
-	body.push('<link rel="icon" type="image/x-icon" href="/server/favicon.png">')
+	body.push('<link rel="icon" type="image/x-icon" href="/server/img/logo.png">')
 	body.push('<title>'+title+'</title>')
 	body.push('</head><body class="server-body">')
 	body.push('<h3>'+title +'</h3>')
@@ -107,7 +107,7 @@ exports.showDirecotry = (req, res, serverRootPath, reqPath) => {
 		res.writeHead(200, resHeaders());
 
 		html += '<h5>共有 '+ files.length + ' 个文件!</h5>';
-		html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 4</a></p></html>';
+		html += '<p class="i-footer">Powered by <a href="https://github.com/ektx/iServer/">iServer 5</a></p></html>';
 		res.write(html)
 		res.end()
 	})
