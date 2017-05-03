@@ -255,7 +255,42 @@ $(function() {
 		.fail(function(err) {
 			console.log(err)
 		})
-	})
+	});
 
+
+	// 打开文件目录
+	$('li', '.project-list').click(function(e) {
+		console.log(e);
+		let _ = $(this);
+
+		let openDir = function() {
+			let url = _.find('a').attr('href');
+
+			$.ajax({
+				url: '/toOpenFilePath',
+				type: 'post',
+				dataType: 'json',
+				data: {
+					url: url
+				}
+			})
+			.done( data => {
+				console.log(data)
+			})
+			.fail( err => {
+				console.error(err)
+			})
+		}
+
+		if (navigator.platform === 'MacIntel') {
+
+			if (e.metaKey) {
+				e.preventDefault();
+
+				openDir()
+			}
+
+		}
+	})
 	
 })

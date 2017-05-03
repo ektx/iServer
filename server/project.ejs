@@ -3,7 +3,6 @@
 	<%- include('parts/head', {host: host, title: title, css: []}) %>
 <body>
 	<% var isGit = projectInfo.type === 'git' %>
-
 	<%- include('parts/header', {usr: usrInfo, titurl: titurl, proSet: proStatus, project: projectInfo, isG: isGit}) %>
 
 	<main class="project-inner">
@@ -14,7 +13,7 @@
 				<% var url = '/' %>
 				<% for (var i = 1, l =breadCrumbs.length; i < l; i++){ %>
 					<% url += breadCrumbs[i]+'/' %>
-					<% if (i == 2) url+='f/' %>
+					<% if (i == 2 && usrInfo ) url+='f/' %>
 				<a href="<%= url %>"> <%= breadCrumbs[i] %></a>
 				<% } %>
 			</dl>
