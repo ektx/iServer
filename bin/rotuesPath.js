@@ -1,5 +1,6 @@
 // 路径对应请求
 const fs = require('fs');
+const os = require('os');
 const url = require('url');
 const path = require('path');
 const http  = require('http');
@@ -18,6 +19,7 @@ require('shelljs/global');
 
 const ifiles = require('./ifiles');
 const email = require('./email');
+const IP  = require('./getIPs');
 
 const ProSet = require('./projectSet');
 
@@ -1817,6 +1819,45 @@ exports.vieworigincode = (req, res)=> {
 			path: req.body.file.replace('/viewmd', '') 
 		});
 	}
+}
+
+
+/*
+	打开文件目录功能
+	-----------------------------------
+	为作为本地服务器时,可以通过
+	Mac 上 command + 点击
+	Win 上 Ctrl + 点击
+	打开对应的文件夹
+*/
+exports.toOpenPath = (req, res) => {
+
+	let platform = os.platform();
+	let openPath = path.join(process.cwd(), req.body.url);
+
+	let stat = fs.statSync( openPath );
+
+	if ( stat.isFile() ) {
+		openPath = path.dirname( openPath )
+	}
+
+	if ( IP.getClientIP(req).isServer ) {
+		if ( platform === 'darwin') {
+			console.log('Your are Mac OS')
+			exec('open '+ openPath)
+		} 
+		else if ( platform === 'linux2' ) {
+			exec('nautilus '+openPath)
+		}
+		else if ( platform === 'win32' ) {
+			console.log('Your are Win OS')
+			exec('explorer .')
+		}
+	}
+
+	res.send({
+		success: true
+	})
 }
 
 

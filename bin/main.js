@@ -15,7 +15,7 @@ function server(options) {
 	const iconv   = require('iconv-lite');
 
 	const ifiles  = require('./ifiles');
-	const getIPs  = require('./getIPs');
+	const IP  = require('./getIPs');
 	const open    = require('./open');
 	const rotues  = require('./rotues');
 	const parseURL  = require('./parseURL');
@@ -35,6 +35,11 @@ function server(options) {
 	app.set('views', path.resolve(__dirname, '../server') )
 	app.set('view engine', 'ejs')
 
+	app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
+
+	// parse application/json 
+	app.use(bodyParser.json())
+
 	if (options.type === 'os') {
 
 		console.log('服务器根目录:', process.cwd() );
@@ -48,11 +53,6 @@ function server(options) {
 				maxAge: 60* 1000 * 30
 			}
 		}));
-
-		app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
-
-		// parse application/json 
-		app.use(bodyParser.json())
 
 		mongoose.connect(options.db);
 		mongoose.set('debug', true);
@@ -109,12 +109,12 @@ function server(options) {
 	}).listen(mainPort, ()=> {
 		if (options.type === 'tool' && options.browser) {
 		
-			let openURL = 'http://'+getIPs().IPv4.public + ':' + mainPort;
+			let openURL = 'http://'+ IP.getIPs().IPv4.public + ':' + mainPort;
 
 			open(openURL, options.browser)
 		}
 
-		let zIP = getIPs().IPv4;
+		let zIP = IP.getIPs().IPv4;
 		let showInfo = ('=================================\n'+
 			'  Welcome to '+ options.version +
 			'\n=================================\n').rainbow;
