@@ -291,6 +291,12 @@ $(function() {
 			}
 
 		}
+		if (navigator.platform === 'Win32') {
+			if (e.ctrlKey) {
+				e.preventDefault();
+				openDir();
+			}
+		}
 	})
 	
 })

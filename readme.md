@@ -22,6 +22,7 @@ __需要 Mongodb 数据库__
 * 支持生成 `js` `source map`  
 * 支持min文件重向功能  
 * [增加代理跨域功能](https://github.com/ektx/iServer/tree/master/Doc#使用代理服务器-iproxy-url)
+* 支持快速打开本地文件 [Demo](/Doc/images/openDir.gif)
 
 
 ## 安装
