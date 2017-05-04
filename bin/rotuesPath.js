@@ -1843,15 +1843,14 @@ exports.toOpenPath = (req, res) => {
 
 	if ( IP.getClientIP(req).isServer ) {
 		if ( platform === 'darwin') {
-			console.log('Your are Mac OS')
 			exec('open '+ openPath)
 		} 
 		else if ( platform === 'linux2' ) {
 			exec('nautilus '+openPath)
 		}
 		else if ( platform === 'win32' ) {
-			console.log('Your are Win OS')
-			exec('explorer .')
+			openPath = openPath.replace(/\//g, '\\');
+			exec('explorer '+ openPath)
 		}
 	}
 
