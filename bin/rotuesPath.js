@@ -1833,13 +1833,15 @@ exports.vieworigincode = (req, res)=> {
 exports.toOpenPath = (req, res) => {
 
 	let platform = os.platform();
-	let openPath = path.join(process.cwd(), req.body.url);
-
+	let openPath = path.join(process.cwd(), req.body.url );
 	let stat = fs.statSync( openPath );
 
 	if ( stat.isFile() ) {
 		openPath = path.dirname( openPath )
 	}
+
+	// 处理空格
+	openPath = openPath.replace(/\s/g, '\\ ');
 
 	if ( IP.getClientIP(req).isServer ) {
 		if ( platform === 'darwin') {
