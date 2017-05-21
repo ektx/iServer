@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
+const pug = require('pug');
 const generate = require('./generate');
 const ifiles = require('./ifiles');
 const colors = require('colors');
@@ -135,10 +136,20 @@ module.exports = (req, res, options) => {
 				// 文件则显示内容
 				// 如果文件是ejs或是jade
 				// 我们渲染成页面输出，防止下载下来了
-				if (path.extname(_path) === '.ejs' || 
-					path.extname(_path) === '.jade') {
+				if (path.extname(_path) === '.ejs') {
 					res.render(_path);
-				} else {
+				} 
+				else if (path.extname(_path) === '.jade' || path.extname(_path) === '.pug') {
+
+					if (_path.endsWith('.jade')) {
+						_path = _path.replace(/.jade$/, '.pug')
+						res.send('Please Use Pug to Replace Jade File Extname!<br/>请使用 pug 来做为新的模板名!')
+					} else {
+						res.render(_path)
+					}
+
+				}
+				else {
 
 					if (options.fileCallback) {
 						options.fileCallback(_path)
