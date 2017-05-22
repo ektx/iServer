@@ -45,7 +45,7 @@
 		"redis": "^2.6.3",
 		"rimraf": "^2.5.4",
 		"shelljs": "^0.7.5",
-		"socket.io": "*",
+		"socket.io": "^2.0.1",
 		"spdy": "^3.4.4",
 		"superagent": "^2.3.0",
 		"tar-pack": "^3.1.4",

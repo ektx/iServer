@@ -1861,6 +1861,22 @@ exports.toOpenPath = (req, res) => {
 	})
 }
 
+/*
+	make
+	-----------------------------------
+	归属: tool
+	说明: 用于生成页面
+*/
+exports.makeHTML = (req, res) => {
+	console.log('make')
+	res.render('make');
+
+	console.log(path.join(__dirname, '../server/make') )
+
+	let html = ejs.render(fs.readFile( path.join(__dirname, '../server/make.ejs'), 'utf8' ) )
+
+	res.send( html )
+}
 
 /*
 	发送邮件测试

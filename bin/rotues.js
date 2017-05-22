@@ -11,7 +11,6 @@ module.exports = (app, type) => {
 		return
 	});
 
-
 	if (type == "os") {
 
 		app.get('/', r.root)
@@ -26,6 +25,7 @@ module.exports = (app, type) => {
 		app.get('/users', redirectCheckLoginUsr, r.getUsers)
 	}
 
+	app.get('/server/make', r.makeHTML )
 	app.get('/server/*', r.server)
 	app.get('/iproxy-url=*', r.iproxy)
 
