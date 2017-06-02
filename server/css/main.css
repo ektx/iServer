@@ -753,6 +753,7 @@ ul {
 	background-color: #fff;
 	border: 1px solid #eee;
 	border-radius: 3px;
+    backdrop-filter: blur(10px);
 	background-color: rgba(255, 255, 255, .9);
 }
 #my-contextmenu-nav a {
