@@ -1870,6 +1870,30 @@ exports.toOpenPath = (req, res) => {
 	归属: tool
 	说明: 用于生成页面
 */
+exports.makeHTMLPage = (req, res) => {
+
+	fs.readFile( path.join(__dirname, '../server/make.ejs'), 'utf8', (err, data) => {
+		if (err) {
+			console.log(err);
+			res.send(err);
+			return;
+		}
+
+		let html = ejs.render( data )
+
+		res.send( html )
+		
+	} )
+
+}
+
+
+/*
+	make
+	-----------------------------------
+	归属: tool
+	说明: 用于生成页面
+*/
 exports.makeHTML = (req, res) => {
 
 	fs.readFile( path.join(__dirname, '../server/make.ejs'), 'utf8', (err, data) => {
