@@ -28,6 +28,8 @@ module.exports = (app, type) => {
 	app.get('/server/make', r.makeHTML )
 	app.get('/server/*', r.server)
 	app.get('/iproxy-url=*', r.iproxy)
+	
+	app.post('/server/zipfile', r.tool_zipdownload )
 
 	if (type == "os") {
 		app.get('/api/v1/:usr', api_v1.API_usrHome)

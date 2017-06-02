@@ -177,6 +177,28 @@ $(function() {
 			case 'my-contextnav-upload':
 				$('#toUploadProFiles').trigger('click');
 				break;
+
+			case 'zip-download-btn':
+
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', '/server/zipfile', true);
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState === 4 && xhr.status == 200) {
+						var blob = new Blob([xhr.response], {type: 'octet/stream'});
+						saveAs(blob, $('#project-title').text() + '.zip')
+					}
+				}
+				xhr.responseType = 'arraybuffer';
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.send(JSON.stringify({
+					filePath: decodeURI(location.pathname)
+				}))
+
+				break;
+
+			default:
+				console.log('no event');
+				break;
 		}
 	});
 
@@ -300,6 +322,8 @@ $(function() {
 				openDir();
 			}
 		}
-	})
+	});
+
+	// 打包下载
 	
 })
