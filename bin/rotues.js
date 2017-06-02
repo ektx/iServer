@@ -28,8 +28,6 @@ module.exports = (app, type) => {
 	app.get('/server/make', r.makeHTML )
 	app.get('/server/*', r.server)
 	app.get('/iproxy-url=*', r.iproxy)
-	
-	app.post('/server/zipfile', r.tool_zipdownload )
 
 	if (type == "os") {
 		app.get('/api/v1/:usr', api_v1.API_usrHome)
@@ -54,11 +52,13 @@ module.exports = (app, type) => {
 		app.post('/create/myProDir', checkLoginUsr, r.createUsrProjectDirs)
 		app.post('/pro/refreshgit', checkLoginUsr, r.refreshGitProject)
 		app.post('/updateProGitRemote', checkLoginUsr, r.updateProjectGitRemote)
+		app.post('/server/zipfile', r.os_zipdownload )
 
 		app.delete('/deleteMyPro', checkLoginUsr, r.delMyPro)
 		app.delete('/myPro/file', checkLoginUsr, r.delMyProFile)
 	} else {
 		app.post('/toOpenFilePath', r.toOpenPath)
+		app.post('/server/zipfile', r.tool_zipdownload )
 
 		app.post('*', r.postAll)
 		app.get('*', r.getAll)
