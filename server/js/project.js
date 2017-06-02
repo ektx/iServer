@@ -98,16 +98,15 @@ $(function() {
 
 			if (!navmenu.dataset.servertype) {
 				if (isGit) {
-					_navHTML += '<hr class="split-line">';
 					_navHTML += '<a class="my-git-refresh">更新代码</a>';
+					_navHTML += '<hr class="split-line">';
 				} else {
 					_navHTML += '<hr class="split-line">';
 					_navHTML += '<a id="my-contextnav-upload">上传文件</a>';
 				}
-			} else {
-				_navHTML += `<a id="zip-download-btn">打包并下载</a>`
 			}
 
+			_navHTML += `<a id="zip-download-btn">打包并下载</a>`
 
 			contextmenuObj = e;
 
