@@ -25,7 +25,8 @@ module.exports = (app, type) => {
 		app.get('/users', redirectCheckLoginUsr, r.getUsers)
 	}
 
-	app.get('/server/make', r.makeHTML )
+	app.get('/server/make', r.makeHTMLPage )
+	app.get('/server/toMake', r.makeHTMLPage )
 	app.get('/server/*', r.server)
 	app.get('/iproxy-url=*', r.iproxy)
 
