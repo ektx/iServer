@@ -2,6 +2,7 @@
 const fs = require('fs');
 const os = require('os');
 const url = require('url');
+const ejs = require('ejs');
 const path = require('path');
 const http  = require('http');
 const async = require('async');
@@ -1859,6 +1860,53 @@ exports.toOpenPath = (req, res) => {
 	res.send({
 		success: true
 	})
+}
+
+/*
+	make
+	-----------------------------------
+	归属: tool
+	说明: 用于生成页面
+*/
+exports.makeHTMLPage = (req, res) => {
+
+	fs.readFile( path.join(__dirname, '../server/make.ejs'), 'utf8', (err, data) => {
+		if (err) {
+			console.log(err);
+			res.send(err);
+			return;
+		}
+
+		let html = ejs.render( data )
+
+		res.send( html )
+		
+	} )
+
+}
+
+
+/*
+	make
+	-----------------------------------
+	归属: tool
+	说明: 用于生成页面
+*/
+exports.makeHTML = (req, res) => {
+
+	fs.readFile( path.join(__dirname, '../server/make.ejs'), 'utf8', (err, data) => {
+		if (err) {
+			console.log(err);
+			res.send(err);
+			return;
+		}
+
+		let html = ejs.render( data )
+
+		res.send( html )
+		
+	} )
+
 }
 
 
