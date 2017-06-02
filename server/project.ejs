@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-cn">
 	<%- include('parts/head', {host: host, title: title, css: []}) %>
 <body>
 	<% var isGit = projectInfo.type === 'git' %>
@@ -89,7 +89,7 @@
 	<div class="files-progress-bar-mod"></div>
 	<%} else {%>
 	<!-- 右键菜单 2 -->
-	<nav id="my-contextmenu-nav">
+	<nav id="my-contextmenu-nav" data-servertype="<%= serverType %>">
 		<a id="my-contextnav-open">查看</a>
 	</nav>
 	<% } %>

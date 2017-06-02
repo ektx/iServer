@@ -84,7 +84,7 @@ $(function() {
 			var isGit   = document.getElementById('isgitpro');
 			var _navHTML = '';
 
-			if (e.target.tagName === 'A' && navmenu) {
+			if (e.target.tagName === 'A' && navmenu && !navmenu.dataset.servertype) {
 				// $('#my-contextnav-open, #my-contextnav-del').removeClass('not-used')
 				var _ = e.target;
 				var _href = _.pathname;
@@ -96,12 +96,16 @@ $(function() {
 				// $('#my-contextnav-open, #my-contextnav-del').addClass('not-used')
 			}
 
-			if (isGit) {
-				_navHTML += '<hr class="split-line">';
-				_navHTML += '<a class="my-git-refresh">更新代码</a>';
+			if (!navmenu.dataset.servertype) {
+				if (isGit) {
+					_navHTML += '<hr class="split-line">';
+					_navHTML += '<a class="my-git-refresh">更新代码</a>';
+				} else {
+					_navHTML += '<hr class="split-line">';
+					_navHTML += '<a id="my-contextnav-upload">上传文件</a>';
+				}
 			} else {
-				_navHTML += '<hr class="split-line">';
-				_navHTML += '<a id="my-contextnav-upload">上传文件</a>';
+				_navHTML += `<a id="zip-download-btn">打包并下载</a>`
 			}
 
 
@@ -260,7 +264,6 @@ $(function() {
 
 	// 打开文件目录
 	$('li', '.project-list').click(function(e) {
-		console.log(e);
 		let _ = $(this);
 
 		let openDir = function() {
