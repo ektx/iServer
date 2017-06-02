@@ -65,7 +65,8 @@
 			<h3>上传到此目录?</h3>
 		</div>
 	</div>
-
+	
+	<!-- 右键菜单 1 -->
 	<nav id="my-contextmenu-nav">
 		<a id="my-contextnav-open">查看</a>
 		<% if ( isGit ) { %> 
@@ -86,7 +87,12 @@
 	</form>
 
 	<div class="files-progress-bar-mod"></div>
-	<%}%>
+	<%} else {%>
+	<!-- 右键菜单 2 -->
+	<nav id="my-contextmenu-nav">
+		<a id="my-contextnav-open">查看</a>
+	</nav>
+	<% } %>
 
 	<script src="<%= host %>/server/js/jquery-3.1.0.min.js"></script>
 	<script src="<%= host %>/server/js/main.js"></script>
