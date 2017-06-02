@@ -328,6 +328,7 @@ exports.usrProject = (req, res)=> {
 				realUrl.endsWith('/') ? breadArr.pop() : breadArr;
 
 				res.render('project', {
+					serverType: 'os',
 					files: fileArr,
 					projectInfo: projectInfo,
 					host: defHead.host,

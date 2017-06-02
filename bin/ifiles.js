@@ -64,6 +64,7 @@ exports.showDirecotry = (req, res, serverRootPath, reqPath) => {
 		let title = index ? breadCrumbs[ index ] : 'iServer' ; 
 
 		res.render('project', {
+			serverType: 'tool',
 			files: fileInfo,
 			host: '',
 			title: title,

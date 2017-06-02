@@ -761,6 +761,8 @@ ul {
 	line-height: 22px;
 	color: #333;
 	padding: 0 15px;
+	-webkit-user-select: none;
+	cursor: pointer;
 }
 #my-contextmenu-nav a:hover {
 	background-color: #eee;
