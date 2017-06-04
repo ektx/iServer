@@ -1913,17 +1913,19 @@ exports.makeHTML = (req, res) => {
 
 
 /*
-	打包压缩文件
+	工具 - 打包压缩文件
 	---------------------------------
+	将当前的文件目录打包并下载
 */
 exports.tool_zipdownload = ( req, res) => {
-	toZipdownload( req, res);	
+	toZipdownload(req, res);	
 }
 
 
 /*
-	打包压缩文件
+	系统 - 打包压缩文件
 	---------------------------------
+	对当前项目进行打包(在这项目中的任意文件中都是打包项目非文件夹)
 */
 exports.os_zipdownload = ( req, res) => {
 	let filePath = req.body.filePath;
@@ -1932,12 +1934,18 @@ exports.os_zipdownload = ( req, res) => {
 		filePath = filePath.split('/f/')[0]
 	}
 	let fileArr = filePath.split('/');
-	let usr = fileArr[0];
+	let usr = fileArr[1];
 
-	filePath = fileArr[1];
+	filePath = fileArr[2];
 
-	console.log( filePath )
-	toZipdownload( req, res);	
+	console.log( '--',filePath, usr );
+	ProSet.FindUsrProjects({
+		key: { usr: usr, private: false, name: filePath},
+		callback: (err, data) => {
+			res.send(data)
+		}
+	})
+	// toZipdownload( req, res);	
 }
 
 
