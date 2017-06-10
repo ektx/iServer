@@ -2,9 +2,8 @@
 
 const fs = require('fs');
 const path = require('path');
-
-const ejs  = require('ejs');
 const mime = require('mime');
+const OS_CONFIG = require('../os.config');
 
 /*
 	获取文件类型
@@ -179,16 +178,17 @@ function resHeaders(type) {
 		'Server': 'iServer 5.0.0 beta'
 	};
 
-	let cacheType = ['javascript', 'css', 'jpeg', 'png', 'gif', 'x-markdown'];
+	let cacheType = ['javascript', 'css', 'jpeg', 'jpg', 'png', 'gif', 'x-markdown'];
 
 	if ( cacheType.includes( type.split('/')[1] ) ) {
 		let expires = new Date();
 		// 31536000 * 1000
-		expires.setTime(expires.getTime() + 31536000000);
+		expires.setTime(expires.getTime() + OS_CONFIG.tool.maxage);
+		console.log( expires.getTime() + OS_CONFIG.tool.maxage )
 
 		headerInfo.Expires = expires.toUTCString();
 		// 缓存一年 60 * 60 * 24 * 365
-		headerInfo['Cache-Control'] = 'max-age=' + 31536000;
+		headerInfo['Cache-Control'] = 'max-age=' + OS_CONFIG.tool.maxage;
 	}
 
 	return headerInfo;

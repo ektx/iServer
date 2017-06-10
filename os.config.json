@@ -1,6 +1,13 @@
 {
-	"port": 8000,
-	"http": 8001,
-	"https": 8002,
-	"db": "mongodb://localhost/iserver"
+	"os": {
+		"port": 8000,
+		"http": 8001,
+		"https": 8002,
+		"maxage": 31536000000,
+		"db": "mongodb://localhost/iserver"
+	},
+	"tool": {
+		"maxage": 5
+	}
+
 }

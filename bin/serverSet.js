@@ -1,5 +1,5 @@
 const main = require('./main');
-const osInfo = require('../os.config');
+const osInfo = require('../os.config').os;
 
 function getServerSet(options) {
 
