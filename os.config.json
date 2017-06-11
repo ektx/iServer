@@ -7,7 +7,7 @@
 		"db": "mongodb://localhost/iserver"
 	},
 	"tool": {
-		"maxage": 5
+		"maxage": 0
 	}
 
 }
