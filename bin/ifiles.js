@@ -184,7 +184,6 @@ function resHeaders(type) {
 		let expires = new Date();
 		// 31536000 * 1000
 		expires.setTime(expires.getTime() + OS_CONFIG.tool.maxage);
-		console.log( expires.getTime() + OS_CONFIG.tool.maxage )
 
 		headerInfo.Expires = expires.toUTCString();
 		// 缓存一年 60 * 60 * 24 * 365
