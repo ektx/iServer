@@ -77,6 +77,11 @@
 			})
 		}
 	})
+
+	var socket = io.connect('//localhost:9000');
+	socket.on('hello iserver', data => {
+		console.warn(data)
+	})
 </script>
 </body>
 </html>
