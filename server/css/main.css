@@ -84,6 +84,9 @@ ul {
 	font-weight: 100;
 	font-size: 26px;
 	line-height: 60px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .os-header h1 a {
 	color: #333;
