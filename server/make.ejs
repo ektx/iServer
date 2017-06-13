@@ -3,11 +3,11 @@
 <head>
 	<meta charset="UTF-8">
 	<title>MAKE HTML</title>
-	<link rel="stylesheet" type="text/css" href="/server/css/layout.css">
+	<link rel="stylesheet" type="text/css" href="/server/css/make.css">
 </head>
 <body>
-<form class="make-form" action="">
-	<input type="url" placeholder="生成页面URL">
+<form class="make-form" novalidate="novalidate">
+	<input id="file-path" type="text" placeholder="生成页面URL">
 
 	<a class="make-pro" href=":important">覆盖生成</a>
 
@@ -22,8 +22,8 @@
 
 <div class="make-ul-box"></div>
 
-<script src="/server/js/socket.io.js"></script>
-<script src="/server/js/Vue/vue.js"></script>
+	<script src="/server/js/jquery-3.1.0.min.js"></script>
+	<script src="/server/js/socket.io.js"></script>
 <script>
 	var listArr = document.querySelectorAll('.make-list li');
 	// 添加样式 
@@ -81,6 +81,19 @@
 	var socket = io.connect('//localhost:9000');
 	socket.on('hello iserver', data => {
 		console.warn(data)
+	});
+
+	$('#file-path').on('keyup', function (e) {
+		e.preventDefault();
+
+			console.log( e.keyCode )
+		if (e.which == 13) {
+
+			console.log( this.value )
+		}
+	}).parent().on('submit', function(e) {
+		e.preventDefault();
+
 	})
 </script>
 </body>
