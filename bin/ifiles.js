@@ -8,13 +8,16 @@ const OS_CONFIG = require('../os.config');
 /*
 	获取文件类型
 	-----------------------------------------
+	@filePath 文件根目录
+	@files    在 filePath 下的文件数组
 */
 function getFileType( files, filePath ) {
 	let result = [];
 
 	if (files.length > 0) {
 		files.forEach( (val, index) => {
-			let stat = fs.statSync( filePath + val);
+			let thisPath = path.join(filePath, val);
+			let stat = fs.statSync( thisPath );
 			let type = '';
 			if ( stat.isDirectory() ) {
 				type = 'dir';
@@ -25,14 +28,16 @@ function getFileType( files, filePath ) {
 
 			result.push({
 				name: val,
-				type: type
+				type: type,
+				path: thisPath,
+				_stats: stat
 			})
 		})
 	}
 
 	return result;
 }
-
+exports.getFileType = getFileType;
 /*
 	showDirecotry
 	---------------------------------------------------
@@ -193,3 +198,41 @@ function resHeaders(type) {
 	return headerInfo;
 }
 
+
+/*
+	查找文件下的所有文件
+	-------------------------------------
+*/
+function findDirFiles(dirPath, inChild) {
+	console.log(dirPath, inChild);
+
+	let result = '';
+	let fileTypeArr = [];
+
+	let todo = (_Path) => {
+	
+		try {
+
+			let files = fs.readdirSync(_Path);
+			
+			let fileType = getFileType(files, _Path);
+
+			fileTypeArr = fileTypeArr.concat( fileType );
+
+			fileType.forEach((val, i)=>{
+				if (val.type == 'dir' && inChild) {
+					todo(path.join(_Path, val.name))
+				}
+			})
+
+		} catch (err) {
+			fileTypeArr = err;
+		}
+		
+	}
+
+	todo(dirPath);
+
+	return fileTypeArr;
+}
+exports.findDirFiles = findDirFiles;
