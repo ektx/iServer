@@ -1,8 +1,12 @@
 
 const fs = require('fs');
 const path = require('path');
+const ejs = require('ejs');
+const jade = require('pug');
+
 const ifs = require('./ifiles');
 const mkdir = require('./mkdirs');
+const beautify_html = require('js-beautify').html;
 
 /*
 	socketEvent 
@@ -102,14 +106,17 @@ function socket (io) {
 				for (let i = 0, l = generate_file.length; i < l; i++) {
 					let __file = generate_file[i];
 
-					if (['.ejs', '.jade', '.css'].includes( path.extname( generate_file[i].path ) )) {
-
+					if (['.ejs', '.jade', '.pug', '.css'].includes( path.extname( generate_file[i].path ) )) {
+						outPutFile(__file, (__file)=>{
+							socket.emit('GENERATE_MAKE_FILE', {
+								file: __file
+							})
+						})
 					} else {
 						fs.stat(generate_file[i].outPath, (err, stats) => {
 							// 如果没有生成
 							if (err) {
 								outPutFile(generate_file[i], (__file)=> {
-									console.log(__file)
 									socket.emit('GENERATE_MAKE_FILE', {
 										file: __file
 									})
@@ -121,7 +128,6 @@ function socket (io) {
 							if(stats.mtime < generate_file[i]._stats.mtime) {
 								outPutFile(generate_file[i], (__file)=> {
 
-									console.log(__file)
 									socket.emit('GENERATE_MAKE_FILE', {
 										file: __file
 									})
@@ -208,6 +214,13 @@ function outPutFile(file, callback) {
 
 	switch (_extname) {
 
+		// 如果文件是以 ejs 或是 jade 的类型
+		case '.ejs':
+		case '.jade':
+			// 生成 HTML
+			outputMod( file, callback );
+			break;
+
 		default:
 			let readS = fs.createReadStream(file.path);
 			let writeS = fs.createWriteStream(file.outPath);
@@ -217,4 +230,70 @@ function outPutFile(file, callback) {
 			if (callback) callback(file)
 
 	}
+}
+
+
+// 输出文件
+// @fileName 文件名
+// @_url 原始路径
+// @_curl 复制目标路径
+function outputMod(file, callback) {
+	let html = '';
+
+	let generateHTML = (file, html, callback)=> {
+		html = beautify_html( html, {
+			"indent_size":"1",
+			"indent_char":"\t",
+			"max_preserve_newlines":"-1",
+			"preserve_newlines":false,
+			"keep_array_indentation":false,
+			"break_chained_methods":false,
+			"indent_scripts":"keep",
+			"brace_style":"expand",
+			"space_before_conditional":false,
+			"unescape_strings":false,
+			"jslint_happy":false,
+			"end_with_newline": false,
+			"wrap_line_length":"0",
+			"indent_inner_html": true,
+			"comma_first":false,
+			"e4x":false
+		} )
+
+		fs.writeFile(file.outPath, html, {encodeing:'utf8'}, (err, written, string) => {
+			if (callback) callback(file)
+		})		
+	}
+
+	if (path.extname(file.path) == '.ejs') {
+		let _basename = path.basename(file.outPath, '.ejs');
+		let _dirname = path.dirname(file.outPath);
+
+		file.outPath = file.outPath.replace('.ejs', '.html')
+
+		fs.stat( path.join(_dirname, _basename+'.html'), (err, stats) => {
+			// 没有数据时,渲染生成
+			if (err) {
+
+				let read = fs.readFileSync(file.path, 'utf8');
+
+				html = ejs.render(read, {filename: file.path});
+
+				generateHTML(file, html, callback);
+				return;
+			}
+
+			// 已经有的情况
+
+		})
+
+
+	} else {
+		html = jade.renderFile( _url );
+
+		generateHTML(file, html, callback)
+	}
+
+
+
 }
