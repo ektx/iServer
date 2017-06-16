@@ -90,7 +90,7 @@
 		el: '#my-app',
 		components: {
 			'file-li': {
-				template: `<li>{{file.status}} {{file.name }} - {{file.path}}</li>`,
+				template: `<li :class="[ file.status ]">{{file.status}} {{file.name }} - {{file.path}}</li>`,
 				props: ['file']
 			}
 		},

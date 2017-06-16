@@ -6,6 +6,7 @@ const jade = require('pug');
 
 const ifs = require('./ifiles');
 const mkdir = require('./mkdirs');
+const getModules = require('./getModule');
 const beautify_html = require('js-beautify').html;
 
 /*
@@ -89,14 +90,17 @@ function socket (io) {
 				}
 
 				socket.emit('generate info', { msg: generate_file});
-				// console.log(outPath)
+				// console.log(generate_dir)
 				// console.log(proFiles)
+
+				let allChildModule = getModuleChild( module_dir );
 
 				// 得到变化过的模块文件
 				let changeMod =	getChangeMode( module_dir );
 
 				mkdir(generate_dir);
 
+				console.log('文件夹生成完成')
 				socket.emit('generate_dir_event', { 
 					msg: '文件夹生成完成',
 					success: true
@@ -156,9 +160,16 @@ function getChangeMode(moduleFiles) {
 	for (let val in moduleFiles) {
 
 		let versionPath = path.join(val, 'version.json');
-		let version = require(versionPath);
+		let version = {};
 		let verChange = false;
 		let moduleArr = moduleFiles[val];
+
+		try {
+			version = require(versionPath)
+		} catch (err) {
+			version = {};
+			console.log('没有 version !')
+		}
 
 		for (let i = 0, l = moduleArr.length; i < l; i++) {
 
@@ -183,7 +194,7 @@ function getChangeMode(moduleFiles) {
 				} 
 				// 新加的模板我们加上
 				else {
-					console.log('添加了:', _file.name);
+					console.log('添加了:', version, _file.name);
 					version[_file.name] = _fileMTime;
 					verChange = true;
 					changeMod.push(_file);
@@ -194,7 +205,7 @@ function getChangeMode(moduleFiles) {
 
 		// 更新或生成版本控制文件
 		if (verChange) {
-			console.log('更新或生成版本控制文件');
+			console.log('更新或生成版本控制文件', version);
 
 			fs.writeFile(versionPath, JSON.stringify(version), {encodeing: 'utf8'}, (err, data)=>{
 				if (err) {
@@ -217,6 +228,7 @@ function outPutFile(file, callback) {
 		// 如果文件是以 ejs 或是 jade 的类型
 		case '.ejs':
 		case '.jade':
+		case '.pug':
 			// 生成 HTML
 			outputMod( file, callback );
 			break;
@@ -289,11 +301,40 @@ function outputMod(file, callback) {
 
 
 	} else {
-		html = jade.renderFile( _url );
+		// html = jade.renderFile( _url );
 
 		generateHTML(file, html, callback)
 	}
 
 
 
+}
+
+/*
+	输出所有模块之间的关联
+	-----------------------------------
+*/
+function getModuleChild( files ) {
+
+	let result = {};
+
+	for ( let dirName in files) {
+
+		let dirFiles = files[dirName]
+
+		for (let i = 0, l = dirFiles.length; i < l; i++) {
+
+			if (dirFiles[i].name.endsWith('.ejs')) {
+				let mods = getModules( dirFiles[i].path, true );
+
+				if ( mods.length > 0)
+					result[dirFiles[i].path] = mods
+
+			}
+		}
+	}
+
+	console.log('所有模块的内容:', result );
+
+	return result;
 }
