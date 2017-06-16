@@ -75,6 +75,13 @@ ul {
 	background: #f5f5f5;
 }
 
+.make-list li.ready {
+	color: #FF9800
+}
+.make-list li.DONE {
+	color: #4CAF50;
+}
+
 .make-form input[type="text"] {
 	width: 94%;
     padding: 14px 3%;
