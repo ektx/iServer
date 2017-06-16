@@ -110,32 +110,27 @@ function socket (io) {
 				for (let i = 0, l = generate_file.length; i < l; i++) {
 					let __file = generate_file[i];
 
-					if (['.ejs', '.jade', '.pug', '.css'].includes( path.extname( generate_file[i].path ) )) {
+					let toOutFn = () => {
 						outPutFile(__file, (__file)=>{
 							socket.emit('GENERATE_MAKE_FILE', {
 								file: __file
 							})
 						})
+					}
+
+					if (['.ejs', '.jade', '.pug', '.css'].includes( path.extname( generate_file[i].path ) )) {
+						toOutFn()
 					} else {
 						fs.stat(generate_file[i].outPath, (err, stats) => {
 							// 如果没有生成
 							if (err) {
-								outPutFile(generate_file[i], (__file)=> {
-									socket.emit('GENERATE_MAKE_FILE', {
-										file: __file
-									})
-								})
+								toOutFn()
 								return;
 							}
 
 							// 已经有的比较文件新旧
 							if(stats.mtime < generate_file[i]._stats.mtime) {
-								outPutFile(generate_file[i], (__file)=> {
-
-									socket.emit('GENERATE_MAKE_FILE', {
-										file: __file
-									})
-								})
+								toOutFn()
 
 							}
 
