@@ -56,6 +56,7 @@ function socket (io) {
 					outPath = path.join(process.cwd(), data.out)
 				}
 
+				// 归类文件
 				for (let i = 0, l = proFiles.length; i < l; i++) {
 					let _file = proFiles[i];
 					let _pathDir = path.dirname(_file.path);
@@ -97,6 +98,7 @@ function socket (io) {
 
 				// 得到变化过的模块文件
 				let changeMod =	getChangeMode( module_dir );
+				console.log('已经修改过的模板文件有:\n', changeMod)
 
 				mkdir(generate_dir);
 
@@ -291,6 +293,23 @@ function outputMod(file, callback) {
 			}
 
 			// 已经有的情况
+			// 1. 如果自己的修改时间比生成的文件时间要新,更新
+			if (stats.mtime < file._stats.mtime) {
+				console.log(file.name ,'文件最近已经修改,准备生成...');
+
+				let read = fs.readFileSync(file.path, 'utf8');
+
+				html = ejs.render(read, {filename: file.path});
+
+				generateHTML(file, html, callback);
+
+			}
+			// 2. 如果自己没有修改过,我们查看它所有调用过的模块有没有更新过
+			else {
+				let mods = getModules( file.path, true );
+
+				console.log('当前文件调用过以下模块:\n', mods)
+			}
 
 		})
 
