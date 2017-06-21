@@ -107,14 +107,14 @@
 		console.warn(data)
 	});
 
-	socket.on('generate info', data => {
-		filesBox.files = data.msg;
-		// console.warn(data)
-		for (let i = 0, l = data.msg.length; i < l; i++) {
+	// socket.on('generate info', data => {
+	// 	filesBox.files = data.msg;
+	// 	// console.warn(data)
+	// 	for (let i = 0, l = data.msg.length; i < l; i++) {
 
-			filesIndex[data.msg[i].name] = i;
-		}
-	});
+	// 		filesIndex[data.msg[i].name] = i;
+	// 	}
+	// });
 
 	socket.on('generate_dir_event', data => {
 		if (data.success) {
@@ -126,10 +126,17 @@
 		}
 	})
 
+	socket.on('WILL_GENERATE_FILE', data => {
+		console.log(data);
+
+		filesIndex[data.file.path] = filesBox.files.length;
+		filesBox.files.push( data.file );
+	})
+
 	socket.on('GENERATE_MAKE_FILE', data => {
 		console.log(data);
 
-		filesBox.files[ filesIndex[data.file.name] ].status = 'DONE'
+		filesBox.files[ filesIndex[data.file.path] ].status = 'DONE'
 	})
 
 	$('#file-path').on('keyup', function (e) {
