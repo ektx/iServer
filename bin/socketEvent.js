@@ -90,10 +90,11 @@ function socket (io) {
 
 				}
 
-				socket.emit('generate info', { msg: generate_file});
+				// socket.emit('generate info', { msg: generate_file});
 				// console.log(generate_dir)
 				// console.log(proFiles)
 
+				// 所有模板之间的的关联
 				let allChildModule = getModuleChild( module_dir );
 
 				// 得到变化过的模块文件
@@ -108,21 +109,43 @@ function socket (io) {
 					success: true
 				});
 
-				// console.log('start make project:'+JSON.stringify(data));
 				for (let i = 0, l = generate_file.length; i < l; i++) {
 					let __file = generate_file[i];
 
 					let toOutFn = () => {
-						outPutFile(__file, (__file)=>{
-							socket.emit('GENERATE_MAKE_FILE', {
+						
+						socket.emit('WILL_GENERATE_FILE', {
+							file: __file
+						})
+
+						outPutFile(
+							__file,
+							(__file)=>{
+								socket.emit('GENERATE_MAKE_FILE', {
 								file: __file
 							})
 						})
 					}
 
+					// 模板文件处理
 					if (['.ejs', '.jade', '.pug', '.css'].includes( path.extname( generate_file[i].path ) )) {
-						toOutFn()
-					} else {
+
+						socket.emit('WILL_GENERATE_FILE', {
+							file: __file
+						})
+						
+						outputMod( 
+							__file, 
+							changeMod, 
+							(__file)=>{
+								socket.emit('GENERATE_MAKE_FILE', {
+									file: __file
+								})
+							} 
+						);
+					} 
+					// 静态文件处理
+					else {
 						fs.stat(generate_file[i].outPath, (err, stats) => {
 							// 如果没有生成
 							if (err) {
@@ -218,27 +241,14 @@ function getChangeMode(moduleFiles) {
 
 
 function outPutFile(file, callback) {
-	let _extname = path.extname(file.path);
 
-	switch (_extname) {
+	let readS = fs.createReadStream(file.path);
+	let writeS = fs.createWriteStream(file.outPath);
 
-		// 如果文件是以 ejs 或是 jade 的类型
-		case '.ejs':
-		case '.jade':
-		case '.pug':
-			// 生成 HTML
-			outputMod( file, callback );
-			break;
+	readS.pipe( writeS );
 
-		default:
-			let readS = fs.createReadStream(file.path);
-			let writeS = fs.createWriteStream(file.outPath);
+	if (callback) callback(file)
 
-			readS.pipe( writeS );
-
-			if (callback) callback(file)
-
-	}
 }
 
 
@@ -246,10 +256,14 @@ function outPutFile(file, callback) {
 // @fileName 文件名
 // @_url 原始路径
 // @_curl 复制目标路径
-function outputMod(file, callback) {
+function outputMod(file, changeMod, callback) {
 	let html = '';
+	let fileExtName = path.extname(file.path);
 
 	let generateHTML = (file, html, callback)=> {
+
+		
+
 		html = beautify_html( html, {
 			"indent_size":"1",
 			"indent_char":"\t",
@@ -274,7 +288,17 @@ function outputMod(file, callback) {
 		})		
 	}
 
-	if (path.extname(file.path) == '.ejs') {
+
+	let ejsGenHTMLOption = (file, callback) => {
+
+		let read = fs.readFileSync(file.path, 'utf8');
+
+		html = ejs.render(read, {filename: file.path});
+
+		generateHTML(file, html, callback);
+	}
+
+	if (fileExtName == '.ejs') {
 		let _basename = path.basename(file.outPath, '.ejs');
 		let _dirname = path.dirname(file.outPath);
 
@@ -284,11 +308,7 @@ function outputMod(file, callback) {
 			// 没有数据时,渲染生成
 			if (err) {
 
-				let read = fs.readFileSync(file.path, 'utf8');
-
-				html = ejs.render(read, {filename: file.path});
-
-				generateHTML(file, html, callback);
+				ejsGenHTMLOption(file, callback);
 				return;
 			}
 
@@ -297,27 +317,39 @@ function outputMod(file, callback) {
 			if (stats.mtime < file._stats.mtime) {
 				console.log(file.name ,'文件最近已经修改,准备生成...');
 
-				let read = fs.readFileSync(file.path, 'utf8');
-
-				html = ejs.render(read, {filename: file.path});
-
-				generateHTML(file, html, callback);
+				ejsGenHTMLOption(file, callback);
 
 			}
 			// 2. 如果自己没有修改过,我们查看它所有调用过的模块有没有更新过
 			else {
 				let mods = getModules( file.path, true );
+				let hasMod = false;
 
-				console.log('当前文件调用过以下模块:\n', mods)
+				console.log('当前文件调用过以下模块:\n', mods);
+
+				for (let val of changeMod) {
+					if (mods.includes( val )) {
+						hasMod = true;
+						break;
+					}
+				}
+
+				if (hasMod) {
+					ejsGenHTMLOption(file, callback);
+				}
 			}
 
 		})
 
 
-	} else {
+	} 
+	else if (fileExtName === '.pug') {
 		// html = jade.renderFile( _url );
 
 		generateHTML(file, html, callback)
+	}
+	else if (fileExtName === '.css') {
+		
 	}
 
 
