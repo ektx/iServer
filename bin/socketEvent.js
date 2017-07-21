@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
 const jade = require('pug');
+const imCss = require('im-css');
 
 const ifs = require('./ifiles');
 const mkdir = require('./mkdirs');
@@ -64,15 +65,21 @@ function socket (io) {
 					_file.status = 'ready';
 					_file.outPath = _file.path.replace(filePath, outPath);
 
+					// 对输出的文件处理 将模板文件处理成 html
+					if (/\.(ejs|pug)$/i.test(_file.outPath)) {
+						_file.outPath = _file.outPath.replace(/\.(ejs|pug)$/i, '.html')
+					}
+
 					if (_file.type == 'dir') {
 						if (path.basename(_file.path) === 'parts') {
 							if (!(_file.path in module_dir))
 								module_dir[_file.path] = []
-
-
 						}
 
-						generate_dir.push( _file.outPath )
+						if ( !/\/parts/.test(_file.path) ) {
+							generate_dir.push( _file.outPath )
+						}
+
 					} else {
 						if (/\/parts\//.test(_file.path)) {
 							// 如果已经有存放区
@@ -84,15 +91,13 @@ function socket (io) {
 								module_dir[_pathDir] = [];
 							}
 						} else {
-							generate_file.push( _file )
+
+							if (! ['.DS_Store'].includes(path.basename(_file.path)))
+								generate_file.push( _file )
 						}
 					}
 
 				}
-
-				// socket.emit('generate info', { msg: generate_file});
-				// console.log(generate_dir)
-				// console.log(proFiles)
 
 				// 所有模板之间的的关联
 				let allChildModule = getModuleChild( module_dir );
@@ -103,63 +108,84 @@ function socket (io) {
 
 				mkdir(generate_dir);
 
-				console.log('文件夹生成完成')
+				console.log('文件夹生成完成\n', generate_dir)
 				socket.emit('generate_dir_event', { 
 					msg: '文件夹生成完成',
 					success: true
 				});
 
-				for (let i = 0, l = generate_file.length; i < l; i++) {
-					let __file = generate_file[i];
+				/*
+					输出静态资源
+					@__file 文件信息
+				*/
+				let toOutFn = (__file) => {
+					
+					socket.emit('WILL_GENERATE_FILE', {
+						file: __file
+					})
 
-					let toOutFn = () => {
-						
-						socket.emit('WILL_GENERATE_FILE', {
+					outPutFile(
+						__file,
+						(__file)=>{
+							socket.emit('GENERATE_MAKE_FILE', {
 							file: __file
 						})
+					})
+				}
 
-						outPutFile(
-							__file,
-							(__file)=>{
-								socket.emit('GENERATE_MAKE_FILE', {
+				/* 处理模板文件
+					@__file 文件信息
+				*/
+				let doWithModFile = (__file) => {
+
+					socket.emit('WILL_GENERATE_FILE', {
+						file: __file
+					})
+					
+					outputMod( 
+						__file, 
+						changeMod, 
+						(__file)=>{
+							socket.emit('GENERATE_MAKE_FILE', {
 								file: __file
 							})
-						})
-					}
+						} 
+					);
+				}
+
+				/*
+					判断输出目录文件与源文件的关系
+					@file 文件信息
+					@errCallback 错误时处理方法
+					@callback 正常情况下处理方法
+				*/
+				let fsStatStatus = (file, errCallback, callback) => {
+
+					fs.stat(file.outPath, (err, stats) => {
+
+						if (err) {
+							errCallback(file);
+							return
+						}
+
+						// 如果生成区的文件没有模板新时,我们就更新文件
+						if (stats.mtime < file._stats.mtime) callback(file)
+					})
+				}
+
+				for (let i = 0, l = generate_file.length; i < l; i++) {
+					let __file = generate_file[i];
+					let __fileExtName = path.extname( __file.path ); 
 
 					// 模板文件处理
-					if (['.ejs', '.jade', '.pug', '.css'].includes( path.extname( generate_file[i].path ) )) {
-
-						socket.emit('WILL_GENERATE_FILE', {
-							file: __file
-						})
-						
-						outputMod( 
-							__file, 
-							changeMod, 
-							(__file)=>{
-								socket.emit('GENERATE_MAKE_FILE', {
-									file: __file
-								})
-							} 
-						);
+					if (['.ejs', '.jade', '.pug', '.css'].includes(__fileExtName) ) {
+						fsStatStatus(generate_file[i], doWithModFile, doWithModFile)
 					} 
 					// 静态文件处理
 					else {
-						fs.stat(generate_file[i].outPath, (err, stats) => {
-							// 如果没有生成
-							if (err) {
-								toOutFn()
-								return;
-							}
 
-							// 已经有的比较文件新旧
-							if(stats.mtime < generate_file[i]._stats.mtime) {
-								toOutFn()
-
-							}
-
-						})
+						fsStatStatus(generate_file[i], toOutFn, toOutFn)
+						
 					}
 				}
 
@@ -348,8 +374,16 @@ function outputMod(file, changeMod, callback) {
 
 		generateHTML(file, html, callback)
 	}
+	// 对 css 处理
 	else if (fileExtName === '.css') {
-		
+
+		imCss({
+			file: file.path,
+			out: file.outPath
+		}, (result) => {
+
+			if (result.save) callback( file )
+		})
 	}
 
 
