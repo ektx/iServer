@@ -7,9 +7,11 @@
 </head>
 <body>
 	<section id="my-app">	
-		<form class="make-form" novalidate="novalidate">
-			<input id="file-path" type="text" placeholder="生成页面URL">
-
+		<form class="make-form" novalidate="novalidate" v-on:submit.prevent="sendProject">
+			<input type="text" 
+				placeholder="生成页面URL" 
+				v-model='projectPath'
+			>
 			<a class="make-pro" href=":important">覆盖生成</a>
 
 			<ul class="make-type-btns">
@@ -28,147 +30,11 @@
 		</div>
 
 	</section>
-<script src="/server/js/jquery-3.1.0.min.js"></script>
-<script src="/server/js/socket.io.js"></script>
-<script src="/server/js/Vue/vue.js"></script>
-<script>
-	var listArr = document.querySelectorAll('.make-list li');
-	// 添加样式 
-	for (var i = 0, len = listArr.length; i < len; i++) {
-		var className = listArr[i].innerHTML.replace(/.+\.(?=.+)/gi, '').replace(/\n/g, '');
+	
+	<script src="/server/js/jquery-3.1.0.min.js"></script>
+	<script src="/server/js/socket.io.js"></script>
+	<script src="/server/js/Vue/vue.js"></script>
+	<script src="/server/js/makeTem.js"></script>
 
-		className = className.toLocaleLowerCase();
-		switch (className) {
-			case 'html':
-			case 'jade':
-			case 'ejs':
-			case 'htm':
-				className = 'html';
-				break;
-
-			case 'css':
-			case 'js':
-				break;
-
-			default:
-				className = 'other';
-		}
-
-		listArr[i].setAttribute('class', className)
-	}
-
-	// 切换事件
-	document.querySelector('.make-type-btns').addEventListener('click',function(e){
-		// alert(this.innerHTML)
-		if (!e.target.classList.contains('make-type-btns')) {
-			// 除去之前的状态
-			document.querySelector('.current').classList.remove('current');
-			// 添加当前点击元素状态
-			e.target.classList.add('current');
-
-			var className = e.target.innerHTML.toLocaleLowerCase();
-
-			NodeList.prototype.forEach = Array.prototype.forEach;
-			document.querySelectorAll('.make-list li').forEach(function(e){
-
-				if (className == 'all') {
-					e.style.display = 'block';
-					return;
-				}
-
-				if (!e.classList.contains(className)) {
-					e.style.display = 'none';
-				} else {
-					e.style.display = 'block'
-				}
-			})
-		}
-	})
-
-	// 文件列表
-	let filesBox = new Vue({
-		el: '#my-app',
-		components: {
-			'file-li': {
-				template: `<li :class="[ file.status ]">{{file.status}} {{file.name }} - {{file.path}}</li>`,
-				props: ['file']
-			}
-		},
-		data: {
-			files: []
-		}
-	});
-
-
-	let socket = io.connect('//localhost:9000');
-	let filesIndex = {};
-
-	socket.on('hello iserver', data => {
-		console.warn(data)
-	});
-
-	// socket.on('generate info', data => {
-	// 	filesBox.files = data.msg;
-	// 	// console.warn(data)
-	// 	for (let i = 0, l = data.msg.length; i < l; i++) {
-
-	// 		filesIndex[data.msg[i].name] = i;
-	// 	}
-	// });
-
-	socket.on('generate_dir_event', data => {
-		if (data.success) {
-			for(let i = 0, l = filesBox.files.length; i < l; i++) {
-				if (filesBox.files[i].type == 'dir') {
-					filesBox.files[i].status = 'done'
-				}
-			}
-		}
-	})
-
-	socket.on('WILL_GENERATE_FILE', data => {
-		console.log(data);
-
-		filesIndex[data.file.path] = filesBox.files.length;
-		filesBox.files.push( data.file );
-	})
-
-	socket.on('GENERATE_MAKE_FILE', data => {
-		console.log(data);
-
-		filesBox.files[ filesIndex[data.file.path] ].status = 'DONE'
-	})
-
-	$('#file-path').on('keyup', function (e) {
-		e.preventDefault();
-
-		let getOutPath = (path) => {
-			let pathArr = path.split('/');
-			let _l = pathArr.length;
-			let result = '';
-
-			if (pathArr[_l -1] == '') {
-				pathArr[_l -2] = pathArr[_l - 2]+'_HTML2';
-			} else {
-				pathArr[_l -1] = pathArr[_l -1] + '_HTML2'
-			}
-
-			return pathArr.join('/');
-		}
-
-		if (e.which == 13) {
-
-			console.log( this.value );
-			socket.emit('start make project', {
-				path: this.value,
-				out: getOutPath(this.value)
-			})
-		}
-	}).parent().on('submit', function(e) {
-		e.preventDefault();
-
-	})
-
-</script>
 </body>
 </html>
