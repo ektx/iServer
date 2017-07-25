@@ -32,7 +32,9 @@ function socket (io) {
 			}
 		*/
 		socket.on('start make project', (data) => {
+			console.log('\n\n===================================')
 			console.log( data )
+			console.log('===================================')
 
 			if(LOCK_GENERATE) {
 				socket.emit('generate info', { msg: '目前已经有项目在生成,你稍候再试!'});
@@ -179,7 +181,9 @@ function socket (io) {
 
 					// 模板文件处理
 					if (['.ejs', '.jade', '.pug', '.css'].includes(__fileExtName) ) {
-						fsStatStatus(generate_file[i], doWithModFile, doWithModFile)
+
+						// fsStatStatus(generate_file[i], doWithModFile, doWithModFile)
+						doWithModFile( generate_file[i] )
 					} 
 					// 静态文件处理
 					else {
@@ -325,15 +329,15 @@ function outputMod(file, changeMod, callback) {
 	}
 
 	if (fileExtName == '.ejs') {
+		console.log('===> ejs')
 		let _basename = path.basename(file.outPath, '.ejs');
 		let _dirname = path.dirname(file.outPath);
 
 		file.outPath = file.outPath.replace('.ejs', '.html')
 
-		fs.stat( path.join(_dirname, _basename+'.html'), (err, stats) => {
+		fs.stat( path.join(_dirname, _basename), (err, stats) => {
 			// 没有数据时,渲染生成
 			if (err) {
-
 				ejsGenHTMLOption(file, callback);
 				return;
 			}
@@ -362,6 +366,10 @@ function outputMod(file, changeMod, callback) {
 
 				if (hasMod) {
 					ejsGenHTMLOption(file, callback);
+				} 
+				// 没有修改
+				else {
+
 				}
 			}
 
