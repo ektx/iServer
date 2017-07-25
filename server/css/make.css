@@ -81,6 +81,9 @@ ul {
 .make-list li.DONE {
 	color: #4CAF50;
 }
+.make-list li.error {
+	color: red;
+}
 
 .make-form input[type="text"] {
 	width: 94%;
