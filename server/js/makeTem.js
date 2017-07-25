@@ -94,11 +94,7 @@ socket.on('hello iserver', data => {
 
 socket.on('generate_dir_event', data => {
 	if (data.success) {
-		for(let i = 0, l = filesBox.files.length; i < l; i++) {
-			if (filesBox.files[i].type == 'dir') {
-				filesBox.files[i].status = 'done'
-			}
-		}
+		console.log(data)
 	}
 })
 

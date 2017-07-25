@@ -45,7 +45,18 @@ function socket (io) {
 				let filePath = path.join(process.cwd(), data.path);
 				let outPath = '';
 				let proFiles = ifs.findDirFiles(filePath, true);
-				
+
+				if (proFiles.code === 'ENOENT') {
+					socket.emit('WILL_GENERATE_FILE', {
+						file: {
+							status: 'error',
+							name: '没有发现以下路径',
+							path: proFiles.path
+						}
+					})
+					return;
+				}
+
 				let module_dir = {};
 				// 所有的模板文件
 				let generate_dir = [];
