@@ -151,14 +151,18 @@ function socket (io) {
 				*/
 				let doWithModFile = (__file) => {
 
-					socket.emit('WILL_GENERATE_FILE', {
-						file: __file
-					})
 					
 					outputMod( 
 						__file, 
-						changeMod, 
+						changeMod,
 						(__file)=>{
+							// 准备生成
+							socket.emit('WILL_GENERATE_FILE', {
+								file: __file
+							})
+						},
+						(__file)=>{
+							// 生成完成
 							socket.emit('GENERATE_MAKE_FILE', {
 								file: __file
 							})
@@ -166,25 +170,6 @@ function socket (io) {
 					);
 				}
 
-				/*
-					判断输出目录文件与源文件的关系
-					@file 文件信息
-					@errCallback 错误时处理方法
-					@callback 正常情况下处理方法
-				*/
-				let fsStatStatus = (file, errCallback, callback) => {
-
-					fs.stat(file.outPath, (err, stats) => {
-
-						if (err) {
-							errCallback(file);
-							return
-						}
-
-						// 如果生成区的文件没有模板新时,我们就更新文件
-						if (stats.mtime < file._stats.mtime) callback(file)
-					})
-				}
 
 				for (let i = 0, l = generate_file.length; i < l; i++) {
 					let __file = generate_file[i];
@@ -293,11 +278,14 @@ function outPutFile(file, callback) {
 }
 
 
-// 输出文件
-// @fileName 文件名
-// @_url 原始路径
-// @_curl 复制目标路径
-function outputMod(file, changeMod, callback) {
+/* 
+	输出文件
+	@file 文件名信息
+	@changeMod 有修改有子模板集合
+	@readCallback 准备生成提醒回调
+	@callback 生成完成回调
+*/
+function outputMod(file, changeMod, readCallback, callback) {
 	let html = '';
 	let fileExtName = path.extname(file.path);
 
@@ -344,11 +332,10 @@ function outputMod(file, changeMod, callback) {
 		let _basename = path.basename(file.outPath, '.ejs');
 		let _dirname = path.dirname(file.outPath);
 
-		file.outPath = file.outPath.replace('.ejs', '.html')
-
-		fs.stat( path.join(_dirname, _basename), (err, stats) => {
+		fs.stat( file.outPath, (err, stats) => {
 			// 没有数据时,渲染生成
 			if (err) {
+				readCallback(file);
 				ejsGenHTMLOption(file, callback);
 				return;
 			}
@@ -357,6 +344,8 @@ function outputMod(file, changeMod, callback) {
 			// 1. 如果自己的修改时间比生成的文件时间要新,更新
 			if (stats.mtime < file._stats.mtime) {
 				console.log(file.name ,'文件最近已经修改,准备生成...');
+				
+				readCallback(file);
 
 				ejsGenHTMLOption(file, callback);
 
@@ -369,13 +358,14 @@ function outputMod(file, changeMod, callback) {
 				console.log('当前文件调用过以下模块:\n', mods);
 
 				for (let val of changeMod) {
-					if (mods.includes( val )) {
+					if (mods.includes( val.path )) {
 						hasMod = true;
 						break;
 					}
 				}
 
 				if (hasMod) {
+					readCallback(file);
 					ejsGenHTMLOption(file, callback);
 				} 
 				// 没有修改
@@ -395,6 +385,8 @@ function outputMod(file, changeMod, callback) {
 	}
 	// 对 css 处理
 	else if (fileExtName === '.css') {
+
+		readCallback(file)
 
 		imCss({
 			file: file.path,
@@ -436,4 +428,25 @@ function getModuleChild( files ) {
 	console.log('所有模块的内容:', result );
 
 	return result;
+}
+
+
+/*
+	判断输出目录文件与源文件的关系
+	@file 文件信息
+	@errCallback 错误时处理方法
+	@callback 正常情况下处理方法
+*/
+function fsStatStatus (file, errCallback, callback){
+
+	fs.stat(file.outPath, (err, stats) => {
+
+		if (err) {
+			errCallback(file);
+			return
+		}
+
+		// 如果生成区的文件没有模板新时,我们就更新文件
+		if (stats.mtime < file._stats.mtime) callback(file)
+	})
 }
