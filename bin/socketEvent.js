@@ -33,6 +33,7 @@ function socket (io) {
 		*/
 		socket.on('start make project', (data) => {
 			console.log('\n\n===================================')
+			console.log( new Date() )
 			console.log( data )
 			console.log('===================================')
 
@@ -327,35 +328,41 @@ function outputMod(file, changeMod, readCallback, callback) {
 		generateHTML(file, html, callback);
 	}
 
-	if (fileExtName == '.ejs') {
-		console.log('===> ejs')
-		let _basename = path.basename(file.outPath, '.ejs');
-		let _dirname = path.dirname(file.outPath);
+
+	let getFileStat = (file, callback) => {
+
+		console.log(`3. 处理模板文件中...`)
 
 		fs.stat( file.outPath, (err, stats) => {
 			// 没有数据时,渲染生成
 			if (err) {
+
+				console.log(`3.1 没有发现输出文件,生成文件 - ${file.path}`)
 				readCallback(file);
-				ejsGenHTMLOption(file, callback);
+				// ejsGenHTMLOption(file, callback);
+				callback()
 				return;
 			}
 
 			// 已经有的情况
 			// 1. 如果自己的修改时间比生成的文件时间要新,更新
 			if (stats.mtime < file._stats.mtime) {
+				console.log(`3.1 文件较新,需要生成`)
 				console.log(file.name ,'文件最近已经修改,准备生成...');
 				
 				readCallback(file);
 
-				ejsGenHTMLOption(file, callback);
+				// ejsGenHTMLOption(file, callback);
+				callback()
 
 			}
 			// 2. 如果自己没有修改过,我们查看它所有调用过的模块有没有更新过
 			else {
+				console.log(`3.1 判断模板是否有更新中...`)
 				let mods = getModules( file.path, true );
 				let hasMod = false;
 
-				console.log('当前文件调用过以下模块:\n', mods);
+				console.log(`${file.path}\n当前文件调用过以下模块:\n`, mods);
 
 				for (let val of changeMod) {
 					if (mods.includes( val.path )) {
@@ -366,7 +373,7 @@ function outputMod(file, changeMod, readCallback, callback) {
 
 				if (hasMod) {
 					readCallback(file);
-					ejsGenHTMLOption(file, callback);
+					callback()
 				} 
 				// 没有修改
 				else {
@@ -375,7 +382,16 @@ function outputMod(file, changeMod, readCallback, callback) {
 			}
 
 		})
+	}
 
+	console.log(`1. ${file.path} 文件已经准备`)
+
+	if (fileExtName == '.ejs') {
+		console.log(`2. 为 Ejs 模板文件`)
+
+		getFileStat(file, () => {
+			ejsGenHTMLOption(file, callback);
+		})
 
 	} 
 	else if (fileExtName === '.pug') {
@@ -386,14 +402,15 @@ function outputMod(file, changeMod, readCallback, callback) {
 	// 对 css 处理
 	else if (fileExtName === '.css') {
 
-		readCallback(file)
+		// readCallback(file)
+		getFileStat(file, () => {
+			imCss({
+				file: file.path,
+				out: file.outPath
+			}, (result) => {
 
-		imCss({
-			file: file.path,
-			out: file.outPath
-		}, (result) => {
-
-			if (result.save) callback( file )
+				if (result.save) callback( file )
+			})
 		})
 	}
 
