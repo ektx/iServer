@@ -402,8 +402,9 @@ function outputMod(file, changeMod, readCallback, callback) {
 	// 对 css 处理
 	else if (fileExtName === '.css') {
 
-		// readCallback(file)
-		getFileStat(file, () => {
+		readCallback(file)
+		// 目前样式功能还不完美
+		// getFileStat(file, () => {
 			imCss({
 				file: file.path,
 				out: file.outPath
@@ -411,7 +412,7 @@ function outputMod(file, changeMod, readCallback, callback) {
 
 				if (result.save) callback( file )
 			})
-		})
+		// })
 	}
 
 
