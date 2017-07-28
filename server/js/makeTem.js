@@ -3,75 +3,59 @@
 	------------------------------
 */
 
-var listArr = document.querySelectorAll('.make-list li');
-// 添加样式 
-for (var i = 0, len = listArr.length; i < len; i++) {
-	var className = listArr[i].innerHTML.replace(/.+\.(?=.+)/gi, '').replace(/\n/g, '');
-
-	className = className.toLocaleLowerCase();
-	switch (className) {
-		case 'html':
-		case 'jade':
-		case 'ejs':
-		case 'htm':
-			className = 'html';
-			break;
-
-		case 'css':
-		case 'js':
-			break;
-
-		default:
-			className = 'other';
-	}
-
-	listArr[i].setAttribute('class', className)
-}
-
-// 切换事件
-document.querySelector('.make-type-btns').addEventListener('click',function(e){
-	// alert(this.innerHTML)
-	if (!e.target.classList.contains('make-type-btns')) {
-		// 除去之前的状态
-		document.querySelector('.current').classList.remove('current');
-		// 添加当前点击元素状态
-		e.target.classList.add('current');
-
-		var className = e.target.innerHTML.toLocaleLowerCase();
-
-		NodeList.prototype.forEach = Array.prototype.forEach;
-		document.querySelectorAll('.make-list li').forEach(function(e){
-
-			if (className == 'all') {
-				e.style.display = 'block';
-				return;
-			}
-
-			if (!e.classList.contains(className)) {
-				e.style.display = 'none';
-			} else {
-				e.style.display = 'block'
-			}
-		})
-	}
-})
-
 // 文件列表
 let filesBox = new Vue({
 	el: '#my-app',
 	components: {
 		'file-li': {
-			template: `<li :class="[ file.status ]">{{file.status}} {{file.name }} - {{file.path}}</li>`,
+			template: `<li :class="[ file.status ]"><i></i> {{file.name }} - {{file.path}}</li>`,
 			props: ['file']
 		}
 	},
 	data: {
 		files: [],
-		projectPath: '/iServerDemo/ejs/'
+		data: [],
+		filter: 'all',
+		projectPath: ''
+	},
+	watch: {
+		files: function(newVal, oldVal){
+			this.filterFiles()
+		},
+		filter: function(newVal, oldVal) {
+			this.filterFiles()
+		}
 	},
 	methods: {
 		// 发送项目
-		sendProject: v_sendProject
+		sendProject: v_sendProject,
+
+		btnClick: function(e) {
+			let text = e.target.innerText;
+			this.filter = text.toLocaleLowerCase();
+			// add hover class
+			let lis = e.target.parentElement.querySelectorAll('li');
+
+			lis.forEach(n=>{
+				if (n.innerText === text) {
+					n.classList.add('current')
+				} else {
+					n.classList.remove('current')
+				}
+			})
+		},
+
+		// 过虑显示功能
+		filterFiles: function() {
+			if (['html', 'js', 'css'].includes(this.filter)) {
+				this.data = this.files.filter((val)=>{
+					return val.outPath.endsWith(`.${this.filter}`)
+				})
+			} else {
+				this.data = this.files;
+			}
+
+		}
 	}
 });
 
@@ -108,7 +92,7 @@ socket.on('WILL_GENERATE_FILE', data => {
 socket.on('GENERATE_MAKE_FILE', data => {
 	console.log(data);
 
-	filesBox.files[ filesIndex[data.file.path] ].status = 'DONE'
+	filesBox.files[ filesIndex[data.file.path] ].status = 'done'
 })
 
 

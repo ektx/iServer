@@ -12,9 +12,9 @@
 				placeholder="生成页面URL" 
 				v-model='projectPath'
 			>
-			<a class="make-pro" href=":important">覆盖生成</a>
+			<a class="make-pro" href="">打开项目目录</a>
 
-			<ul class="make-type-btns">
+			<ul v-on:click="btnClick" class="make-type-btns">
 				<li class="current">All</li>
 				<li>HTML</li>
 				<li>Css</li>
@@ -25,14 +25,13 @@
 
 		<div id="make-files-box" class="make-ul-box">
 			<ul class="make-list">
-				<file-li v-for="data in files" v-bind:file="data" :key="data.title"></file-li>
+				<file-li v-for="data in data" v-bind:file="data" :key="data.title"></file-li>
 			</ul>
 
 		</div>
 
 	</section>
 	
-	<script src="/server/js/jquery-3.1.0.min.js"></script>
 	<script src="/server/js/socket.io.js"></script>
 	<script src="/server/js/Vue/vue.js"></script>
 	<script src="/server/js/makeTem.js"></script>
