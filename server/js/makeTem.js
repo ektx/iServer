@@ -60,7 +60,7 @@ let filesBox = new Vue({
 });
 
 
-let socket = io.connect('//localhost:9000');
+let socket = io.connect( location.origin );
 let filesIndex = {};
 
 socket.on('hello iserver', data => {
