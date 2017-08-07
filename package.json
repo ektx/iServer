@@ -32,7 +32,7 @@
 		"ejs": "^2.4.2",
 		"express": "^4.14.0",
 		"express-session": "^1.14.0",
-		"im-css": "^0.2.1",
+		"im-css": "^0.3.1",
 		"imkdirs": "0.0.4",
 		"inquirer": "^1.1.2",
 		"js-beautify": "^1.6.12",

@@ -402,20 +402,27 @@ function outputMod(file, changeMod, readCallback, callback) {
 	// 对 css 处理
 	else if (fileExtName === '.css') {
 
-		readCallback(file)
-		// 目前样式功能还不完美
-		// getFileStat(file, () => {
-			imCss({
-				file: file.path,
-				out: file.outPath
-			}, (result) => {
+		imCss({
+			entryFile: file.path,
+			outFile: file.outPath,
+			min: true,
+			callback: {
+				ready: r => {
+					console.log('READY', r)
+					readCallback(file)
+				},
 
-				if (result.save) callback( file )
-			})
-		// })
+				out: (r)=> {
+					console.log('SAVE', r)
+					if (r.status) callback( file )
+				},
+
+				min: r => {
+					console.log(r)
+				}
+			}
+		})
 	}
-
-
 
 }
 
