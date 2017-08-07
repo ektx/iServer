@@ -55,6 +55,20 @@ let filesBox = new Vue({
 				this.data = this.files;
 			}
 
+		},
+
+		// 打开项目目录
+		openThisPro: function() {
+			let xhr = new XMLHttpRequest();
+			xhr.open('POST', '/toOpenFilePath', true);
+			//Send the proper header information along with the request
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhr.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					console.log(this.responseText)
+				}
+			}
+			xhr.send(`url=${this.projectPath}`)
 		}
 	}
 });

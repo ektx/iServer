@@ -12,7 +12,7 @@
 				placeholder="生成页面URL" 
 				v-model='projectPath'
 			>
-			<a class="make-pro" href="">打开项目目录</a>
+			<a class="open-this-pro" v-on:click="openThisPro">打开项目目录</a>
 
 			<ul v-on:click="btnClick" class="make-type-btns">
 				<li class="current">All</li>

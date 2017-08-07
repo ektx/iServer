@@ -57,12 +57,13 @@ ul {
 }
 
 /*强制生成*/
-.make-pro {
+.open-this-pro {
     color: #666;
     font-size: 14px;
     transition: color .3s ease;
+    cursor: pointer;
 }
-.make-pro:hover {
+.open-this-pro:hover {
 	color: #09F;
 }
 
