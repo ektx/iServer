@@ -74,6 +74,12 @@ let filesBox = new Vue({
 });
 
 
+// 自动追加项目地址
+window.onload = () => {
+	filesBox.projectPath = location.search.substr(5)
+}
+
+
 let socket = io.connect( location.origin );
 let filesIndex = {};
 
@@ -81,14 +87,6 @@ socket.on('hello iserver', data => {
 	console.warn(data)
 });
 
-// socket.on('generate info', data => {
-// 	filesBox.files = data.msg;
-// 	// console.warn(data)
-// 	for (let i = 0, l = data.msg.length; i < l; i++) {
-
-// 		filesIndex[data.msg[i].name] = i;
-// 	}
-// });
 
 socket.on('generate_dir_event', data => {
 	if (data.success) {
