@@ -1,12 +1,13 @@
 <head>
-	<meta charset="utf-8">
-    <title><%= title %></title>
-    <link type="text/css" href="contents/css/layout.min.css" rel="stylesheet" />
+	<meta charset="UTF-8">
+	<title><%= title %></title>
+	<% if (typeof css != 'undefined') {
+	for (var i = 0, l = css.length; i < l; i++) { %>
+	<link rel="stylesheet" href="<%= css[i] %>">
+	<% } } %>
 
-    <%# 单个页面样式添加 %>
-    <% links.forEach(function(link) { %>
-	    <% if (link) { %>
-    <link rel="stylesheet" href="<%= link %>" />
-    	<% } %>
-    <% }) %>
+	<% if (typeof mobile != 'undefined' && mobile) { %>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<script src="contents/js/setHtmlRootSize.js"></script>
+	<% } %>
 </head>

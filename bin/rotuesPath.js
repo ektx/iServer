@@ -15,6 +15,7 @@ const rimraf = require('rimraf');
 const querystring = require('querystring');
 const pack    = require('tar-pack').pack;
 const unpack  = require('tar-pack').unpack;
+const JSZip   = require('jszip');
 
 require('shelljs/global');
 
@@ -328,6 +329,7 @@ exports.usrProject = (req, res)=> {
 				realUrl.endsWith('/') ? breadArr.pop() : breadArr;
 
 				res.render('project', {
+					serverType: 'os',
 					files: fileArr,
 					projectInfo: projectInfo,
 					host: defHead.host,
@@ -1911,6 +1913,43 @@ exports.makeHTML = (req, res) => {
 
 
 /*
+	工具 - 打包压缩文件
+	---------------------------------
+	将当前的文件目录打包并下载
+*/
+exports.tool_zipdownload = ( req, res) => {
+	toZipdownload(req, res);	
+}
+
+
+/*
+	系统 - 打包压缩文件
+	---------------------------------
+	对当前项目进行打包(在这项目中的任意文件中都是打包项目非文件夹)
+*/
+exports.os_zipdownload = ( req, res) => {
+	let filePath = req.body.filePath;
+	
+	if (filePath.includes('/f/') > -1) {
+		filePath = filePath.split('/f/')[0]
+	}
+	let fileArr = filePath.split('/');
+	let usr = fileArr[1];
+
+	filePath = fileArr[2];
+
+	console.log( '--',filePath, usr );
+	ProSet.FindUsrProjects({
+		key: { usr: usr, private: false, name: filePath},
+		callback: (err, data) => {
+			res.send(data)
+		}
+	})
+	// toZipdownload( req, res);	
+}
+
+
+/*
 	发送邮件测试
 	sendMsg:
 	{
@@ -2040,3 +2079,65 @@ function getUserInfo(match, done, fail){
 	)
 }
 
+
+/*
+	压缩输出
+	------------------------------
+*/
+function toZipdownload(req, res) {
+
+	let zipFilePathArr = [];
+	let zipFolderPathArr = [];
+
+	let dealWithPath = (_filePath) => {
+
+		let statsData = fs.statSync(_filePath);
+		let filter = ['.DS_Store'];
+		
+		if (statsData.isFile()) {
+			if ( !/\.DS_Store/.test(_filePath) ){
+				zipFilePathArr.push(_filePath);
+			}
+		} 
+		else if (statsData.isDirectory()) {
+			let files = fs.readdirSync(_filePath);
+
+			zipFolderPathArr.push(_filePath);
+
+			for(let i = 0, l = files.length; i < l; i++) {
+				dealWithPath(path.join(_filePath, files[i]))
+			}
+		}
+
+	}
+
+	let addZipFile = () => {
+
+		let zip = new JSZip();
+
+		res.setHeader('Content-Type','application/zip');
+
+		zipFilePathArr.forEach( file => {
+			console.log(file)
+			let stream = fs.createReadStream(file);
+			file = file.replace(path.join(process.cwd(), req.body.filePath), '');
+			zip.file(file, stream)
+		})
+
+		zipFolderPathArr.forEach( folder => {
+			folder = folder.replace(path.join(process.cwd(), req.body.filePath), '');
+			zip.folder(folder)
+		})
+	
+		zip
+		.generateNodeStream({type:'nodebuffer', streamFiles:true})
+		.pipe(res)
+
+	}
+
+	// 取地址
+	dealWithPath( path.join(process.cwd(), req.body.filePath) );
+	// 压缩文件
+	addZipFile();
+	console.log( zipFilePathArr.length )
+}

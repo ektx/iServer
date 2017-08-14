@@ -1,12 +1,11 @@
 {
 	"name": "iservers",
-	"version": "5.0.0",
+	"version": "5.2.0",
 	"author": {
 		"name": "ektx",
 		"email": "530675800@qq.com"
 	},
 	"description": "iojs/nodejs web server",
-	"preferGlobal": true,
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ektx/iServer.git"
@@ -33,9 +32,11 @@
 		"ejs": "^2.4.2",
 		"express": "^4.14.0",
 		"express-session": "^1.14.0",
+		"im-css": "^0.3.1",
 		"imkdirs": "0.0.4",
 		"inquirer": "^1.1.2",
 		"js-beautify": "^1.6.12",
+		"jszip": "^3.1.3",
 		"mime": "^1.3.4",
 		"mongoose": "^4.5.5",
 		"multer": "^1.2.0",

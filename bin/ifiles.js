@@ -2,20 +2,22 @@
 
 const fs = require('fs');
 const path = require('path');
-
-const ejs  = require('ejs');
 const mime = require('mime');
+const OS_CONFIG = require('../os.config');
 
 /*
 	获取文件类型
 	-----------------------------------------
+	@filePath 文件根目录
+	@files    在 filePath 下的文件数组
 */
 function getFileType( files, filePath ) {
 	let result = [];
 
 	if (files.length > 0) {
 		files.forEach( (val, index) => {
-			let stat = fs.statSync( filePath + val);
+			let thisPath = path.join(filePath, val);
+			let stat = fs.statSync( thisPath );
 			let type = '';
 			if ( stat.isDirectory() ) {
 				type = 'dir';
@@ -26,14 +28,16 @@ function getFileType( files, filePath ) {
 
 			result.push({
 				name: val,
-				type: type
+				type: type,
+				path: thisPath,
+				_stats: stat
 			})
 		})
 	}
 
 	return result;
 }
-
+exports.getFileType = getFileType;
 /*
 	showDirecotry
 	---------------------------------------------------
@@ -64,6 +68,7 @@ exports.showDirecotry = (req, res, serverRootPath, reqPath) => {
 		let title = index ? breadCrumbs[ index ] : 'iServer' ; 
 
 		res.render('project', {
+			serverType: 'tool',
 			files: fileInfo,
 			host: '',
 			title: title,
@@ -178,18 +183,56 @@ function resHeaders(type) {
 		'Server': 'iServer 5.0.0 beta'
 	};
 
-	let cacheType = ['javascript', 'css', 'jpeg', 'png', 'gif', 'x-markdown'];
+	let cacheType = ['javascript', 'css', 'jpeg', 'jpg', 'png', 'gif', 'x-markdown'];
 
 	if ( cacheType.includes( type.split('/')[1] ) ) {
 		let expires = new Date();
 		// 31536000 * 1000
-		expires.setTime(expires.getTime() + 31536000000);
+		expires.setTime(expires.getTime() + OS_CONFIG.tool.maxage);
 
 		headerInfo.Expires = expires.toUTCString();
 		// 缓存一年 60 * 60 * 24 * 365
-		headerInfo['Cache-Control'] = 'max-age=' + 31536000;
+		headerInfo['Cache-Control'] = 'max-age=' + OS_CONFIG.tool.maxage;
 	}
 
 	return headerInfo;
 }
 
+
+/*
+	查找文件下的所有文件
+	-------------------------------------
+*/
+function findDirFiles(dirPath, inChild) {
+	console.log(dirPath, inChild);
+
+	let result = '';
+	let fileTypeArr = [];
+
+	let todo = (_Path) => {
+	
+		try {
+
+			let files = fs.readdirSync(_Path);
+			
+			let fileType = getFileType(files, _Path);
+
+			fileTypeArr = fileTypeArr.concat( fileType );
+
+			fileType.forEach((val, i)=>{
+				if (val.type == 'dir' && inChild) {
+					todo(path.join(_Path, val.name))
+				}
+			})
+
+		} catch (err) {
+			fileTypeArr = err;
+		}
+		
+	}
+
+	todo(dirPath);
+
+	return fileTypeArr;
+}
+exports.findDirFiles = findDirFiles;

@@ -53,11 +53,13 @@ module.exports = (app, type) => {
 		app.post('/create/myProDir', checkLoginUsr, r.createUsrProjectDirs)
 		app.post('/pro/refreshgit', checkLoginUsr, r.refreshGitProject)
 		app.post('/updateProGitRemote', checkLoginUsr, r.updateProjectGitRemote)
+		app.post('/server/zipfile', r.os_zipdownload )
 
 		app.delete('/deleteMyPro', checkLoginUsr, r.delMyPro)
 		app.delete('/myPro/file', checkLoginUsr, r.delMyProFile)
 	} else {
 		app.post('/toOpenFilePath', r.toOpenPath)
+		app.post('/server/zipfile', r.tool_zipdownload )
 
 		app.post('*', r.postAll)
 		app.get('*', r.getAll)

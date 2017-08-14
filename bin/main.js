@@ -20,7 +20,6 @@ function server(options) {
 	const rotues  = require('./rotues');
 	const parseURL  = require('./parseURL');
 	const app = express();
-	const io  = require('socket.io')(http);
 
 	// https & http port
 	let	mainPort = options.port;
@@ -125,23 +124,37 @@ function server(options) {
 
 		console.log(showInfo);
 
-		http.createServer(app).listen(httpPort, ()=> {
+		let httpS = http.createServer(app);
+
+		httpS.listen(httpPort, ()=> {
 			console.log(`HTTP  辅助端口为: ${httpPort}`)
 		})
 		.on('error', err => {
 			serverErr(err, ` ${httpPort} http 辅助接口被占用!`)
 		})
 		
-		http2.createServer(sslOptions, app).listen(httpsPort, ()=> {
+		
+		let http2S = http2.createServer(sslOptions, app);
+
+		http2S.listen(httpsPort, ()=> {
 			console.log(`HTTPS 辅助端口为: ${httpsPort}`)
 		})
 		.on('error', err => {
 			serverErr(err, ` ${httpsPort} https 辅助接口被占用!`)
 		})
+		
+		const io = require('socket.io')(httpS);
+		const ioS = require('socket.io')(http2S);
+
+		const socketEvent = require('./socketEvent');
+
+		socketEvent(io)
+		socketEvent(ioS)
 
 	}).on('error', err => {
 		serverErr(err, ` ${mainPort} 端口已经被占位!请更换其它端口! `)
 	});
+
 
 }
 
