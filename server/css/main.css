@@ -84,6 +84,9 @@ ul {
 	font-weight: 100;
 	font-size: 26px;
 	line-height: 60px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .os-header h1 a {
 	color: #333;
@@ -753,6 +756,7 @@ ul {
 	background-color: #fff;
 	border: 1px solid #eee;
 	border-radius: 3px;
+    backdrop-filter: blur(10px);
 	background-color: rgba(255, 255, 255, .9);
 }
 #my-contextmenu-nav a {
@@ -761,6 +765,8 @@ ul {
 	line-height: 22px;
 	color: #333;
 	padding: 0 15px;
+	-webkit-user-select: none;
+	cursor: pointer;
 }
 #my-contextmenu-nav a:hover {
 	background-color: #eee;

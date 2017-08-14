@@ -25,6 +25,12 @@ __需要 Mongodb 数据库__
 * 支持快速打开本地文件 [Demo](/Doc/images/openDir.gif)
 
 
+
+
+## 文件生成
+
+[文档](Doc/生成页面功能.md)
+
 ## 安装
 
 ```Shell

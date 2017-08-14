@@ -132,5 +132,3 @@ function generateMinJS(inputPath, sourceMap) {
 
 exports.min = setPath
 
-// TEST
-// console.log(setPath('E:/xxx','E:/xx', true))

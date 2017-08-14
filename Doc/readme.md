@@ -30,6 +30,30 @@ npm uninstall -g iservers
 npm unlink
 ```
 
+## os.config.json 配置
+```javascript
+{
+	// 服务器配置
+	"os": {
+		// 默认端口(必填)
+		"port": 8000,
+		// http 端口(默认为默认端口+1)
+		"http": 8001,
+		// https 端口(默认为默认端口+2)
+		"https": 8002,
+		// 最大缓存周期 以毫秒为单位
+		"maxage": 31536000000,
+		// db 数据库保存位置
+		"db": "mongodb://localhost/iserver"
+	},
+	// 工作台配置
+	"tool": {
+		// 最大缓存周期 以毫秒为单位
+		"maxage": 5
+	}
+
+}
+```
 
 ## 使用代理服务器 iproxy-url=
 

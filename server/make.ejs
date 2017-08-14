@@ -3,80 +3,39 @@
 <head>
 	<meta charset="UTF-8">
 	<title>MAKE HTML</title>
-	<link rel="stylesheet" type="text/css" href="/server/css/layout.css">
+	<link rel="stylesheet" type="text/css" href="/server/css/make.css">
 </head>
 <body>
-<form class="make-form" action="">
-	<input type="url" placeholder="生成页面URL">
+	<section id="my-app">	
+		<form class="make-form" novalidate="novalidate" v-on:submit.prevent="sendProject">
+			<input type="text" 
+				placeholder="生成页面URL" 
+				v-model='projectPath'
+			>
+			<a class="open-this-pro" v-on:click="openThisPro">打开项目目录</a>
+			<a v-show="outProPath" class="open-this-pro" :href="outProPath" target="_blank">查看生成项目</a>
 
-	<a class="make-pro" href=":important">覆盖生成</a>
+			<ul v-on:click="btnClick" class="make-type-btns">
+				<li class="current">All</li>
+				<li>HTML</li>
+				<li>Css</li>
+				<li>Js</li>
+				<li>Other</li>
+			</ul>
+		</form>
 
-	<ul class="make-type-btns">
-		<li class="current">All</li>
-		<li>HTML</li>
-		<li>Css</li>
-		<li>Js</li>
-		<li>Other</li>
-	</ul>
-</form>
+		<div id="make-files-box" class="make-ul-box">
+			<ul class="make-list">
+				<file-li v-for="data in data" v-bind:file="data" :key="data.title"></file-li>
+			</ul>
 
-<div class="make-ul-box"></div>
+		</div>
 
-<script src="/server/js/socket.io.js"></script>
-<script src="/server/js/Vue/vue.js"></script>
-<script>
-	var listArr = document.querySelectorAll('.make-list li');
-	// 添加样式 
-	for (var i = 0, len = listArr.length; i < len; i++) {
-		var className = listArr[i].innerHTML.replace(/.+\.(?=.+)/gi, '').replace(/\n/g, '');
+	</section>
+	
+	<script src="/server/js/socket.io.js"></script>
+	<script src="/server/js/Vue/vue.js"></script>
+	<script src="/server/js/makeTem.js"></script>
 
-		className = className.toLocaleLowerCase();
-		switch (className) {
-			case 'html':
-			case 'jade':
-			case 'ejs':
-			case 'htm':
-				className = 'html';
-				break;
-
-			case 'css':
-			case 'js':
-				break;
-
-			default:
-				className = 'other';
-		}
-
-		listArr[i].setAttribute('class', className)
-	}
-
-	// 切换事件
-	document.querySelector('.make-type-btns').addEventListener('click',function(e){
-		// alert(this.innerHTML)
-		if (!e.target.classList.contains('make-type-btns')) {
-			// 除去之前的状态
-			document.querySelector('.current').classList.remove('current');
-			// 添加当前点击元素状态
-			e.target.classList.add('current');
-
-			var className = e.target.innerHTML.toLocaleLowerCase();
-
-			NodeList.prototype.forEach = Array.prototype.forEach;
-			document.querySelectorAll('.make-list li').forEach(function(e){
-
-				if (className == 'all') {
-					e.style.display = 'block';
-					return;
-				}
-
-				if (!e.classList.contains(className)) {
-					e.style.display = 'none';
-				} else {
-					e.style.display = 'block'
-				}
-			})
-		}
-	})
-</script>
 </body>
 </html>
