@@ -16,7 +16,8 @@ let filesBox = new Vue({
 		files: [],
 		data: [],
 		filter: 'all',
-		projectPath: ''
+		projectPath: '',
+		outProPath: ''
 	},
 	watch: {
 		files: function(newVal, oldVal){
@@ -76,7 +77,7 @@ let filesBox = new Vue({
 
 // 自动追加项目地址
 window.onload = () => {
-	filesBox.projectPath = location.search.substr(5)
+	filesBox.projectPath = decodeURI( location.search.substr(5) )
 }
 
 
@@ -134,9 +135,10 @@ function v_sendProject () {
 	}
 
 	this.files = [];
+	this.outProPath = getOutPath(this.projectPath);
 
 	socket.emit('start make project', {
 		path: this.projectPath,
-		out: getOutPath(this.projectPath)
+		out: this.outProPath
 	})
 }
