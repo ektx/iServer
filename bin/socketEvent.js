@@ -43,7 +43,7 @@ function socket (io) {
 				LOCK_GENERATE = false;
 			} else {
 				LOCK_GENERATE = true;
-				let filePath = path.join(process.cwd(), data.path);
+				let filePath = path.join(process.cwd(), decodeURI( data.path ) );
 				let outPath = '';
 				let proFiles = ifs.findDirFiles(filePath, true);
 
@@ -90,12 +90,12 @@ function socket (io) {
 								module_dir[_file.path] = []
 						}
 
-						if ( !/\/parts/.test(_file.path) ) {
+						if ( !/[\/\\]parts/.test(_file.path) ) {
 							generate_dir.push( _file.outPath )
 						}
 
 					} else {
-						if (/\/parts\//.test(_file.path)) {
+						if (/[\/\\]parts[\/\\]/.test(_file.path)) {
 							// 如果已经有存放区
 							if (_pathDir in module_dir) {
 								module_dir[_pathDir].push( _file )
