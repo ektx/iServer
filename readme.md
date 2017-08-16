@@ -31,18 +31,31 @@ __需要 Mongodb 数据库__
 
 [文档](Doc/生成页面功能.md)
 
+
+
 ## 安装
 
 ```Shell
+# 使用 NPM (use npm)
 npm install -g iservers
+
+# 使用gitlab (use gitlab)
+# 1. 克隆(clone)
+git clone https://github.com/ektx/iServer.git
+cd iServer
+# 2. 安装依赖 (install package)
+npm i
+# 3. 建立本地命名 (make node server)
+npm link
+
 ```
 
 
 ## 快速启动
 
 ```Shell
-# 进入用户根目录:
-cd ~
+# 进入你想要作用服务器根目录的地址:
+cd your_existing_folder
 
 # 启动:
 iserver tool
@@ -55,7 +68,11 @@ http://localhost:8000
 
 ## 卸装
 ```sh
+# with NPM
 npm uninstall -g iservers
+
+# with gitlab
+npm unlink
 ```
 
 
