@@ -75,10 +75,11 @@ function socket (io) {
 				for (let i = 0, l = proFiles.length; i < l; i++) {
 					let _file = proFiles[i];
 					let _pathDir = path.dirname(_file.path);
-					let _isModule = /\.(ejs|pug)$/i.test(_file.outPath);
+					let _isModule; // 是否是模板文件
 
 					_file.status = 'ready';
 					_file.outPath = path.normalize(_file.path.replace(filePath, outPath));
+					_isModule = /\.(ejs|pug)$/i.test(_file.outPath);
 
 					// 对输出的文件处理 将模板文件处理成 html
 					if (_isModule) {
