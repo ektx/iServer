@@ -28,7 +28,7 @@ function getModule(filePath, sync ) {
 
 	let doWithData = (filePath, data) => {
 
-		let moduleArr = data.match(/<%-\sinclude\('(.+)\)\s%>/g);
+		let moduleArr = data.match(/<%-(.|\w|\W)+?%>/g);
 
 		if (moduleArr && moduleArr.length > 0) {
 
