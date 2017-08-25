@@ -75,12 +75,13 @@ function socket (io) {
 				for (let i = 0, l = proFiles.length; i < l; i++) {
 					let _file = proFiles[i];
 					let _pathDir = path.dirname(_file.path);
+					let _isModule = /\.(ejs|pug)$/i.test(_file.outPath);
 
 					_file.status = 'ready';
-					_file.outPath = _file.path.replace(filePath, outPath);
+					_file.outPath = path.normalize(_file.path.replace(filePath, outPath));
 
 					// 对输出的文件处理 将模板文件处理成 html
-					if (/\.(ejs|pug)$/i.test(_file.outPath)) {
+					if (_isModule) {
 						_file.outPath = _file.outPath.replace(/\.(ejs|pug)$/i, '.html')
 					}
 
@@ -97,13 +98,15 @@ function socket (io) {
 					} else {
 						if (/[\/\\]parts[\/\\]/.test(_file.path)) {
 							// 如果已经有存放区
-							if (_pathDir in module_dir) {
-								module_dir[_pathDir].push( _file )
-							} 
-							// 生成存放区
-							else {
+
+							if (!(_pathDir in module_dir)) {
 								module_dir[_pathDir] = [];
+							} 
+							
+							if (_isModule) {
+								module_dir[_pathDir].push( _file )
 							}
+
 						} else {
 
 							if (! ['.DS_Store'].includes(path.basename(_file.path)))
@@ -339,7 +342,7 @@ function outputMod(file, changeMod, readCallback, callback) {
 
 				console.log(`3.1 没有发现输出文件,生成文件 - ${file.path}`)
 				readCallback(file);
-				// ejsGenHTMLOption(file, callback);
+
 				callback()
 				return;
 			}
@@ -352,7 +355,6 @@ function outputMod(file, changeMod, readCallback, callback) {
 				
 				readCallback(file);
 
-				// ejsGenHTMLOption(file, callback);
 				callback()
 
 			}
