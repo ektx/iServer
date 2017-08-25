@@ -1,4 +1,4 @@
-# iServer 5.x  
+# iServer 5.2.x  
 
 
 ## 功能说明:    
@@ -39,7 +39,7 @@ __需要 Mongodb 数据库__
 # 使用 NPM (use npm)
 npm install -g iservers
 
-# 使用gitlab (use gitlab)
+# 使用github (use github)
 # 1. 克隆(clone)
 git clone https://github.com/ektx/iServer.git
 cd iServer
@@ -47,7 +47,6 @@ cd iServer
 npm i
 # 3. 建立本地命名 (make node server)
 npm link
-
 ```
 
 
@@ -71,7 +70,7 @@ http://localhost:8000
 # with NPM
 npm uninstall -g iservers
 
-# with gitlab
+# with github
 npm unlink
 ```
 
@@ -84,8 +83,6 @@ MIT
 ## 相关资料  
 
 查看 [node.js](https://nodejs.org/)  
-查看 [IOJS](https://iojs.org/)  
-查看 [GenneratePages](https://github.com/ektx/Node/tree/master/GenneratePages)  
 查看 [Express](http://expressjs.com/)  
 查看 [Ejs](http://ejs.co/)  
 查看 [Jade](http://jade-lang.com/)  
