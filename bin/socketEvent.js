@@ -71,6 +71,8 @@ function socket (io) {
 					outPath = path.join(process.cwd(), data.out)
 				}
 
+				generate_dir.push( outPath )
+
 				// 归类文件
 				for (let i = 0, l = proFiles.length; i < l; i++) {
 					let _file = proFiles[i];
