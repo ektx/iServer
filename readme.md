@@ -1,19 +1,7 @@
-# iServer 5.2.x  
+# iTools 0.0.1  
 
 
-## 功能说明:    
-
-### 作为服务器使用
-__需要 Mongodb 数据库__
-
-* Node.js 多用户服务器 
-* 配合 git 服务器
-* 支持渲染模板文件, ejs或pug
-* 支持用户注册与登录及密码修改
-* 增加 api 接口
-  - 用户项目接口
-
-### 作用本地静态服务器   
+## 功能说明:      
 
 * 让开发者使用 `ejs` 和 `pug` 来组件化开发自己的静态页面       
 * 支持样式的合并与压缩功能  
@@ -75,14 +63,12 @@ npm unlink
 ```
 
 
-## License
-
-MIT
-
-
 ## 相关资料  
 
 查看 [node.js](https://nodejs.org/)  
 查看 [Express](http://expressjs.com/)  
-查看 [Ejs](http://ejs.co/)  
-查看 [Jade](http://jade-lang.com/)  
+
+
+## License
+
+MIT
