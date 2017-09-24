@@ -8,49 +8,29 @@ const setServer = require('./bin/serverSet');
 const osInfo  = require('./package');
 const version = osInfo.version;
 
-const n_browser = '-b, --browser [默认浏览器]';
-const i_browser = '开启服务器同时打开浏览器[chrome|firefox|ie|opera]';
-const n_port = '-p, --port [port]';
-const i_port = '自定义端口号';
-
 program
 	.version(version)
+	.option('-b, --browser [默认浏览器]', '开启服务器同时打开浏览器[chrome|firefox|ie|opera]')
+	.option('-p, --port [port]', '自定义端口号')
 
-program
-	.command('tool')
-	.description('启动本地服务器')
-	.option(n_browser, i_browser)
-	.option(n_port, i_port)
-	.action((options)=> {
-
-		setServer({
-			type: 'tool',
-			browser: !options.browser ? false : options.browser,
-			port: isNaN(options.port) ? 8000 : parseInt(options.port),
-			version: version
-		})
-
-	});
-
-program
-	.command('os')
-	.description('启动系统服务器')
-	.action((options)=> {
-
-		setServer({
-			type: 'os',
-			version: version
-		})
-
-	});
-
-
-program.on('--help', ()=>{
+program.on('--help', () => {
 	console.log('  例如:\n\t');
-	console.log('    iserver tool')
-	console.log('    iserver server')
-	console.log('    iserver server -h')
+	console.log('    its -h')
 });
 
-
 program.parse(process.argv);
+
+// 如果没有输入端口或是只输入了端口名并没有添加端口号时,默认为 8000
+if ((typeof program.port === 'boolean' && program.port) || !program.port) {
+	program.port = 8000
+} else {
+	program.port = parseInt(program.port)
+}
+
+// 启动
+setServer({
+	type: 'tool',
+	browser: !program.browser ? false : program.browser,
+	port: program.port,
+	version: version
+})
