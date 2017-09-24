@@ -1,11 +1,11 @@
 {
-	"name": "iservers",
+	"name": "itools",
 	"version": "5.2.1",
 	"author": {
 		"name": "ektx",
 		"email": "530675800@qq.com"
 	},
-	"description": "iojs/nodejs web server",
+	"description": "基于 Node.js 的简单本地服务器",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ektx/iServer.git"
@@ -21,8 +21,7 @@
 		"mongodb"
 	],
 	"bin": {
-		"iserver": "index.js",
-		"igit": "bin/git.js"
+		"its": "index.js"
 	},
 	"dependencies": {
 		"async": "^2.3.0",
