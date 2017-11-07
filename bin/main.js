@@ -26,45 +26,22 @@ function server(options) {
 	let	httpPort = options.http || options.port + 1;
 	let	httpsPort = options.https || options.port + 2;
 
+	// http2 使用的证书，你可以自己重新生成
+	// 这里只是示例
 	const sslOptions = {
 		key: fs.readFileSync(path.join(__dirname, '../ssl/iserver.pem')),
 		cert: fs.readFileSync(path.join(__dirname, '../ssl/iserver-cert.pem'))
 	}
 
+	// 设置示图页面
 	app.set('views', path.resolve(__dirname, '../server') )
+	// 设置模板引擎
 	app.set('view engine', 'ejs')
 
 	app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
 	// parse application/json 
 	app.use(bodyParser.json())
-
-	if (options.type === 'os') {
-
-		console.log('服务器根目录:', process.cwd() );
-		console.log('服务启动目录:', __dirname);
-
-		app.use(session({
-			secret: 'hello iServer!',
-			resave: false,
-			saveUninitialized: true,
-			cookie: {
-				maxAge: 60* 1000 * 30
-			}
-		}));
-
-		mongoose.connect(options.db);
-		mongoose.set('debug', true);
-		
-		let db = mongoose.connection;
-		db.on('error', ()=> {
-			console.log('Mongodb not connection!')
-		});
-		db.once('open', () => {
-			console.log('Mongodb OK!');
-		})
-
-	} 
 
 	// GBK URL中文乱码问题
 	app.use(parseURL)
