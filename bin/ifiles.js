@@ -3,7 +3,6 @@
 const fs = require('fs');
 const path = require('path');
 const mime = require('mime');
-const OS_CONFIG = require('../os.config');
 
 /*
 	获取文件类型
@@ -188,11 +187,11 @@ function resHeaders(type) {
 	if ( cacheType.includes( type.split('/')[1] ) ) {
 		let expires = new Date();
 		// 31536000 * 1000
-		expires.setTime(expires.getTime() + OS_CONFIG.tool.maxage);
+		expires.setTime(expires.getTime() + 0);
 
 		headerInfo.Expires = expires.toUTCString();
 		// 缓存一年 60 * 60 * 24 * 365
-		headerInfo['Cache-Control'] = 'max-age=' + OS_CONFIG.tool.maxage;
+		headerInfo['Cache-Control'] = 'max-age=' + 0;
 	}
 
 	return headerInfo;
