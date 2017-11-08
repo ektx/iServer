@@ -28,7 +28,7 @@ exports.root = (req, res) => {
 
 // 所有get * 请求
 exports.getAll = (req, res) => {
-	console.log('%s * %s', req.method.bgGreen.white, decodeURI(req.url) );
+	console.log('%s %s %s', req.method.bgGreen.white, new Date().toLocaleString().blue, decodeURI(req.url) );
 
 	server(req, res);
 };
