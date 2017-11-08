@@ -1,7 +1,9 @@
 
 const fs = require('fs')
 const path = require('path')
-const ifiles = require('./ifiles')
+// const ifiles = require('./ifiles')
+const sendFile = require('./sendFile')
+const statAsync = require('./statAsync')
 const colors = require('colors')
 
 /*
@@ -18,7 +20,8 @@ module.exports = async function (req, res) {
 		let rootFileStat = await statAsync(process.cwd(), req.url)
 
 		if (rootFileStat.stats.isFile()) {
-
+			console.log('is file')
+			sendFile(req, res, process.cwd(), req.url)
 		} 
 		else if (rootFileStat.stats.isDirectory()) {
 
@@ -34,7 +37,7 @@ module.exports = async function (req, res) {
 		}
 
 	} catch (err) {
-		res.status(404).send('404')		
+		res.status(404).send('404\n' + err)		
 	}
 }
 
@@ -50,25 +53,3 @@ function readdirAsync(filePath) {
 		})
 	})
 }
-
-/*
-	异步读取文件的状态情况
-	@filePath [string] 文件父母路径
-	@file [string] 文件名
-*/
-function statAsync(filePath, file) {
-	return new Promise((resolve, reject) => {
-		let absolutePath = path.join(filePath, file)
-		fs.stat(absolutePath, (err, stats) => {
-			if (err) reject(err)
-			else {
-				resolve({
-					file,
-					path: absolutePath,
-					stats
-				})
-			}
-		})
-	})
-}
-
