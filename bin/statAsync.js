@@ -22,7 +22,7 @@ module.exports = function (filePath, file) {
 					// 绝对路径
 					path: absolutePath,
 					// 是否为文件夹
-					type: stats.isDirectory(),
+					isDir: stats.isDirectory(),
 					// 状态信息
 					stats
 				})

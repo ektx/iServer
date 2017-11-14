@@ -11,13 +11,6 @@ const colors = require('colors')
 	---------------------------------------------
 */
 module.exports = async function (req, res) {
-	// 请求 API
-	let isAPI = false
-
-	if (req.url.startsWith('/api')) {
-		isAPI = true
-		req.url = req.url.replace(/^\/api/i, '')
-	}
 
 	let filePath = path.join( process.cwd(), req.url)
 
@@ -32,27 +25,21 @@ module.exports = async function (req, res) {
 		} 
 		else if (rootFileStat.stats.isDirectory()) {
 
-			if (isAPI) {
-				let files = await readdirAsync(filePath)
+			let files = await readdirAsync(filePath)
 			
-				let childrenPathPromises = files.map(file => 
-					statAsync(filePath, file)
-				)
+			let childrenPathPromises = files.map(file => 
+				statAsync(filePath, file)
+			)
 
-				childrenInfo = await Promise.all(childrenPathPromises) 
+			childrenInfo = await Promise.all(childrenPathPromises) 
 
-				res.send(childrenInfo)
-			}
-			else {
-				sendFile(req, res, __dirname, '../web/index.html')
-			}
+			res.send(childrenInfo)
 		}
 
 	} catch (err) {
 		res.status(404).send('404\n' + err)		
 	}
 }
-
 
 /*
 	异步读取目录下的文件列表

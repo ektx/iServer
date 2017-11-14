@@ -13,6 +13,8 @@ module.exports = (app, type) => {
 	app.get('/server/make', r.makeHTMLPage )
 	app.get('/server/toMake', r.makeHTMLPage )
 	app.get('/server/*', r.server)
+	app.get('/@/*', r.getWeb)
+	// app.get('/api/*', r.getAPI)
 	app.get('/iproxy-url=*', r.iproxy)
 
 	app.post('/toOpenFilePath', r.toOpenPath)
