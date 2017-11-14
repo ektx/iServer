@@ -11,6 +11,7 @@ const JSZip   = require('jszip')
 
 const IP  = require('./getIPs')
 
+const sendFile = require('./sendFile')
 
 
 // 访问 / [get]
@@ -26,11 +27,17 @@ exports.root = (req, res) => {
 }
 
 
+exports.getWeb = function (req, res) {
+	console.log('%s %s %s', req.method.bgGreen.white, new Date().toLocaleString().grey, decodeURI(req.url) );
+	sendFile(req, res, __dirname, req.url.replace(/^\/@/, '../web'))
+}
+
+
 // 所有get * 请求
 exports.getAll = (req, res) => {
 	console.log('%s %s %s', req.method.bgGreen.white, new Date().toLocaleString().blue, decodeURI(req.url) );
 
-	server(req, res);
+	server(req, res)
 };
 
 // 服务器内部文件请求
@@ -38,6 +45,11 @@ exports.server = (req, res) => {
 
 	server(req, res, {serverRootPath: __dirname.replace('bin', '') });
 };
+
+
+// exports.getAPI = (req, res) => {
+
+// }
 
 /*
 	添加简单的自定义跨域访问
