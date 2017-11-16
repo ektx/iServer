@@ -1,6 +1,9 @@
+
 const fs = require('fs')
 const path = require('path')
+
 const r = require('./rotuesPath')
+const toOpenPath = require('./toOpenPath')
 
 
 module.exports = (app, type) => {
@@ -17,7 +20,7 @@ module.exports = (app, type) => {
 	// app.get('/api/*', r.getAPI)
 	app.get('/iproxy-url=*', r.iproxy)
 
-	app.post('/toOpenFilePath', r.toOpenPath)
+	app.post('/api/opendir', toOpenPath)
 	app.post('/server/zipfile', r.tool_zipdownload )
 
 	app.post('*', r.postAll)

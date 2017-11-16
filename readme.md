@@ -1,32 +1,17 @@
 # iTools 0.0.1  
 
+本地静态服务器
 
 ## 功能说明:      
 
-* 让开发者使用 `ejs` 和 `pug` 来组件化开发自己的静态页面       
-* 支持样式的合并与压缩功能  
-* 生成文件及统计与输出 
-* 从命令行启动并打开浏览器  
-* 支持生成 `js` `source map`  
-* 支持min文件重向功能  
-* [增加代理跨域功能](https://github.com/ektx/iServer/tree/master/Doc#使用代理服务器-iproxy-url)
-* 支持快速打开本地文件 [Demo](/Doc/images/openDir.gif)
-
-
-
-
-## 文件生成
-
-[文档](Doc/生成页面功能.md)
-
+- 浏览本地文件
+- shift + 点击，打开文件所在文件夹
+- 后台访问日志功能
 
 
 ## 安装
 
 ```Shell
-# 使用 NPM (use npm)
-npm install -g iservers
-
 # 使用github (use github)
 # 1. 克隆(clone)
 git clone https://github.com/ektx/iServer.git
@@ -45,20 +30,14 @@ npm link
 cd your_existing_folder
 
 # 启动:
-iserver tool
-
-# 在浏览器中打开浏览:
-http://localhost:8000
+# 启动8000端口并在浏览器中打开服务器根目录
+its -p 8000 -b
 ```
-> 更多使用帮助:  [配置文档](/Doc/)
-
 
 ## 卸装
 ```sh
-# with NPM
-npm uninstall -g iservers
-
 # with github
+# 进入 itools 克隆目录
 npm unlink
 ```
 

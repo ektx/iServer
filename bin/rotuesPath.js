@@ -88,45 +88,6 @@ exports.postAll = (req, res) => {
 
 
 /*
-	打开文件目录功能
-	-----------------------------------
-	为作为本地服务器时,可以通过
-	Mac 上 command + 点击
-	Win 上 Ctrl + 点击
-	打开对应的文件夹
-*/
-exports.toOpenPath = (req, res) => {
-
-	let platform = os.platform();
-	let openPath = path.join(process.cwd(), req.body.url );
-	let stat = fs.statSync( openPath );
-
-	if ( stat.isFile() ) {
-		openPath = path.dirname( openPath )
-	}
-
-	// 处理空格
-	openPath = openPath.replace(/\s/g, '\\ ');
-
-	if ( IP.getClientIP(req).isServer ) {
-		if ( platform === 'darwin') {
-			exec('open '+ openPath)
-		} 
-		else if ( platform === 'linux2' ) {
-			exec('nautilus '+openPath)
-		}
-		else if ( platform === 'win32' ) {
-			openPath = openPath.replace(/\//g, '\\');
-			exec('explorer '+ openPath)
-		}
-	}
-
-	res.send({
-		success: true
-	})
-}
-
-/*
 	make
 	-----------------------------------
 	归属: tool
