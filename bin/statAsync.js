@@ -9,11 +9,13 @@ const path = require('path')
 */
 module.exports = function (filePath, file) {
 	return new Promise((resolve, reject) => {
-		
+
 		let absolutePath = path.join(filePath, file)
 
 		fs.stat(absolutePath, (err, stats) => {
-			if (err) reject(err)
+			if (err) {
+				reject(err)
+			}
 			else {
 				// 返回内容
 				resolve({
@@ -28,5 +30,8 @@ module.exports = function (filePath, file) {
 				})
 			}
 		})
+	}).catch(err => {
+		// 捕捉错误信息并返回
+		return err
 	})
 }
