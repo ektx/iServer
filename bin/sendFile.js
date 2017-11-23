@@ -12,13 +12,22 @@ const statAsync = require('./statAsync')
 	@filePath: 文件路径
 */
 module.exports = async function(req, res, rootPath, fileName) {
+	// 发送服务器模版
+	// 默认是发送请求文件（false） 发送模版为 true
+	let sendMod = false
+	
+	// 如果 等于 INDEX 就是发送模版了
+	// 在 server.js  处理请求目录时处理
+	if (fileName === 'INDEX') {
+		fileName = '../web/index.html';
+		sendMod = true
+	}
 
 	let fileAllInfo = await statAsync(rootPath, fileName)
 	let filePath = fileAllInfo.path
 	let stat = fileAllInfo.stats
 
 	if (req.headers['range']) {
-		console.log(1)
 
 		var total = stat.size;
 		var range = req.headers.range;
@@ -51,7 +60,7 @@ module.exports = async function(req, res, rootPath, fileName) {
         }
 
 	} else {
-		let lastModifed = stat.mtime.toUTCString();
+		let lastModifed = stat.mtime.toUTCString()
 		let wh_opt = resHeaders( 
 				mime.lookup(
 					path.basename(filePath)
@@ -59,9 +68,11 @@ module.exports = async function(req, res, rootPath, fileName) {
 			);
 		wh_opt['Last-Modified'] = lastModifed;
 
-		if (req.headers['if-modified-since'] && lastModifed == req.headers['if-modified-since'] ) {
-			res.set(wh_opt);
+		if (req.headers['if-modified-since'] && lastModifed == req.headers['if-modified-since'] && !sendMod) {
+
+			res.set(wh_opt)
 			res.end()
+
 		} else {
 
 			let stream = fs.createReadStream(filePath);

@@ -27,7 +27,6 @@ module.exports = async function (req, res) {
 		let rootFileStat = await statAsync(process.cwd(), req.url)
 
 		if (rootFileStat.stats.isFile()) {
-			console.log('is file')
 			sendFile(req, res, process.cwd(), req.url)
 		} 
 		else if (rootFileStat.stats.isDirectory()) {
@@ -44,7 +43,7 @@ module.exports = async function (req, res) {
 				res.send(childrenInfo)
 			}
 			else {
-				sendFile(req, res, __dirname, '../web/index.html')
+				sendFile(req, res, __dirname, 'INDEX')
 			}
 		}
 
