@@ -37,7 +37,7 @@ module.exports = async function (req, res) {
 
 	// 处理空格
 	openPath = openPath.replace(/\s/g, '\\ ');
-
+console.log( IP.getClientIP(req).isServer )
 	if ( IP.getClientIP(req).isServer ) {
 		if ( platform === 'darwin') {
 			exec('open '+ openPath)

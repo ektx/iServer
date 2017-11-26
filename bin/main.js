@@ -46,6 +46,11 @@ function server(options) {
 	// GBK URL中文乱码问题
 	app.use(parseURL)
 
+	app.use((req, res, next) => {
+		console.log('xxx', req.connection.remoteAddress)
+		next()
+	})
+
 	// 使用路由
 	rotues(app, options.type);
 
@@ -67,6 +72,7 @@ function server(options) {
 			}
 
 			let proxy = net.createConnection(address, ()=> {
+				console.log(1)
 				proxy.write(buf);
 				netSocket.pipe(proxy).pipe(netSocket);
 			});
@@ -130,7 +136,7 @@ function server(options) {
 
 	}).on('error', err => {
 		serverErr(err, ` ${mainPort} 端口已经被占位!请更换其它端口! `)
-	});
+	})
 
 
 }
