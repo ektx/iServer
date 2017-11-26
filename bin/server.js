@@ -1,11 +1,10 @@
 
 const fs = require('fs')
 const path = require('path')
-// const ifiles = require('./ifiles')
+const colors = require('colors')
 const sendFile = require('./sendFile')
 const statAsync = require('./statAsync')
-const colors = require('colors')
-
+const getIP = require('./getIPs')
 /*
 	文件服务主功能
 	---------------------------------------------
@@ -14,6 +13,7 @@ module.exports = async function (req, res) {
 	// 请求 API
 	let isAPI = false
 
+	// 请求以 '/api/' 开头的，我们默认为请求 api
 	if (req.url.startsWith('/api')) {
 		isAPI = true
 		req.url = req.url.replace(/^\/api/i, '')
@@ -40,7 +40,10 @@ module.exports = async function (req, res) {
 
 				childrenInfo = await Promise.all(childrenPathPromises) 
 
-				res.send(childrenInfo)
+				res.send({
+					server: getIP.getClientIP(req).isServer,
+					data: childrenInfo
+				})
 			}
 			else {
 				sendFile(req, res, __dirname, 'INDEX')

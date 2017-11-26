@@ -48,8 +48,8 @@ function getClientIP (req) {
 	req.socket.remoteAddress ||
 	req.connection.socket.remoteAddress;
 
+console.log(req.ip, req.socket.remoteAddress, req.connection.remoteAddress)
 	ip = ip.match(/\d.+/)[0];
-
 	if (ip !== '127.0.0.1')
 		isServer = getIPs().IPv4.public === ip ? true : false;
 	else
