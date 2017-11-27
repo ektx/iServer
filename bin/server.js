@@ -51,7 +51,7 @@ module.exports = async function (req, res) {
 		}
 
 	} catch (err) {
-		res.status(404).send('404\n' + err)		
+		res.status(404).send('404\r\n' + err)		
 	}
 }
 

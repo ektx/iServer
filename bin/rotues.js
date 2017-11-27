@@ -6,7 +6,7 @@ const r = require('./rotuesPath')
 const toOpenPath = require('./toOpenPath')
 
 
-module.exports = (app, type) => {
+module.exports = function (app) {
 
 	app.get('/favicon.ico', function(req, res) {
 		res.end()
@@ -17,7 +17,6 @@ module.exports = (app, type) => {
 	app.get('/server/toMake', r.makeHTMLPage )
 	app.get('/server/*', r.server)
 	app.get('/@/*', r.getWeb)
-	// app.get('/api/*', r.getAPI)
 	app.get('/iproxy-url=*', r.iproxy)
 
 	app.post('/api/opendir', toOpenPath)

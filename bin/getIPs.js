@@ -1,16 +1,14 @@
 
-var os = require('os')
-
-
+const os = require('os')
 
 function getIPs () {
-	var ipv4s = {};
-	var ipv6s = [];
-	var ifaces = os.networkInterfaces();
+	let ipv4s = {};
+	let ipv6s = [];
+	let ifaces = os.networkInterfaces();
 
-	for (var i in ifaces) {
-		for (var ii in ifaces[i]) {
-			var ip = ifaces[i][ii]
+	for (let i in ifaces) {
+		for (let ii in ifaces[i]) {
+			let ip = ifaces[i][ii]
 
 			if (ip.family === 'IPv4') {
 
@@ -48,12 +46,12 @@ function getClientIP (req) {
 	req.socket.remoteAddress ||
 	req.connection.socket.remoteAddress;
 
-console.log(req.ip, req.socket.remoteAddress, req.connection.remoteAddress)
-	ip = ip.match(/\d.+/)[0];
-	if (ip !== '127.0.0.1')
-		isServer = getIPs().IPv4.public === ip ? true : false;
-	else
+	if (ip === '127.0.0.1' || ip === '::1')
 		isServer = true
+	else {
+		ip = ip.match(/\d.+/)[0]; 
+		isServer = getIPs().IPv4.public === ip;
+	}
 
 	return {
 		ip: ip,
