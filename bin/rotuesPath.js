@@ -26,7 +26,11 @@ exports.root = (req, res) => {
 	}
 }
 
-
+/*
+	请求服务器内部资源
+	-----------------------------------
+	内部资源目前存放在 ../web 目录中
+*/
 exports.getWeb = function (req, res) {
 	console.log('%s %s %s', req.method.bgGreen.white, new Date().toLocaleString().grey, decodeURI(req.url) );
 	sendFile(req, res, __dirname, req.url.replace(/^\/@/, '../web'))
@@ -46,10 +50,6 @@ exports.server = (req, res) => {
 	server(req, res, {serverRootPath: __dirname.replace('bin', '') });
 };
 
-
-// exports.getAPI = (req, res) => {
-
-// }
 
 /*
 	添加简单的自定义跨域访问

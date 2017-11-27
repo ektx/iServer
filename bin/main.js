@@ -1,152 +1,92 @@
-function server(options) {
 
-	'use strict';
+const fs      = require('fs');
+const http    = require('http');
+const https	  = require('https');
+// 停用 npm 包，使用node自带 https
+// const http2   = require('spdy');
+const path    = require('path');
+// const net     = require('net');
+const express = require('express');
+// const session = require('express-session');
+const bodyParser = require('body-parser');
+const colors  = require('colors');
+// const mongoose = require('mongoose');
+// const iconv   = require('iconv-lite');
 
-	const fs      = require('fs');
-	const http    = require('http');
-	const http2   = require('spdy');
-	const path    = require('path');
-	const net     = require('net');
-	const express = require('express');
-	const session = require('express-session');
-	const bodyParser = require('body-parser');
-	const colors  = require('colors');
-	const mongoose = require('mongoose');
-	const iconv   = require('iconv-lite');
+// const ifiles  = require('./ifiles');
+const IP  = require('./getIPs');
+const open    = require('./open');
+const rotues  = require('./rotues');
+const parseURL  = require('./parseURL');
 
-	const ifiles  = require('./ifiles');
-	const IP  = require('./getIPs');
-	const open    = require('./open');
-	const rotues  = require('./rotues');
-	const parseURL  = require('./parseURL');
-	const app = express();
+const app = express();
 
-	// https & http port
-	let	mainPort = options.port;
-	let	httpPort = options.http || options.port + 1;
-	let	httpsPort = options.https || options.port + 2;
+// 设置示图页面
+app.set('views', path.resolve(__dirname, '../server') )
+// 设置模板引擎
+// app.set('view engine', 'ejs')
 
-	// http2 使用的证书，你可以自己重新生成
-	// 这里只是示例
-	const sslOptions = {
-		key: fs.readFileSync(path.join(__dirname, '../ssl/iserver.pem')),
-		cert: fs.readFileSync(path.join(__dirname, '../ssl/iserver-cert.pem'))
-	}
+app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
-	// 设置示图页面
-	app.set('views', path.resolve(__dirname, '../server') )
-	// 设置模板引擎
-	app.set('view engine', 'ejs')
+// parse application/json 
+app.use(bodyParser.json())
 
-	app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
+// GBK URL中文乱码问题
+app.use(parseURL)
 
-	// parse application/json 
-	app.use(bodyParser.json())
 
-	// GBK URL中文乱码问题
-	app.use(parseURL)
+module.exports = function (options) {
+	
+	serverInfo(options)
 
-	app.use((req, res, next) => {
-		console.log('xxx', req.connection.remoteAddress)
-		next()
-	})
-
+	let	serverPort = options.port;
+	let server;
+	
 	// 使用路由
-	rotues(app, options.type);
+	rotues(app);
 
-	// 主服务
-	net.createServer(netSocket=> {
-		netSocket.once('data', buf => {
-			// pause the socket
-			netSocket.pause();
+	if (options.https) {
+		console.log('🌈  Start HTTPS Server ...'.green)
 
-			// determine if this is an http(s) request
-			let byte = buf[0];
-
-			let address;
-
-			if (byte === 22) {
-				address = httpsPort;
-			} else if (32 < byte && byte < 127) {
-				address = httpPort;
-			}
-
-			let proxy = net.createConnection(address, ()=> {
-				console.log(1)
-				proxy.write(buf);
-				netSocket.pipe(proxy).pipe(netSocket);
-			});
-
-			netSocket.resume();
-			
-			proxy.on('err', err => {
-				console.log(err)
-			})
-		});
-
-
-		netSocket.on('error', err => {
-			console.log('iserver error: '+err)
-		})
-	}).listen(mainPort, ()=> {
-		if (options.type === 'tool' && options.browser) {
-		
-			let openURL = 'http://'+ IP.getIPs().IPv4.public + ':' + mainPort;
-
-			open(openURL, options.browser)
+		// http2 使用的证书，你可以自己重新生成
+		// 这里只是示例
+		const sslOptions = {
+			key: fs.readFileSync(path.join(__dirname, '../ssl/iserver.pem')),
+			cert: fs.readFileSync(path.join(__dirname, '../ssl/iserver-cert.pem'))
 		}
 
-		let zIP = IP.getIPs().IPv4;
-		let showInfo = ('=================================\n'+
-			'  Welcome to '+ options.version +
-			'\n=================================\n').rainbow;
+		server = https.createServer(sslOptions, app);
 
-		for (let i in zIP) {
-			showInfo += '地址请求: '+zIP[i] + ':' + mainPort + '\n';
+	} else {
+		console.log('🌈  Start HTTP Server ...'.yellow)
+
+		server = http.createServer(app)
+	}
+
+	server.listen(serverPort, function() {
+		console.log('🎉  Start completed!'.green)
+		if (options.browser) {
+			console.log((options.https ? 'https':'http') + IP.getIPs().IPv4.public +':'+serverPort)
+			open(
+				(options.https ? 'https':'http') +`://${IP.getIPs().IPv4.public}:${serverPort}`,
+				options.browser
+			)
 		}
-
-		console.log(showInfo);
-
-		let httpS = http.createServer(app);
-
-		httpS.listen(httpPort, ()=> {
-			console.log(`HTTP  辅助端口为: ${httpPort}`)
-		})
-		.on('error', err => {
-			serverErr(err, ` ${httpPort} http 辅助接口被占用!`)
-		})
-		
-		
-		let http2S = http2.createServer(sslOptions, app);
-
-		http2S.listen(httpsPort, ()=> {
-			console.log(`HTTPS 辅助端口为: ${httpsPort}`)
-		})
-		.on('error', err => {
-			serverErr(err, ` ${httpsPort} https 辅助接口被占用!`)
-		})
-		
-		const io = require('socket.io')(httpS);
-		const ioS = require('socket.io')(http2S);
-
-		const socketEvent = require('./socketEvent');
-
-		socketEvent(io)
-		socketEvent(ioS)
-
-	}).on('error', err => {
-		serverErr(err, ` ${mainPort} 端口已经被占位!请更换其它端口! `)
 	})
 
+	server.on('error', (e) => {
+		if (e.code === 'EADDRINUSE') {
+			console.log('💔  当前端口被占用，请重试\r\nAddress in use, retrying...'.red)
+		}
+	})
 
 }
 
-function serverErr(err, msg) {
-	if (err && err.code === 'EADDRINUSE') {
-		console.log(msg.yellow.bgRed)
-		return;
-	}
+
+function serverInfo (options) {
+	console.log('================================='.rainbow)
+	console.log('📦  iTools ')
+	console.log('📃  ' + `v ${options.version}`.rainbow)
+	console.log('😍  '+ 'Welcome To Use !'.rainbow)
+	console.log('================================='.rainbow)
 }
-
-
-module.exports = server;
