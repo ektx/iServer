@@ -2,18 +2,11 @@
 const fs      = require('fs');
 const http    = require('http');
 const https	  = require('https');
-// 停用 npm 包，使用node自带 https
-// const http2   = require('spdy');
 const path    = require('path');
-// const net     = require('net');
 const express = require('express');
-// const session = require('express-session');
 const bodyParser = require('body-parser');
 const colors  = require('colors');
-// const mongoose = require('mongoose');
-// const iconv   = require('iconv-lite');
 
-// const ifiles  = require('./ifiles');
 const IP  = require('./getIPs');
 const open    = require('./open');
 const rotues  = require('./rotues');
@@ -23,8 +16,6 @@ const app = express();
 
 // 设置示图页面
 app.set('views', path.resolve(__dirname, '../server') )
-// 设置模板引擎
-// app.set('view engine', 'ejs')
 
 app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
@@ -65,8 +56,8 @@ module.exports = function (options) {
 
 	server.listen(serverPort, function() {
 		console.log('🎉  Start completed!'.green)
+		console.log('================================='.rainbow)
 		if (options.browser) {
-			console.log((options.https ? 'https':'http') + IP.getIPs().IPv4.public +':'+serverPort)
 			open(
 				(options.https ? 'https':'http') +`://${IP.getIPs().IPv4.public}:${serverPort}`,
 				options.browser
@@ -86,7 +77,7 @@ module.exports = function (options) {
 function serverInfo (options) {
 	console.log('================================='.rainbow)
 	console.log('📦  iTools ')
-	console.log('📃  ' + `v ${options.version}`.rainbow)
-	console.log('😍  '+ 'Welcome To Use !'.rainbow)
-	console.log('================================='.rainbow)
+	console.log('📃  ' + `v ${options.version}`)
+	console.log('😍  '+ 'Welcome To Use !')
+	console.log('---------------------------------'.rainbow)
 }
