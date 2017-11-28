@@ -46,7 +46,7 @@ function getClientIP (req) {
 	req.socket.remoteAddress ||
 	req.connection.socket.remoteAddress;
 
-	if (ip === '127.0.0.1' || ip === '::1')
+	if (['::ffff:127.0.0.1', '127.0.0.1','::1'].includes(ip))
 		isServer = true
 	else {
 		ip = ip.match(/\d.+/)[0]; 
