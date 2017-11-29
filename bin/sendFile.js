@@ -12,33 +12,29 @@ const statAsync = require('./statAsync')
 	@filePath: 文件路径
 */
 module.exports = async function(req, res, rootPath, fileName) {
-	// 发送服务器模版
-	// 默认是发送请求文件（false） 发送模版为 true
-	let sendMod = false
 	
 	// 如果 等于 INDEX 就是发送模版了
 	// 在 server.js  处理请求目录时处理
 	if (fileName === 'INDEX') {
 		fileName = '../web/index.html';
-		sendMod = true
 	}
 
 	let fileAllInfo = await statAsync(rootPath, fileName)
 	let filePath = fileAllInfo.path
-	let stat = fileAllInfo.stats
 
 	if (req.headers['range']) {
 
-		var total = stat.size;
-		var range = req.headers.range;
-		var parts = range.replace(/bytes=/, '').split('-');
-        var partialstart = parts[0];
-        var partialend = parts[1];
+		let stat = fileAllInfo.stats
+		let total = stat.size;
+		let range = req.headers.range;
+		let parts = range.replace(/bytes=/, '').split('-');
+        let partialstart = parts[0];
+        let partialend = parts[1];
 
-        var start = parseInt(partialstart, 10);
-        var end = partialend ? parseInt(partialend, 10) : total -1;
+        let start = parseInt(partialstart, 10);
+        let end = partialend ? parseInt(partialend, 10) : total -1;
  
-        var chunksize = (end - start) + 1;
+        let chunksize = (end - start) + 1;
 
         console.log('RANGE: ' + start+' - '+ end+ ' = '+ chunksize);
         console.log('----------------------------------------');
@@ -50,42 +46,34 @@ module.exports = async function(req, res, rootPath, fileName) {
             res.setHeader("Content-Length", chunksize);
             res.writeHead('206', "Partial Content");
             
-            var stream = fs.createReadStream(filePath, {start: start, end: end});
+            let stream = fs.createReadStream(filePath, {start: start, end: end});
             stream.pipe(res)
             
         } else {
             res.removeHeader("Content-Length");
+            // 服务器无法处理请求的数据区间
             res.writeHead(416, "Request Range Not Satisfiable");
             res.end();
         }
 
 	} else {
-		let lastModifed = stat.mtime.toUTCString()
+
 		let wh_opt = resHeaders( 
 				mime.lookup(
 					path.basename(filePath)
 				) 
 			);
-		wh_opt['Last-Modified'] = lastModifed;
 
-		if (req.headers['if-modified-since'] && lastModifed == req.headers['if-modified-since'] && !sendMod) {
+		let stream = fs.createReadStream(filePath);
 
-			res.set(wh_opt)
-			res.end()
+		stream.on('error', function() {
+			sendError(res, 505)
+		})
 
-		} else {
+		res.set(wh_opt)
 
-			let stream = fs.createReadStream(filePath);
-
-			stream.on('error', function() {
-				sendError(res, 505)
-			})
-
-			res.set(wh_opt)
-
-			stream.pipe(res);
+		stream.pipe(res);
 			
-		}
 	}
 
 }
@@ -103,7 +91,7 @@ function resHeaders(type = 'text/html') {
 		'Access-Control-Allow-Origin': '*',
 		'Content-Type': type+';charset="utf8"',
 		'x-xss-protection': '1; mode=block',
-		'Server': 'iServer 5.0.0 beta'
+		'Server': 'iTools 0.0.2 beta'
 	};
 
 	let cacheType = ['javascript', 'css', 'jpeg', 'jpg', 'png', 'gif', 'markdown'];
