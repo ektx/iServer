@@ -10,7 +10,14 @@ const path = require('path')
 module.exports = function (filePath, file) {
 	return new Promise((resolve, reject) => {
 
-		let absolutePath = path.join(filePath, file)
+		let absolutePath = ''
+
+		if (file)
+			absolutePath = path.join(filePath, file)
+		else {
+			absolutePath = filePath
+			file = path.basename(filePath)
+		}
 
 		fs.stat(absolutePath, (err, stats) => {
 			if (err) {

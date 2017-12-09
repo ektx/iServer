@@ -13,8 +13,8 @@ module.exports = function (app) {
 		return
 	});
 
-	app.get('/server/make', r.makeHTMLPage )
-	app.get('/server/toMake', r.makeHTMLPage )
+	// app.get('/@Workbench', r.makeHTMLPage )
+	// app.get('/server/toMake', r.makeHTMLPage )
 	app.get('/server/*', r.server)
 	app.get('/@/*', r.getWeb)
 	app.get('/iproxy-url=*', r.iproxy)

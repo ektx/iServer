@@ -11,8 +11,10 @@ const IP  = require('./getIPs');
 const open    = require('./open');
 const rotues  = require('./rotues');
 const parseURL  = require('./parseURL');
+const socketEvt = require('./socketEvent')
 
 const app = express();
+let io  = ''
 
 // 设置示图页面
 app.set('views', path.resolve(__dirname, '../server') )
@@ -54,6 +56,10 @@ module.exports = function (options) {
 		server = http.createServer(app)
 	}
 
+	// socket io
+	io = require('socket.io')(server)
+	socketEvt(io)
+
 	server.listen(serverPort, function() {
 		console.log('🎉  Start completed!'.green)
 		console.log('================================='.rainbow)
@@ -78,6 +84,7 @@ function serverInfo (options) {
 	console.log('================================='.rainbow)
 	console.log('📦  iTools ')
 	console.log('📃  ' + `v ${options.version}`)
-	console.log('😍  '+ 'Welcome To Use !')
+	console.log('✨  '+ 'Welcome To Use !')
 	console.log('---------------------------------'.rainbow)
 }
+
