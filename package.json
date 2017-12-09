@@ -1,6 +1,6 @@
 {
 	"name": "itools",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"author": {
 		"name": "ektx",
 		"email": "530675800@qq.com"
@@ -14,9 +14,6 @@
 	"keywords": [
 		"server",
 		"node.js",
-		"jade",
-		"pug",
-		"ejs",
 		"http2",
 		"mongodb"
 	],
@@ -27,6 +24,7 @@
 		"body-parser": "^1.17.1",
 		"colors": "^1.1.2",
 		"commander": "^2.11.0",
+		"cssnano": "^3.10.0",
 		"ejs": "^2.4.2",
 		"express": "^4.14.0",
 		"express-session": "^1.14.0",

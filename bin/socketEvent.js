@@ -4,11 +4,14 @@ const path = require('path');
 const ejs = require('ejs');
 const jade = require('pug');
 const imCss = require('im-css');
+const cssnano = require('cssnano')
 
 const ifs = require('./ifiles');
 const mkdir = require('./mkdirs');
 const getModules = require('./getModule');
 const beautify_html = require('js-beautify').html;
+
+const statAsync = require('./statAsync')
 
 /*
 	socketEvent 
@@ -22,182 +25,50 @@ function socket (io) {
 	let LOCK_GENERATE = false;
 
 	io.on('connection', (socket) => {
-		socket.emit('hello iserver', { msg: 'welcome use iServer!'});
+		socket.emit('HELLO_WORLD', { msg: 'Welcome Use iTools!'});
 
 		/*
 			data = {
 				path: '..', // 原目录
 				out: '..',  // 输出目录
-				mustOut: [boolean] // 是否严格使用给定目录
+				// 规则，指明下面 3种文件是否要压缩
+				// 默认只会压缩这3种文件
+				rules: {
+					html: true,
+					css: true,
+					js: true
+				}
 			}
 		*/
-		socket.on('start make project', (data) => {
+		socket.on('START_MAKE_PROJECT', async function(data) {
 			console.log('\n\n===================================')
-			console.log( new Date() )
+			console.log( new Date().toLocaleString() )
 			console.log( data )
 			console.log('===================================')
 
-			if(LOCK_GENERATE) {
-				socket.emit('generate info', { msg: '目前已经有项目在生成,你稍候再试!'});
-
-				LOCK_GENERATE = false;
-			} else {
-				LOCK_GENERATE = true;
-				let filePath = path.join(process.cwd(), decodeURI( data.path ) );
-				let outPath = '';
-				let proFiles = ifs.findDirFiles(filePath, true);
-
-				if (proFiles.code === 'ENOENT') {
-					socket.emit('WILL_GENERATE_FILE', {
-						file: {
-							status: 'error',
-							name: '没有发现以下路径',
-							path: proFiles.path
-						}
-					})
-					return;
-				}
-
-				let module_dir = {};
-				// 所有的模板文件
-				let generate_dir = [];
-				// 所有的生成页面
-				let generate_file = [];
-
-				// 使用给定的确定目录
-				if (data.mustOut) {
-					outPath = data.out;
-				} else {
-					outPath = path.join(process.cwd(), data.out)
-				}
-
-				generate_dir.push( outPath )
-
-				// 归类文件
-				for (let i = 0, l = proFiles.length; i < l; i++) {
-					let _file = proFiles[i];
-					let _pathDir = path.dirname(_file.path);
-					let _isModule; // 是否是模板文件
-
-					_file.status = 'ready';
-					_file.outPath = path.normalize(_file.path.replace(filePath, outPath));
-					_isModule = /\.(ejs|pug)$/i.test(_file.outPath);
-
-					// 对输出的文件处理 将模板文件处理成 html
-					if (_isModule) {
-						_file.outPath = _file.outPath.replace(/\.(ejs|pug)$/i, '.html')
-					}
-
-					if (_file.type == 'dir') {
-						if (path.basename(_file.path) === 'parts') {
-							if (!(_file.path in module_dir))
-								module_dir[_file.path] = []
-						}
-
-						if ( !/[\/\\]parts/.test(_file.path) ) {
-							generate_dir.push( _file.outPath )
-						}
-
-					} else {
-						if (/[\/\\]parts[\/\\]/.test(_file.path)) {
-							// 如果已经有存放区
-
-							if (!(_pathDir in module_dir)) {
-								module_dir[_pathDir] = [];
-							} 
-							
-							if (_isModule) {
-								module_dir[_pathDir].push( _file )
-							}
-
-						} else {
-
-							if (! ['.DS_Store'].includes(path.basename(_file.path)))
-								generate_file.push( _file )
-						}
-					}
-
-				}
-
-				// 所有模板之间的的关联
-				let allChildModule = getModuleChild( module_dir );
-
-				// 得到变化过的模块文件
-				let changeMod =	getChangeMode( module_dir );
-				console.log('已经修改过的模板文件有:\n', changeMod)
-
-				mkdir(generate_dir);
-
-				console.log('文件夹生成完成\n', generate_dir)
-				socket.emit('generate_dir_event', { 
-					msg: '文件夹生成完成',
-					success: true
-				});
-
-				/*
-					输出静态资源
-					@__file 文件信息
-				*/
-				let toOutFn = (__file) => {
-					
-					socket.emit('WILL_GENERATE_FILE', {
-						file: __file
-					})
-
-					outPutFile(
-						__file,
-						(__file)=>{
-							socket.emit('GENERATE_MAKE_FILE', {
-							file: __file
-						})
-					})
-				}
-
-				/* 处理模板文件
-					@__file 文件信息
-				*/
-				let doWithModFile = (__file) => {
-
-					
-					outputMod( 
-						__file, 
-						changeMod,
-						(__file)=>{
-							// 准备生成
-							socket.emit('WILL_GENERATE_FILE', {
-								file: __file
-							})
-						},
-						(__file)=>{
-							// 生成完成
-							socket.emit('GENERATE_MAKE_FILE', {
-								file: __file
-							})
-						} 
-					);
-				}
-
-
-				for (let i = 0, l = generate_file.length; i < l; i++) {
-					let __file = generate_file[i];
-					let __fileExtName = path.extname( __file.path ); 
-
-					// 模板文件处理
-					if (['.ejs', '.jade', '.pug', '.css'].includes(__fileExtName) ) {
-
-						// fsStatStatus(generate_file[i], doWithModFile, doWithModFile)
-						doWithModFile( generate_file[i] )
-					} 
-					// 静态文件处理
-					else {
-
-						fsStatStatus(generate_file[i], toOutFn, toOutFn)
-						
-					}
-				}
-
-
+			let fromPath = path.join(process.cwd(), decodeURI(data.path))
+			let address = {
+				origin: data.path,
+				from: fromPath,
+				to: fromPath + '_HTML'
 			}
+			let fileInfo = await statAsync(fromPath)
+
+			if (fileInfo.isDir) {
+
+				IOFindAllFilesInDir(address, true, socket)
+			}
+			// if(LOCK_GENERATE) {
+			// 	socket.emit('generate info', { msg: '目前已经有项目在生成,你稍候再试!'});
+
+			// 	LOCK_GENERATE = false;
+			// } else {
+			// 	LOCK_GENERATE = true;
+			// 	let filePath = path.join(process.cwd(), decodeURI( data.path ) );
+			// 	let outPath = '';
+			// 	let proFiles = ifs.findDirFiles(filePath, true);
+
+			// }
 		});
 	})
 
@@ -205,8 +76,143 @@ function socket (io) {
 
 module.exports = socket;
 
+async function IOFindAllFilesInDir (address, deep, socket) {
+	console.log(address, deep)
+
+	function loop (filePath) {
+		return new Promise ((resolve, reject) => {
+			let dirArr = []
+			let filesArr = []
+			
+			fs.readdir(filePath, async function(err, files) {
+				if (err) { 
+					resject({
+						msg: 'readir err',
+						err
+					})
+				}
+				else {
+					
+					for (let val of files) {
+
+						// 过滤 Mac 上的以 . 命名的隐藏文件
+						if (val.startsWith('.')) return
+
+						let fileInfo = await statAsync(filePath, val)
+						let extname = path.extname(val)
+						
+						fileInfo.to = fileInfo.path.replace(address.from, address.to)
+						fileInfo.from = fileInfo.path
+						delete fileInfo.path
+
+						if (fileInfo.isDir) {
+							socket.emit('WILL_GENERATE_FILE', fileInfo)
+
+							dirArr.push(fileInfo)
+							
+							if (deep) {
+								let backData = await loop(fileInfo.from, deep, socket)
+								dirArr = backData.dirArr.concat(dirArr)
+								filesArr = backData.filesArr.concat(filesArr)
+							}
+						} else {
+
+							filesArr.push(fileInfo)
+							// 目前只对 css html js 进行优化处理
+							socket.emit('WILL_GENERATE_FILE', fileInfo)
+						}
+
+					}
+
+					resolve({
+						dirArr,
+						filesArr
+					})
+				}
+			})
+		})
+	}
+
+	let backData = await loop(address.from)
+
+	let mkdirArr = []
+	// 地址父级目录
+	let toParentPath = path.dirname(address.to)
+
+	// 所有目录创建好后回调
+	let mkDoneCallback = function() {
+		console.log('Done!')
+		socket.emit('HELLO_WORLD', { msg: 'hhhh!'});
+	}
+
+	// 单个文件夹创建好后回调
+	let mkdirDoneCallback = function(data) {
+		socket.emit('GENERATE_MAKE_FILE', path.join(toParentPath, data))
+	}
+
+	for (let i = 0, l = backData.dirArr.length; i < l; i++) {
+
+		mkdirArr.push( backData.dirArr[i].to.replace(toParentPath, '') )
+	}
+
+	await mkdir(mkdirArr, toParentPath, mkDoneCallback, mkdirDoneCallback)
+
+	console.log('Ready dowith files ;)')
+
+	for (let i = 0, l = backData.filesArr.length; i < l; i++) {
+		IODoWithFileToGOOD( backData.filesArr[i], socket)
+	}
+}
+
+function IODoWithFileToGOOD(fileInfo, socket) {
+	let type = path.extname(fileInfo.from)
+
+	switch (type) {
+		case '.css':
+				CSSEvent(fileInfo.from, fileInfo.to, socket)
+			break;
+
+		case '.html':
+
+			break;
+
+		case '.js':
+
+			break;
+
+		default:
+				let RS = fs.createReadStream(fileInfo.from)
+				let WS = fs.createWriteStream(fileInfo.to)
+
+				RS.pipe(WS)
+
+				RS.on('end', () => {
+					socket.emit('GENERATE_MAKE_FILE', fileInfo.to)
+				})			
+			break;
+	}
+}
 
 
+function CSSEvent (from, to, socket) {
+	imCss({
+		entryFile: from,
+		outFile: to,
+		min: true,
+		callback: {
+			out: (r)=> {
+				socket.emit('GENERATE_MAKE_FILE', to)
+			},
+
+			min: r => {
+				console.log(r)
+			}
+		}
+	})
+
+}
+
+// =============== OLD Eevnt =======================
 function getChangeMode(moduleFiles) {
 	let changeMod = [];
 
