@@ -15,6 +15,12 @@ const statAsync = require('./statAsync')
 	Mac 上 command + 点击
 	Win 上 Ctrl + 点击
 	打开对应的文件夹
+
+	前端传参
+	{
+		path: 'abc/def',
+		name: 'def'
+	}
 */
 module.exports = async function (req, res) {
 
@@ -37,7 +43,7 @@ module.exports = async function (req, res) {
 
 	// 处理空格
 	openPath = openPath.replace(/\s/g, '\\ ');
-console.log( IP.getClientIP(req).isServer )
+
 	if ( IP.getClientIP(req).isServer ) {
 		if ( platform === 'darwin') {
 			exec('open '+ openPath)

@@ -1,5 +1,5 @@
 /*
-	iMkdirs 3
+	iMkdirs 4
 	-----------------------------
 	Copyright(c) 2017 ektx
 	增加对地址数组功能的支持
@@ -9,61 +9,22 @@
 const fs = require('fs')
 const path = require('path')
 
-
+/*
+	@pathArr [array] 地址目录，例如：['a/b/c', 'a/d']
+	@parentPath [string] 父级目录，例如： '/' 根目录 
+	@doneCallback 【function】完成后回调方法
+	@mkCallback [function] 每生成文件目录时回调方法
+*/
 async function mkdirs(pathArr, parentPath, doneCallback, mkCallback) {
-	console.log('iMkdirs')
-	// delayPath = [];
-
-	// let toPathArr = []
-
-	// for (let i = 0, l = pathArr.length; i < l; i++) {
-	// 	toPathArr.push(pathArr[i].to.replace(process.cwd(), ''))
-	// }
-
-	console.log('pathArr:',pathArr)
 
 	let mkPathObj = array2tree(pathArr)
-
-	console.log(JSON.stringify(mkPathObj, '', '\t'))
 
 	let needMKDirArr = tree2array(mkPathObj)
 
 	await loopEvt(needMKDirArr, parentPath, mkCallback)
 
 	if (doneCallback) doneCallback()
-	// console.log('Done!', x)
-	// let todo = url => {
-	// 	try {
-	// 		let isMS = fs.mkdirSync(url)
 
-	// 		if (!isMS) {
-				
-	// 			if(delayPath.length == 0) return;
-
-	// 			// 反向调用地址列表
-	// 			// 然后删除最初的那个
-	// 			let _toPath = (delayPath.reverse())[0]
-	// 			delayPath.shift()
-	// 			todo(_toPath)
-	// 		}
-	// 	} catch(err) {
-
-	// 		// 返回错误为无法生成时
-	// 		if (err.code === 'ENOENT') {
-
-	// 			delayPath.push(url);
-	// 			let _path = path.dirname(url)
-	// 			todo(_path)
-	// 		}
-	// 	}
-		
-	// }
-
-	// for (let i = 0, l = pathArr.length; i < l; i++) {
-	// 	todo(pathArr[i])
-	// }
-
-	// return true
 }
 
 module.exports = mkdirs;
@@ -85,7 +46,7 @@ function array2tree (arr) {
 	let obj = {}
 
 	arr.forEach( (val,i) => {
-		// console.log(typeof val, ' - ', val)
+
 		let innerArr = val.split('/')
 		let checkObj = obj
 

@@ -13,7 +13,7 @@ module.exports = function (app) {
 		return
 	});
 
-	// app.get('/@Workbench', r.makeHTMLPage )
+	app.get('/@Workbench', r.getAll)
 	// app.get('/server/toMake', r.makeHTMLPage )
 	app.get('/server/*', r.server)
 	app.get('/@/*', r.getWeb)

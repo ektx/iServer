@@ -12,6 +12,7 @@ const getIP = require('./getIPs')
 module.exports = async function (req, res) {
 	// 请求 API
 	let isAPI = false
+	let isWorkbench = req.url.startsWith('/@workbench')
 
 	// 请求以 '/api/' 开头的，我们默认为请求 api
 	if (req.url.startsWith('/api')) {
@@ -19,13 +20,18 @@ module.exports = async function (req, res) {
 		req.url = req.url.replace(/^\/api/i, '')
 	}
 
-	let filePath = path.join( process.cwd(), req.url)
+	let filePath = isWorkbench ? req.url : path.join( process.cwd(), req.url)
+console.log(filePath, 111, isWorkbench)
+
+	if (isWorkbench) {
+		sendFile(req, res, __dirname, 'INDEX')
+		return
+	}
 
 	try {
 
 		// 判断是文件还是文件夹
 		let rootFileStat = await statAsync(process.cwd(), req.url)
-
 		if (rootFileStat.stats.isFile()) {
 			sendFile(req, res, process.cwd(), req.url)
 		} 
@@ -51,7 +57,7 @@ module.exports = async function (req, res) {
 		}
 
 	} catch (err) {
-		res.status(404).send('404\r\n' + err)		
+		res.status(404).send('<h1>404</h1>' + err)		
 	}
 }
 

@@ -22,3 +22,32 @@
 	]
 }
 ```
+
+
+### 打开目录
+
+打开指定文件目录
+
+> /api/opendir
+
+#### 传参
+- path [string] 文件路径
+- name [string] 文件名
+
+#### 示例
+```javascript
+// 打开 /abc/def 文件夹
+fetch('/api/opendir', {
+	method: 'POST',
+	data: JSON.stringify({
+		path: 'abc/def',
+		name: 'def'
+	})	
+})
+.then(res => res.json())
+.then(res => {
+	//...
+})
+
+
+```
