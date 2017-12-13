@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
 const jade = require('pug');
-const imCss = require('im-css');
+const imCss = require('im-css')
+const UglifyJS = require('uglify-es')
 const cssnano = require('cssnano')
 
 const ifs = require('./ifiles');
@@ -12,6 +13,7 @@ const getModules = require('./getModule');
 const beautify_html = require('js-beautify').html;
 
 const statAsync = require('./statAsync')
+const writeFileAsync = require('./writeFileAsync')
 
 /*
 	socketEvent 
@@ -47,45 +49,54 @@ function socket (io) {
 			console.log('===================================')
 
 			let fromPath = path.join(process.cwd(), decodeURI(data.path))
+			fromPath = fromPath.endsWith('/') ? fromPath.slice(0, -1) : fromPath;
+
 			let address = {
 				origin: data.path,
 				from: fromPath,
 				to: fromPath + '_HTML'
 			}
+
 			let fileInfo = await statAsync(fromPath)
 
-			if (fileInfo.isDir) {
-
-				IOFindAllFilesInDir(address, true, socket)
+			// 用户输入文件夹不存在
+			if (fileInfo.code === 'ENOENT') {
+				sendIOErrorMsg(socket, {
+					msg: '此文件夹不存在!',
+					err: fileInfo
+				})
+				return
 			}
-			// if(LOCK_GENERATE) {
-			// 	socket.emit('generate info', { msg: '目前已经有项目在生成,你稍候再试!'});
 
-			// 	LOCK_GENERATE = false;
-			// } else {
-			// 	LOCK_GENERATE = true;
-			// 	let filePath = path.join(process.cwd(), decodeURI( data.path ) );
-			// 	let outPath = '';
-			// 	let proFiles = ifs.findDirFiles(filePath, true);
-
-			// }
-		});
+			// 目前只对目录进行优化操作
+			if (fileInfo.isDir) {
+				IODoWithDirPro(address, true, socket)
+			}
+		})
 	})
 
 }
 
 module.exports = socket;
 
-async function IOFindAllFilesInDir (address, deep, socket) {
-	console.log(address, deep)
+/*
+	处理文件夹项目
+	-----------------------------------------
+	@address 地址，项目的地址信息，包含 from 和 to
+	@deep 是否要处理文件夹内的子文件夹，默认 true
+	@socket 接口
+*/
+async function IODoWithDirPro (address, deep = true, socket) {
 
+	// 遍历文件夹
 	function loop (filePath) {
 		return new Promise ((resolve, reject) => {
 			let dirArr = []
 			let filesArr = []
 			
 			fs.readdir(filePath, async function(err, files) {
-				if (err) { 
+				if (err) {
+					console.log(err) 
 					resject({
 						msg: 'readir err',
 						err
@@ -94,34 +105,33 @@ async function IOFindAllFilesInDir (address, deep, socket) {
 				else {
 					
 					for (let val of files) {
-
 						// 过滤 Mac 上的以 . 命名的隐藏文件
-						if (val.startsWith('.')) return
+						if (!val.startsWith('.')) {
 
-						let fileInfo = await statAsync(filePath, val)
-						let extname = path.extname(val)
-						
-						fileInfo.to = fileInfo.path.replace(address.from, address.to)
-						fileInfo.from = fileInfo.path
-						delete fileInfo.path
-
-						if (fileInfo.isDir) {
-							socket.emit('WILL_GENERATE_FILE', fileInfo)
-
-							dirArr.push(fileInfo)
+							let fileInfo = await statAsync(filePath, val)
+							let extname = path.extname(val)
 							
-							if (deep) {
-								let backData = await loop(fileInfo.from, deep, socket)
-								dirArr = backData.dirArr.concat(dirArr)
-								filesArr = backData.filesArr.concat(filesArr)
+							fileInfo.to = fileInfo.path.replace(address.from, address.to)
+							fileInfo.from = fileInfo.path
+							delete fileInfo.path
+
+							if (fileInfo.isDir) {
+								socket.emit('WILL_GENERATE_FILE', fileInfo)
+
+								dirArr.push(fileInfo)
+								
+								if (deep) {
+									let backData = await loop(fileInfo.from, deep, socket)
+									dirArr = backData.dirArr.concat(dirArr)
+									filesArr = backData.filesArr.concat(filesArr)
+								}
+							} else {
+
+								filesArr.push(fileInfo)
+								// 目前只对 css html js 进行优化处理
+								socket.emit('WILL_GENERATE_FILE', fileInfo)
 							}
-						} else {
-
-							filesArr.push(fileInfo)
-							// 目前只对 css html js 进行优化处理
-							socket.emit('WILL_GENERATE_FILE', fileInfo)
 						}
-
 					}
 
 					resolve({
@@ -133,17 +143,17 @@ async function IOFindAllFilesInDir (address, deep, socket) {
 		})
 	}
 
+	// 处理文件夹
 	let backData = await loop(address.from)
-
+	// console.log('backData', backData)
 	let mkdirArr = []
 	// 地址父级目录
 	let toParentPath = path.dirname(address.to)
 
 	// 所有目录创建好后回调
-	let mkDoneCallback = function() {
-		console.log('Done!')
-		socket.emit('HELLO_WORLD', { msg: 'hhhh!'});
-	}
+	// let mkDoneCallback = function() {
+	// 	socket.emit('HELLO_WORLD', { msg: 'hhhh!'});
+	// }
 
 	// 单个文件夹创建好后回调
 	let mkdirDoneCallback = function(data) {
@@ -155,7 +165,7 @@ async function IOFindAllFilesInDir (address, deep, socket) {
 		mkdirArr.push( backData.dirArr[i].to.replace(toParentPath, '') )
 	}
 
-	await mkdir(mkdirArr, toParentPath, mkDoneCallback, mkdirDoneCallback)
+	await mkdir(mkdirArr, toParentPath, null, mkdirDoneCallback)
 
 	console.log('Ready dowith files ;)')
 
@@ -166,6 +176,10 @@ async function IOFindAllFilesInDir (address, deep, socket) {
 
 function IODoWithFileToGOOD(fileInfo, socket) {
 	let type = path.extname(fileInfo.from)
+	
+	let doneEvt = function () {
+		sendGenerateMakeFile(fileInfo.to, socket)
+	}
 
 	switch (type) {
 		case '.css':
@@ -173,27 +187,54 @@ function IODoWithFileToGOOD(fileInfo, socket) {
 			break;
 
 		case '.html':
-
+				streamFile(fileInfo.from, fileInfo.to, doneEvt)
 			break;
 
 		case '.js':
-
+				streamFile(fileInfo.from, fileInfo.to, doneEvt)
+				JSEvent(fileInfo.from, fileInfo.to, doneEvt)
 			break;
 
 		default:
-				let RS = fs.createReadStream(fileInfo.from)
-				let WS = fs.createWriteStream(fileInfo.to)
-
-				RS.pipe(WS)
-
-				RS.on('end', () => {
-					socket.emit('GENERATE_MAKE_FILE', fileInfo.to)
-				})			
+				streamFile(fileInfo.from, fileInfo.to, doneEvt)
 			break;
 	}
 }
 
+/*
+	socket 广播文件生成成功信息
+*/
+function sendGenerateMakeFile(to, socket) {
+	socket.emit('GENERATE_MAKE_FILE', to)
+}
 
+/*
+	错误处理通知
+
+	@socket 广播接口
+	@msg [string|object] 信息
+*/
+function sendIOErrorMsg(socket, msg) {
+	socket.emit('IO_ERROR_INFO', msg)
+}
+
+/*
+	nodejs 流传输文件
+*/
+function streamFile(from, to, callback) {
+	let RS = fs.createReadStream(from)
+	let WS = fs.createWriteStream(to)
+
+	RS.pipe(WS)	
+
+	RS.on('end', () => {
+		if (callback) callback()
+	})
+}
+
+/*
+	Css 优化处理工作
+*/
 function CSSEvent (from, to, socket) {
 	imCss({
 		entryFile: from,
@@ -209,7 +250,28 @@ function CSSEvent (from, to, socket) {
 			}
 		}
 	})
+}
 
+/*
+	Js 优化处理工作
+*/
+async function JSEvent (from, to, callback) {
+	let data = fs.readFileSync(from, 'utf8')
+	let result = UglifyJS.minify(data, {
+		sourceMap: {
+			url: path.basename(to) + '.map'
+		}
+	})
+
+	if ( result.error) {
+		console.log('Min js error ', error)
+		return
+	}
+
+	await writeFileAsync(to.replace(/js$/, 'min.js'), result.code)
+	await writeFileAsync(to +'.map', result.map)
+
+	if (callback) callback()
 }
 
 // =============== OLD Eevnt =======================
