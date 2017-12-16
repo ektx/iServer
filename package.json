@@ -12,10 +12,9 @@
 	},
 	"scripts": {},
 	"keywords": [
-		"server",
 		"node.js",
-		"http2",
-		"mongodb"
+		"server",
+		"http2"
 	],
 	"bin": {
 		"its": "index.js"
