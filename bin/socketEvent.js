@@ -106,7 +106,9 @@ async function IODoWithDirPro (address, deep = true, socket) {
 					
 					for (let val of files) {
 						// 过滤 Mac 上的以 . 命名的隐藏文件
-						if (!val.startsWith('.')) {
+						if (val.startsWith('.') || ['parts'].includes(val)) {
+							continue
+						} else {
 
 							let fileInfo = await statAsync(filePath, val)
 							let extname = path.extname(val)
@@ -169,42 +171,67 @@ async function IODoWithDirPro (address, deep = true, socket) {
 
 	console.log('Ready dowith files ;)')
 
+	let t = +new Date()
 	for (let i = 0, l = backData.filesArr.length; i < l; i++) {
-		IODoWithFileToGOOD( backData.filesArr[i], socket)
+		await IODoWithFileToGOOD( backData.filesArr[i], socket)
 	}
+	// let dealWithFile = backData.filesArr.map(file => IODoWithFileToGOOD(file, socket))
+	// await Promise.all(dealWithFile)
+	let usetime = +new Date - t
+	console.log('Use time:', usetime)
+
+	socket.emit('PROJECT_DONE_SUCCESS', {
+		success: true,
+		msg: 'Complete this project!项目完成!',
+		data: {
+			runtime: usetime
+		}
+	})
 }
 
 function IODoWithFileToGOOD(fileInfo, socket) {
-	let type = path.extname(fileInfo.from)
-	
-	let doneEvt = function () {
-		sendGenerateMakeFile(fileInfo.to, socket)
-	}
+	return new Promise((resolve, reject) => {
+		console.log('S', fileInfo.from)
+		let type = path.extname(fileInfo.from)
+		
+		let doneEvt = function () {
+			sendGenerateMakeFile(fileInfo.to, socket)
+			console.log('E', fileInfo.from)
+			resolve()
+		}
 
-	switch (type) {
-		case '.css':
-				CSSEvent(fileInfo.from, fileInfo.to, socket)
-			break;
+		switch (type) {
+			case '.css':
+					CSSEvent(fileInfo.from, fileInfo.to, socket, doneEvt)
+				break;
 
-		case '.html':
-				streamFile(fileInfo.from, fileInfo.to, doneEvt)
-			break;
+			case '.html':
+					streamFile(fileInfo.from, fileInfo.to, doneEvt)
+				break;
 
-		case '.js':
-				streamFile(fileInfo.from, fileInfo.to, doneEvt)
-				JSEvent(fileInfo.from, fileInfo.to, doneEvt)
-			break;
+			case '.js':
+					streamFile(fileInfo.from, fileInfo.to, doneEvt)
+					// streamFile(fileInfo.from, fileInfo.to)
+					// JSEvent(fileInfo.from, fileInfo.to, doneEvt)
+					JSEvent(fileInfo.from, fileInfo.to)
+				break;
 
-		default:
-				streamFile(fileInfo.from, fileInfo.to, doneEvt)
-			break;
-	}
+			default:
+					streamFile(fileInfo.from, fileInfo.to, doneEvt)
+				break;
+		}
+
+	}).catch(err => {
+		console.log('Error',err)
+		reject(err)
+	})
 }
 
 /*
 	socket 广播文件生成成功信息
 */
 function sendGenerateMakeFile(to, socket) {
+	console.log('send', +new Date(), to)
 	socket.emit('GENERATE_MAKE_FILE', to)
 }
 
@@ -235,18 +262,18 @@ function streamFile(from, to, callback) {
 /*
 	Css 优化处理工作
 */
-function CSSEvent (from, to, socket) {
+function CSSEvent (from, to, socket, callback) {
 	imCss({
 		entryFile: from,
 		outFile: to,
 		min: true,
 		callback: {
 			out: (r)=> {
-				socket.emit('GENERATE_MAKE_FILE', to)
+				callback()
 			},
 
 			min: r => {
-				console.log(r)
+				console.log('css min', r)
 			}
 		}
 	})
