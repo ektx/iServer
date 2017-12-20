@@ -37,10 +37,8 @@ async function serverInit (req, res) {
 		req.url = req.url.replace(/^\/api/i, '')
 	}
 
-	let filePath = isWorkbench ? req.url : path.join( process.cwd(), req.url)
+	let filePath = isWorkbench ? req.path : path.join( process.cwd(), req.path)
 	let extname = path.extname(filePath)
-
-	console.log(filePath, 111, isWorkbench)
 
 	if (isWorkbench) {
 		sendFile(req, res, __dirname, 'INDEX')
@@ -50,7 +48,7 @@ async function serverInit (req, res) {
 	try {
 
 		// 判断是文件还是文件夹
-		let rootFileStat = await statAsync(process.cwd(), req.url)
+		let rootFileStat = await statAsync(process.cwd(), req.path)
 
 		// 对于文件我们发送给用户
 		if (rootFileStat.stats.isFile()) {
@@ -73,7 +71,7 @@ async function serverInit (req, res) {
 					break;
 
 				default:
-					sendFile(req, res, process.cwd(), req.url)
+					sendFile(req, res, process.cwd(), req.path)
 			}
 			
 		} 
