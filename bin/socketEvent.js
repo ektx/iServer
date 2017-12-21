@@ -209,10 +209,24 @@ function IODoWithFileToGOOD(fileInfo, socket) {
 					streamFile(fileInfo.from, fileInfo.to, doneEvt)
 				break;
 
+			case '.ejs':
+					fs.readFile(fileInfo.from, 'utf8', async (err, data) => {
+						if (err) {
+							console.log(err);
+							reject(err)
+							return;
+						}
+
+						let html = ejs.render(data, {filename: fileInfo.from})
+
+						await writeFileAsync(fileInfo.to.replace(/\.ejs$/, '.html'), html)
+
+						doneEvt()
+					})
+				break;
+
 			case '.js':
 					streamFile(fileInfo.from, fileInfo.to, doneEvt)
-					// streamFile(fileInfo.from, fileInfo.to)
-					// JSEvent(fileInfo.from, fileInfo.to, doneEvt)
 					JSEvent(fileInfo.from, fileInfo.to)
 				break;
 

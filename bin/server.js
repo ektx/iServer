@@ -56,17 +56,7 @@ async function serverInit (req, res) {
 
 			switch (extname) {
 				case '.ejs':
-					// fs.readFile(rootFileStat.path, 'utf8', (err, data) => {
-					// 	if (err) {
-					// 		res.stats(204).send('<h4>204</h4>' + err)
-					// 		return;
-					// 	}
-
-					// 	let html = ejs.render(data, {filename: rootFileStat.path})
-
-					// 	console.log(html)
-
-					// })
+					
 					res.render(rootFileStat.path)
 					break;
 
