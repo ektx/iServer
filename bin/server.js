@@ -37,7 +37,8 @@ async function serverInit (req, res) {
 		req.url = req.url.replace(/^\/api/i, '')
 	}
 
-	let filePath = isWorkbench ? req.path : path.join( process.cwd(), req.path)
+	let decodeReqPath = decodeURIComponent(req.path)
+	let filePath = isWorkbench ? req.path : path.join( process.cwd(), decodeReqPath)
 	let extname = path.extname(filePath)
 
 	if (isWorkbench) {
@@ -48,8 +49,7 @@ async function serverInit (req, res) {
 	try {
 
 		// 判断是文件还是文件夹
-		let rootFileStat = await statAsync(process.cwd(), req.path)
-
+		let rootFileStat = await statAsync(process.cwd(), decodeReqPath)
 		// 对于文件我们发送给用户
 		if (rootFileStat.stats.isFile()) {
 			let fileInner = ''
@@ -61,7 +61,7 @@ async function serverInit (req, res) {
 					break;
 
 				default:
-					sendFile(req, res, process.cwd(), req.path)
+					sendFile(req, res, process.cwd(), decodeReqPath)
 			}
 			
 		} 
