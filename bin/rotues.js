@@ -21,6 +21,7 @@ module.exports = function (app) {
 
 	app.post('/api/opendir', toOpenPath)
 	app.post('/server/zipfile', r.tool_zipdownload )
+	app.post('/iproxy-url=*', r.iproxy)
 
 	app.post('*', r.postAll)
 	app.get('*', r.getAll)
