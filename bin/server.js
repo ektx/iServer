@@ -87,13 +87,41 @@ async function serverInit (req, res) {
 		}
 
 	} catch (err) {
-		// 对于访问 html 的文件，如果不存在的话，我们让他试试其它后缀名访问看看
-		if (['.html'].includes(extname)) {
-			// 这里我们推荐访问 .ejs 后缀名文件
-			req.url = req.url.replace('.html', '.ejs')
-			serverInit(req, res)
-		} else {
-			res.status(404).send('<h1>404</h1>' + err)		
+
+		let send404 = function() {
+			res.status(404).send('<h1>404</h1>' + err)
+		}
+
+		// 迷你文件转换处理
+		let minFile = function(type) {
+			if (filePath.endsWith(`.min${type}`)) {
+				// 这里我们推荐访问 .ejs 后缀名文件
+				req.url = req.url.replace(`.min${type}`, type)
+				serverInit(req, res)
+			} else {
+				send404()
+			}
+		}
+
+		switch (extname) {
+			// 对于访问 html 的文件，如果不存在的话
+			// 我们让他试试其它后缀名访问看看
+			case '.html':
+				// 这里我们推荐访问 .ejs 后缀名文件
+				req.url = req.url.replace('.html', '.ejs')
+				serverInit(req, res)
+				break;
+
+			case '.css':
+				minFile('.css')
+				break;
+
+			case '.js':
+				minFile('.js')
+				break;
+
+			default:
+				send404()
 		}
 	}	
 }

@@ -5,6 +5,7 @@ const url = require('url')
 const ejs = require('ejs')
 const path = require('path')
 const http  = require('http')
+const queryStrring = require('querystring')
 const colors  = require('colors')
 const server  = require('./server')
 const JSZip   = require('jszip')
@@ -67,10 +68,41 @@ exports.iproxy = (req, res) => {
 	// 当用户使用的是 http 请求的后端时,我们可以简单的代理
 	else {
 
-		http.get(encodeURI(proxyUrl), (xres)=> {
-			xres.setEncoding('utf8');
-			xres.pipe(res);
-		})
+		let methodLowerCase = req.method.toLocaleLowerCase()
+
+		// POST
+		if (methodLowerCase === 'post') {
+
+			let bodyContent = queryStrring.stringify(req.body)
+			let myUrl = url.parse(proxyUrl)
+			let options = {
+				hostname: myUrl.hostname,
+				port: myUrl.port || 80,
+				path: myUrl.path,
+				method: req.method
+			}
+
+			// 模拟 form 的 POST 提交
+			options.headers = {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				// 字节长度
+				'Content-Length': Buffer.byteLength(bodyContent, 'utf8')
+			}
+
+			let xreq = http.request(options, (xres) => {
+				xres.pipe(res)
+			})
+
+			xreq.write(bodyContent)
+			xreq.end()
+		} 
+		// GET
+		else {
+			http.get(encodeURI(proxyUrl), (xres)=> {
+				xres.setEncoding('utf8');
+				xres.pipe(res);
+			})
+		}
 		
 	}
 

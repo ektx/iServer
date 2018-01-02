@@ -2,10 +2,17 @@
 
 本地静态服务器，通过浏览器快捷管理文件服务。
 
+## 更新
+- `IMPROVED` 优化代理功能，添加对 POST 的模拟支持  
+- `IMPROVED` 增加对 min 文件的引用支持
+
 ## 功能      
 
 - 静态服务器
 - 模块化项目开发
+	- 支持对 min 文件不存在时，自动查询引用对应完整文件功能  
+	- 支持对html 文件不存在时，自动查询 ejs 模板文件
+	- 支持工作台生成输入html文件（ejs > html）
 - JavaScript、Css文件压缩
 - 在浏览器中实现文件管理器
 
@@ -45,6 +52,11 @@ its -h
 npm unlink
 ```
 
+## 代理使用
+```javascript
+// 代理访问 google
+fetch('/iproxy-url=https://google.com', ...)
+```
 
 ## 相关资料  
 
