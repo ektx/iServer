@@ -14,7 +14,7 @@ module.exports = function (app) {
 	});
 
 	app.get('/@Workbench', r.getAll)
-	// app.get('/server/toMake', r.makeHTMLPage )
+	app.get('/get-iserver-ip', r.serverIP)
 	app.get('/server/*', r.server)
 	app.get('/@/*', r.getWeb)
 	app.get('/iproxy-url=*', r.iproxy)

@@ -214,3 +214,15 @@ function toZipdownload(req, res) {
 	addZipFile();
 	console.log( zipFilePathArr.length )
 }
+
+
+/*
+	获取服务器IP
+	--------------------------------------
+	客户端获取功能	
+*/
+exports.serverIP = function (req, res) {
+	res.send({
+		mes: IP.getIPs()
+	})
+}
