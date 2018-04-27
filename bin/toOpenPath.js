@@ -27,7 +27,7 @@ module.exports = async function (req, res) {
 	let platform = os.platform()
 	let openPath = path.dirname(req.body.path)
 	let stat = await statAsync(openPath, req.body.name)
-	
+
 	// 如果没有文件	
 	if (stat.code === 'ENOENT') {
 		return res.send({
@@ -45,15 +45,17 @@ module.exports = async function (req, res) {
 	openPath = openPath.replace(/\s/g, '\\ ');
 
 	if ( IP.getClientIP(req).isServer ) {
-		if ( platform === 'darwin') {
-			exec('open '+ openPath)
-		} 
-		else if ( platform === 'linux2' ) {
-			exec('nautilus '+openPath)
-		}
-		else if ( platform === 'win32' ) {
-			openPath = openPath.replace(/\//g, '\\');
-			exec('explorer '+ openPath)
+		switch (platform) {
+			case 'darwin':
+				exec(`open ${openPath}`)
+				break;
+			case 'linux2':
+				exec(`nautilus ${openPath}`)
+				break;
+			case 'win32':
+				openPath = openPath.replace(/\//g, '\\');
+				exec(`explorer ${openPath}`)
+				break;
 		}
 	}
 
