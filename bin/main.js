@@ -44,8 +44,8 @@ module.exports = function (options) {
 		// http2 使用的证书，你可以自己重新生成
 		// 这里只是示例
 		const sslOptions = {
-			key: fs.readFileSync(path.join(__dirname, '../ssl/iserver.pem')),
-			cert: fs.readFileSync(path.join(__dirname, '../ssl/iserver-cert.pem'))
+			key: fs.readFileSync(path.join(__dirname, '../ssl/its.pem')),
+			cert: fs.readFileSync(path.join(__dirname, '../ssl/its-cert.pem'))
 		}
 
 		server = https.createServer(sslOptions, app);
