@@ -31,6 +31,6 @@ if ((typeof program.port === 'boolean' && program.port) || !program.port) {
 main({
 	browser: !program.browser ? false : program.browser,
 	port: program.port,
-	version: version,
+	version,
 	https: !program.http
 })
