@@ -1,25 +1,25 @@
 
-const fs      = require('fs');
-const http    = require('http');
-const https	  = require('https');
-const path    = require('path');
-const express = require('express');
-const bodyParser = require('body-parser');
-const colors  = require('colors');
+const fs = require('fs')
+const http = require('http')
+const spdy = require('spdy')
+const path = require('path')
+const colors = require('colors')
+const express = require('express')
+const bodyParser = require('body-parser')
 
-const IP  = require('./getIPs');
-const open    = require('./open');
-const rotues  = require('./rotues');
-const parseURL  = require('./parseURL');
+const IP = require('./getIPs')
+const open = require('./open')
+const rotues = require('./rotues')
+const parseURL = require('./parseURL')
 const socketEvt = require('./socketEvent')
 
-const app = express();
+const app = express()
 let io  = ''
 
 // 设置示图页面
-app.set('views', path.resolve(__dirname, '../server') )
+// app.set('views', path.resolve(__dirname, '../server') )
 
-app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
+app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
 
 // parse application/json 
 app.use(bodyParser.json())
@@ -27,13 +27,12 @@ app.use(bodyParser.json())
 // GBK URL中文乱码问题
 app.use(parseURL)
 
-
 module.exports = function (options) {
 	
 	serverInfo(options)
 
-	let	serverPort = options.port;
-	let server;
+	let	serverPort = options.port
+	let server
 	
 	// 使用路由
 	rotues(app);
@@ -48,7 +47,7 @@ module.exports = function (options) {
 			cert: fs.readFileSync(path.join(__dirname, '../ssl/its-cert.pem'))
 		}
 
-		server = https.createServer(sslOptions, app);
+		server = spdy.createServer(sslOptions, app)
 
 	} else {
 		console.log('🌈  Start HTTP Server ...'.yellow)
@@ -62,7 +61,7 @@ module.exports = function (options) {
 
 	server.listen(serverPort, function() {
 		console.log('🎉  Start completed!'.green)
-		console.log('================================='.rainbow)
+		console.log('='.repeat(49).rainbow)
 		if (options.browser) {
 			open(
 				(options.https ? 'https':'http') +`://${IP.getIPs().IPv4.public}:${serverPort}`,
@@ -81,10 +80,10 @@ module.exports = function (options) {
 
 
 function serverInfo (options) {
-	console.log('================================='.rainbow)
-	console.log('📦  iTools ')
-	console.log('📃  ' + `v ${options.version}`)
+	console.log('='.repeat(49).rainbow)
+	console.log('📦' +  'iTools'.padStart(48,' '))
+	console.log('📃' + ('v '+ options.version).padStart(47, ' '))
 	console.log('✨  '+ 'Welcome To Use !')
-	console.log('---------------------------------'.rainbow)
+	console.log('-'.repeat(49).rainbow)
 }
 

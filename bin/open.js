@@ -4,10 +4,8 @@
   在浏览器中打开网址
 */
 
-var exec = require('child_process').exec
-  , path = require('path')
-  ;
-
+const exec = require('child_process').exec
+const path = require('path')
 
 /**
  * 说明
@@ -19,44 +17,47 @@ var exec = require('child_process').exec
  * https://github.com/pwnall/node-open
  */
 
-module.exports = openBrowser;
-
 function open(target, appName) {
-    var opener;
+    let opener
 
-    if (appName == 'ie' || appName == 'IE') appName = 'iexplore';
+    if (/ie/i.test(appName)) {
+        appName = 'iexplore'
+    }
+    else if (/chrome/i.test(appName)) {
+        appName = 'google chrome'
+    }
 
     switch (process.platform) {
         case 'darwin':
             if (appName) {
-                opener = 'open -a "' + escape(appName) + '"';
+                opener = `open -a "${escape(appName)}"`
             } else {
-                opener = 'open';
+                opener = 'open'
             }
             break;
         case 'win32':
             // if the first parameter to start is quoted, it uses that as the title
             // so we pass a blank title so we can quote the file we are opening
             if (appName) {
-                opener = 'start "" "' + escape(appName) + '"';
+                opener = `start "" "${escape(appName)}"`
             } else {
-                opener = 'start ""';
+                opener = `start ""`
             }
-            break;
+            break
         default:
             if (appName) {
-                opener = escape(appName);
+                opener = escape(appName)
             } else {
                 // use Portlands xdg-open everywhere else
                 opener = path.join(__dirname, '../vendor/xdg-open');
             }
-            break;
+            break
     }
 
     if (process.env.SUDO_USER) {
-        opener = 'sudo -u ' + process.env.SUDO_USER + ' ' + opener;
+        opener = `sudo -u ${process.env.SUDO_USER} ${opener}`
     }
-    return exec(opener + ' "' + escape(target) + '"');
+    return exec(`${opener} "${escape(target)}"`)
 }
 
 function escape(s) {
@@ -69,10 +70,8 @@ function escape(s) {
     --------------------------------------
 
 */
-function openBrowser(url, browserName) {
-
-    if (typeof browserName == 'boolean') browserName = ''
+module.exports = function (url, browserName) {
+    browserName = typeof browserName === 'boolean' ? '' : browserName
 
     open(url, browserName)
-
 }
