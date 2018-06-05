@@ -12,7 +12,11 @@
 	- 支持工作台生成输入html文件（ejs > html）
 - JavaScript、Css文件压缩
 - 在浏览器中实现文件管理器
-- 支持 readme.md 文件查看
+- 支持 readme.md 文件查看, markdown 文件预览
+
+![](http://wx1.sinaimg.cn/large/9444af88gy1fs0cpa1e3og20mb0hrnje.gif)
+
+[markdown文件预览]
 
 ## 安装
 
