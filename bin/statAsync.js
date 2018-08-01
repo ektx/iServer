@@ -2,24 +2,15 @@
 const fs = require('fs')
 const path = require('path')
 
-/*
-	异步读取文件的状态情况
-	@filePath [string] 文件父母路径
-	@file [string] 文件名
-*/
-module.exports = function (filePath, file) {
+/**
+ * 异步读取文件的文件具体信息
+ * @param {string} filePath 文件绝对路径
+ */
+module.exports = function (filePath) {
 	return new Promise((resolve, reject) => {
+        let file = path.basename(filePath)
 
-		let absolutePath = ''
-
-		if (file)
-			absolutePath = path.join(filePath, file)
-		else {
-			absolutePath = filePath
-			file = path.basename(filePath)
-		}
-
-		fs.stat(absolutePath, (err, stats) => {
+		fs.stat(filePath, (err, stats) => {
 			if (err) {
 				reject(err)
 			}
@@ -29,11 +20,11 @@ module.exports = function (filePath, file) {
 					// 文件名
 					file,
 					// 绝对路径
-					path: absolutePath,
+					path: filePath,
 					// 是否为文件夹
 					isDir: stats.isDirectory(),
 					// 状态信息
-					stats
+					stats: {...stats}
 				})
 			}
 		})

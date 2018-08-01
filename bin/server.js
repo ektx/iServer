@@ -1,8 +1,6 @@
 
 const fs = require('fs')
 const path = require('path')
-const ejs = require('ejs')
-const colors = require('colors')
 const sendFile = require('./sendFile')
 const statAsync = require('./statAsync')
 const getIP = require('./getIPs')
@@ -50,20 +48,16 @@ async function serverInit (req, res) {
 
 		// 判断是文件还是文件夹
 		let rootFileStat = await statAsync(process.cwd(), decodeReqPath)
+		console.log(rootFileStat)
 		// 对于文件我们发送给用户
 		if (rootFileStat.stats.isFile()) {
-			let fileInner = ''
-
 			switch (extname) {
 				case '.ejs':
-					
 					res.render(rootFileStat.path)
 					break;
-
 				default:
 					sendFile(req, res, process.cwd(), decodeReqPath)
 			}
-			
 		} 
 		else if (rootFileStat.stats.isDirectory()) {
 
