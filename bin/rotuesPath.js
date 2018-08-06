@@ -1,14 +1,12 @@
 // 路径对应请求
-const fs = require('fs')
-const os = require('os')
+const fs = require('fs-extra')
 const url = require('url')
-const ejs = require('ejs')
 const path = require('path')
 const http  = require('http')
 const queryStrring = require('querystring')
-const colors  = require('colors')
 const server  = require('./server')
 const JSZip   = require('jszip')
+const { httpLog } = require('./signale')
 
 const IP  = require('./getIPs')
 
@@ -33,17 +31,22 @@ exports.root = (req, res) => {
 	内部资源目前存放在 ../web 目录中
 */
 exports.getWeb = function (req, res) {
-	console.log('%s %s %s', req.method.bgGreen.white, new Date().toLocaleString().grey, decodeURI(req.url) );
-	sendFile(req, res, __dirname, req.url.replace(/^\/@/, '../web'))
+	httpLog.get(decodeURI(req.url))
+	let url = path.join(__dirname, req.url.replace(/^\/@/, '../web'))
+	sendFile(url, req, res)
 }
 
 
 // 所有get * 请求
 exports.getAll = (req, res) => {
-	console.log('%s %s %s', req.method.bgGreen.white, new Date().toLocaleString().blue, decodeURI(req.url) );
-
+	httpLog.get(decodeURI(req.url))
 	server(req, res)
-};
+}
+
+exports.home = (req, res) => {
+	let url = path.join(__dirname, '../web/index.html')
+	sendFile(url, req, res)
+}
 
 // 服务器内部文件请求
 exports.server = (req, res) => {
@@ -120,29 +123,6 @@ exports.postAll = (req, res) => {
 
 
 /*
-	make
-	-----------------------------------
-	归属: tool
-	说明: 用于生成页面
-*/
-exports.makeHTMLPage = (req, res) => {
-	fs.readFile( path.join(__dirname, '../server/make.ejs'), 'utf8', (err, data) => {
-		if (err) {
-			console.log(err);
-			res.send(err);
-			return;
-		}
-
-		let html = ejs.render( data )
-
-		res.send( html )
-		
-	} )
-
-}
-
-
-/*
 	工具 - 打包压缩文件
 	---------------------------------
 	将当前的文件目录打包并下载
@@ -213,16 +193,4 @@ function toZipdownload(req, res) {
 	// 压缩文件
 	addZipFile();
 	console.log( zipFilePathArr.length )
-}
-
-
-/*
-	获取服务器IP
-	--------------------------------------
-	客户端获取功能	
-*/
-exports.serverIP = function (req, res) {
-	res.send({
-		mes: IP.getIPs()
-	})
 }

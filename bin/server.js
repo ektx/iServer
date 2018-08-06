@@ -1,5 +1,5 @@
 
-const fs = require('fs')
+const fs = require('fs-extra')
 const path = require('path')
 const sendFile = require('./sendFile')
 const statAsync = require('./statAsync')
@@ -27,45 +27,26 @@ function readdirAsync(filePath) {
 async function serverInit (req, res) {
 	// 请求 API
 	let isAPI = false
-	let isWorkbench = req.url.startsWith('/@workbench')
 
 	// 请求以 '/api/' 开头的，我们默认为请求 api
-	if (req.url.startsWith('/api')) {
+	if (req.url.startsWith('/api/')) {
 		isAPI = true
-		req.url = req.url.replace(/^\/api/i, '')
+		req.url = req.url.slice(4)
 	}
 
 	let decodeReqPath = decodeURIComponent(req.path)
-	let filePath = isWorkbench ? req.path : path.join( process.cwd(), decodeReqPath)
+	let filePath = path.join(process.cwd(), decodeReqPath)
 	let extname = path.extname(filePath)
 
-	if (isWorkbench) {
-		sendFile(req, res, __dirname, 'INDEX')
-		return
-	}
-
 	try {
-
-		// 判断是文件还是文件夹
 		let rootFileStat = await statAsync(process.cwd(), decodeReqPath)
-		console.log(rootFileStat)
-		// 对于文件我们发送给用户
-		if (rootFileStat.stats.isFile()) {
-			switch (extname) {
-				case '.ejs':
-					res.render(rootFileStat.path)
-					break;
-				default:
-					sendFile(req, res, process.cwd(), decodeReqPath)
-			}
-		} 
-		else if (rootFileStat.stats.isDirectory()) {
 
+		if (rootFileStat.isDir) {
 			if (isAPI) {
 				let files = await readdirAsync(filePath)
 			
 				let childrenPathPromises = files.map(file => 
-					statAsync(filePath, file)
+					statAsync(path.join(filePath, file))
 				)
 
 				childrenInfo = await Promise.all(childrenPathPromises) 
@@ -78,6 +59,8 @@ async function serverInit (req, res) {
 			else {
 				sendFile(req, res, __dirname, 'INDEX')
 			}
+		} else {
+			sendFile(req, res, process.cwd(), decodeReqPath)
 		}
 
 	} catch (err) {
@@ -98,21 +81,13 @@ async function serverInit (req, res) {
 		}
 
 		switch (extname) {
-			// 对于访问 html 的文件，如果不存在的话
-			// 我们让他试试其它后缀名访问看看
-			case '.html':
-				// 这里我们推荐访问 .ejs 后缀名文件
-				req.url = req.url.replace('.html', '.ejs')
-				serverInit(req, res)
-				break;
-
 			case '.css':
 				minFile('.css')
-				break;
+				break
 
 			case '.js':
 				minFile('.js')
-				break;
+				break
 
 			default:
 				send404()

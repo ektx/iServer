@@ -25,8 +25,7 @@ module.exports = async function(filePath, req, res) {
         let end = partialEnd ? parseInt(partialEnd, 10) : total -1
         let chunkSize = (end - start) + 1
 
-        console.log(`RANGE: ${start} - ${end} = ${chunkSize}
-${'-'.repeat(50)}`)
+        console.log(`RANGE: ${start} - ${end} = ${chunkSize}${'-'.repeat(50)}`)
 
         res.setHeader('Content-Type', fileType)
 
