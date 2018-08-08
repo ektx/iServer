@@ -1,13 +1,11 @@
 // 路径对应请求
-const fs = require('fs-extra')
 const url = require('url')
 const path = require('path')
 const http  = require('http')
 const queryStrring = require('querystring')
 const server  = require('./server')
-const JSZip   = require('jszip')
 const { httpLog } = require('./signale')
-
+const zip = require('./ZipFiles')
 const IP  = require('./getIPs')
 
 const sendFile = require('./sendFile')
@@ -43,16 +41,10 @@ exports.getAll = (req, res) => {
 	server(req, res)
 }
 
-exports.home = (req, res) => {
-	let url = path.join(__dirname, '../web/index.html')
-	sendFile(url, req, res)
-}
-
 // 服务器内部文件请求
 exports.server = (req, res) => {
-
 	server(req, res, {serverRootPath: __dirname.replace('bin', '') });
-};
+}
 
 
 /*
@@ -127,70 +119,16 @@ exports.postAll = (req, res) => {
 	---------------------------------
 	将当前的文件目录打包并下载
 */
-exports.tool_zipdownload = ( req, res) => {
-	toZipdownload(req, res);	
-}
-
+exports.tool_zipdownload = zip
 
 
 /*
-	压缩输出
-	------------------------------
+	获取服务器IP
+	--------------------------------------
+	客户端获取功能	
 */
-function toZipdownload(req, res) {
-
-	let zipFilePathArr = [];
-	let zipFolderPathArr = [];
-
-	let dealWithPath = (_filePath) => {
-
-		let statsData = fs.statSync(_filePath);
-		let filter = ['.DS_Store'];
-		
-		if (statsData.isFile()) {
-			if ( !/\.DS_Store/.test(_filePath) ){
-				zipFilePathArr.push(_filePath);
-			}
-		} 
-		else if (statsData.isDirectory()) {
-			let files = fs.readdirSync(_filePath);
-
-			zipFolderPathArr.push(_filePath);
-
-			for(let i = 0, l = files.length; i < l; i++) {
-				dealWithPath(path.join(_filePath, files[i]))
-			}
-		}
-
-	}
-
-	let addZipFile = () => {
-
-		let zip = new JSZip();
-
-		res.setHeader('Content-Type','application/zip');
-
-		zipFilePathArr.forEach( file => {
-			console.log(file)
-			let stream = fs.createReadStream(file);
-			file = file.replace(path.join(process.cwd(), req.body.filePath), '');
-			zip.file(file, stream)
-		})
-
-		zipFolderPathArr.forEach( folder => {
-			folder = folder.replace(path.join(process.cwd(), req.body.filePath), '');
-			zip.folder(folder)
-		})
-	
-		zip
-		.generateNodeStream({type:'nodebuffer', streamFiles:true})
-		.pipe(res)
-
-	}
-
-	// 取地址
-	dealWithPath( path.join(process.cwd(), req.body.filePath) );
-	// 压缩文件
-	addZipFile();
-	console.log( zipFilePathArr.length )
+exports.serverIP = function (req, res) {
+	res.send({
+		mes: IP.getIPs()
+	})
 }

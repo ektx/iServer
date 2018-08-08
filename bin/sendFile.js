@@ -13,7 +13,7 @@ const resDefHeader = require('./resDefHeader')
 module.exports = async function(filePath, req, res) {
     let fileInfo = await statAsync(filePath)
     let fileType = mime.getType(filePath)
-    
+
     if (req.headers['range']) {
         let {stats} = fileInfo
         let {size: total} = stats
@@ -25,7 +25,7 @@ module.exports = async function(filePath, req, res) {
         let end = partialEnd ? parseInt(partialEnd, 10) : total -1
         let chunkSize = (end - start) + 1
 
-        console.log(`RANGE: ${start} - ${end} = ${chunkSize}${'-'.repeat(50)}`)
+        console.log(`RANGE: ${start} - ${end} = ${chunkSize}`)
 
         res.setHeader('Content-Type', fileType)
 
@@ -44,7 +44,7 @@ module.exports = async function(filePath, req, res) {
         let webHeaderOption = resDefHeader(fileType)
         let stream = fs.createReadStream(filePath)
 
-        stream.on('error', function() {
+        stream.on('error', function () {
             res.status(505).send('Server Error!')
         })
 
