@@ -39,7 +39,9 @@ async function serverInit (req, res) {
 	let extname = path.extname(filePath)
 
 	try {
-		let rootFileStat = await statAsync(process.cwd(), decodeReqPath)
+		let rootFileStat = await statAsync(path.join(process.cwd(), decodeReqPath))
+
+		if (rootFileStat.code === 'ENOENT') throw Error(rootFileStat)
 
 		if (rootFileStat.isDir) {
 			if (isAPI) {
@@ -57,10 +59,11 @@ async function serverInit (req, res) {
 				})
 			}
 			else {
-				sendFile(req, res, __dirname, 'INDEX')
+				let url = path.join(__dirname, '../web/index.html')
+				sendFile(url, req, res)
 			}
 		} else {
-			sendFile(req, res, process.cwd(), decodeReqPath)
+			sendFile(filePath, req, res)
 		}
 
 	} catch (err) {

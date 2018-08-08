@@ -1,7 +1,3 @@
-
-const fs = require('fs-extra')
-const path = require('path')
-
 const r = require('./rotuesPath')
 const toOpenPath = require('./toOpenPath')
 
@@ -12,11 +8,10 @@ module.exports = function (app) {
 		return
 	})
 
-	// app.get('/get-iserver-ip', r.serverIP)
+	app.get('/get-iserver-ip', r.serverIP)
 	app.get('/server/*', r.server)
 	app.get('/@/*', r.getWeb)
 	app.get('/iproxy-url=*', r.iproxy)
-	app.get('/', r.home)
 
 	app.post('/api/opendir', toOpenPath)
 	app.post('/server/zipfile', r.tool_zipdownload )

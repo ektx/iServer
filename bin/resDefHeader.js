@@ -8,7 +8,7 @@ module.exports = function resHeaders (type = 'text/plain') {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': `${type};charset="utf8"`,
         'x-xss-protection': '1; mode=block',
-        'Server': 'workman 0.1'
+        'Server': 'iServer 3'
     }
     let cacheType = [
         'image/jpeg',
