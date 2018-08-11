@@ -5,7 +5,7 @@ const spdy = require('spdy')
 const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
-const open = require('opn')
+const open = require('./open')
 const colors = require('colors')
 
 const IP = require('./getIPs')
@@ -15,9 +15,6 @@ const socketEvt = require('./socketEvent')
 const { signale, interactive } = require('./signale')
 
 const app = express()
-
-// 设置示图页面
-// app.set('views', path.resolve(__dirname, '../server') )
 
 app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
 
@@ -74,5 +71,4 @@ module.exports = function (options) {
 			interactive.error('[%d/2] 当前端口被占用，请重试', 2)
 		}
 	})
-
 }
