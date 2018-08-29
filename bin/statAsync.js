@@ -8,7 +8,8 @@ const path = require('path')
  */
 module.exports = function (filePath) {
 	return new Promise((resolve, reject) => {
-        let file = path.basename(filePath)
+		let file = path.basename(filePath)
+		let extname = path.extname(file)
 
 		fs.stat(filePath, (err, stats) => {
 			if (err) {
@@ -19,6 +20,8 @@ module.exports = function (filePath) {
 				resolve({
 					// 文件名
 					file,
+					// 后缀名
+					extname,
 					// 绝对路径
 					path: filePath,
 					// 是否为文件夹
