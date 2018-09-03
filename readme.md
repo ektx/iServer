@@ -5,10 +5,9 @@
 ## 功能      
 
 - 静态服务器
-- 模块化项目开发
-	- 支持对 min 文件不存在时，自动查询引用对应完整文件功能  
+- 支持部分文件的直接预览
+- 支持智能选择文件  
 - 在浏览器中实现文件管理器
-- 支持 readme.md 文件查看, markdown 文件预览
 
 ![](http://wx1.sinaimg.cn/large/9444af88gy1fs0cpa1e3og20mb0hrnje.gif)
 
@@ -47,11 +46,6 @@ its -h
 npm unlink
 ```
 
-## 代理使用
-```javascript
-// 代理访问 google
-fetch('/iproxy-url=https://google.com', ...)
-```
 
 ## 相关资料  
 
