@@ -12,7 +12,7 @@ program
 	.option('-s, --http', '启动 HTTP 协议,默认启用 HTTPS')
 
 program.on('--help', () => {
-	console.log('  例如:  启动服务器并打开默认浏览器: its -p 9000 -b\n')
+	console.log('  例如:  启动服务器并打开默认浏览器: iserver -p 9000 -b\n')
 })
 
 program.parse(process.argv)

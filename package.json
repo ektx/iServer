@@ -1,6 +1,6 @@
 {
-	"name": "i-server",
-	"version": "6.0.0",
+	"name": "iservers",
+	"version": "7.0.0",
 	"author": {
 		"name": "ektx",
 		"email": "530675800@qq.com"
@@ -18,7 +18,7 @@
 		"http2"
 	],
 	"bin": {
-		"its": "index.js"
+		"iserver": "index.js"
 	},
 	"dependencies": {
 		"body-parser": "^1.18.3",
