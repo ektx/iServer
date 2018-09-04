@@ -9,8 +9,9 @@
 - 支持智能选择文件  
 - 在浏览器中实现文件管理器
 - 支持二维码访问
+- 支持滚动历史记录
 
-![](http://wx1.sinaimg.cn/large/9444af88gy1fs0cpa1e3og20mb0hrnje.gif)
+![](http://wx3.sinaimg.cn/large/9444af88gy1fuxazeqwtcj20go0c5abm.jpg)
 
 ## 安装
 
