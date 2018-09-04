@@ -25,6 +25,7 @@ app.use(bodyParser.json())
 app.use(parseURL)
 
 module.exports = function (options) {
+	console.log('='.repeat(40))
 	signale.cli('iServer')
 	signale.version(options.version)
 
@@ -58,12 +59,24 @@ module.exports = function (options) {
 	server.listen(serverPort, function() {
 		interactive.success('[%d/2] 服务启动完成', 2)
 
+		let IPs = IP.getIPs()
+		let IP4 = IPs.IPv4.public
+		let web = options.https ? 'https':'http'
+
 		if (options.browser) {
 			open(
-				(options.https ? 'https':'http') +`://${IP.getIPs().IPv4.public}:${serverPort}`,
+				`${web}://${IP4}:${serverPort}`,
 				options.browser
 			)
 		}
+
+		console.log(`
+你可以通过以下地址访问服务:
+
+  ${web}://localhost:${serverPort}
+  ${web}://${IP4}:${serverPort}
+
+`)
 	})
 
 	server.on('error', e => {
