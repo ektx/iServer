@@ -3,37 +3,26 @@
 本地静态服务器，通过浏览器快捷管理文件服务。
 
 ## 功能      
-
-- 静态服务器
 - 支持部分文件的直接预览
-- 支持智能选择文件  
-- 在浏览器中实现文件管理器
-- 支持二维码访问
+- 支持打开本地文件目录
+- 支持快速复制文件目录  
+- 支持预览图片
+- 支持 markdown 文件浏览
+- 支持使用二维码快速访问
 - 支持滚动历史记录
 
 ![](http://wx3.sinaimg.cn/large/9444af88gy1fuxazeqwtcj20go0c5abm.jpg)
 
 ## 安装
-
-```Shell
+```bash
 npm i -g iservers
-
-# 使用github (use github)
-# 1. 克隆(clone)
-git clone https://github.com/ektx/iServer.git
-cd iServer
-# 2. 安装依赖 (install package)
-npm i
-# 3. 建立本地命名 (make node server)
-npm link
 ```
 
 
 ## 使用
-
-```Shell
+```bash
 # 进入你想要作用服务器根目录的地址:
-cd your_existing_folder
+cd yourExistingFolder
 
 # 启动:
 # 启动8000端口并在浏览器中打开服务器根目录
@@ -44,13 +33,22 @@ iserver -h
 ```
 
 ## 卸装
-```sh
+```bash
 npm uni -g iservers
-
-# with github
-# 进入 iServer 克隆目录
-npm unlink
 ```
+
+## 功能展示 
+### 文件预览
+可以对 html\css\js等文件文件直接查看
+![](http://wx2.sinaimg.cn/large/9444af88gy1fvnwqla3aig20lw0e7jv3.gif)
+
+### 打开本地文件
+在你查看的项目文件时，可以快速的打开本地地址。
+![](http://wx3.sinaimg.cn/large/9444af88gy1fvnwqugwvsg20lw0e7jyt.gif)
+
+### 复制文件路径
+你可以使用右键然后选择**复制当前路径**快速得到文件地址，然后可以在你要使用的地方，粘贴出来
+![](http://wx1.sinaimg.cn/mw690/9444af88gy1fvnwr0ttkaj20h60dkq3v.jpg)
 
 
 ## 相关资料  
