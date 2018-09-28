@@ -51,6 +51,16 @@ npm uni -g iservers
 ![](http://wx1.sinaimg.cn/mw690/9444af88gy1fvnwr0ttkaj20h60dkq3v.jpg)
 
 
+## 属性说明
+**iserver [options]**
+
+| 属性 | 类型 | 说明 | 默认值 |
+|:---:|:---:|:---:|:---:|
+| -p | number | 端口 | - |
+| -s | boolean | 是否要使用 https | true |
+| -b | [chrome|firefox|ie|opera] | 指定打开浏览器 | 默认浏览器 |
+
+
 ## 相关资料  
 
 查看 [node.js](https://nodejs.org/)  
