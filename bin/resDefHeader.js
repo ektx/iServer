@@ -1,3 +1,5 @@
+const pack = require('../package.json')
+
 /**
  * 默认网页头设置
  * @param {string}  type 文件类型 
@@ -8,7 +10,7 @@ module.exports = function resHeaders (type = 'text/plain') {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': `${type};charset="utf8"`,
         'x-xss-protection': '1; mode=block',
-        'Server': 'iServer 3'
+        'Server': `iServer ${pack.version}` 
     }
     let cacheType = [
         'image/jpeg',
