@@ -14,6 +14,10 @@ module.exports = async function(filePath, req, res) {
     let fileInfo = await statAsync(filePath)
     let fileType = mime.getType(filePath)
 
+    if (!fileType) {
+        return res.status(505).send('Not Find This File Type!')
+    }
+
     if (req.headers['range']) {
         let {stats} = fileInfo
         let {size: total} = stats
