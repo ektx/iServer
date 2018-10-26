@@ -1,5 +1,11 @@
 # iServer
 
+## 7.3.0 更新内容
+- `NEW` 修改marked 支持 [TOC] 功能
+- `NEW` 支持锚定位功能
+- `IMPROVED` 优化 h1~6的功能与显示
+- `IMPROVED` 优化 http/https 开头的a标签添加打开空白页面的功能
+
 ## 7.2.0
 
 - `NEW` 添加了自己的 logo 🎊
