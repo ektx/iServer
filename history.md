@@ -1,5 +1,10 @@
 # iServer
 
+## 7.3.2 更新内容
+- `IMPROVED` 修复访问某些文件类型导致系统崩溃问题。
+- `IMPROVED` 修复 markdown 标题如果有连接生成错误问题
+- `IMPROVED` 修复浏览器前进后退失效问题
+
 ## 7.3.0 更新内容
 - `NEW` 修改marked 支持 [TOC] 功能
 - `NEW` 支持锚定位功能

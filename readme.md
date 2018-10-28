@@ -4,10 +4,13 @@
 
 [TOC]
 
-## 7.3.2 更新内容
-- `IMPROVED` 修复访问某些文件类型导致系统崩溃问题。
-- `IMPROVED` 修复 markdown 标题如果有连接生成错误问题
-- `IMPROVED` 修复浏览器前进后退失效问题
+## 7.4.0 更新内容
+- `NEW` 添加对.eslintrc 支持
+- `NEW` 添加服务器对.gitignore文件支持
+- `FIXED` 修复地址栏路径非/结尾页面报错问题
+- `FIXED` 添加对txt的显示
+- `FIXED` 修复对 vue 文件的支持
+- `IMPROVED` 优化标题显示功能
 
 ## 功能      
 - 支持部分文件的直接预览
@@ -45,6 +48,7 @@ npm uni -g iservers
 ```
 
 ## 功能展示 
+
 ### 文件预览
 可以对 html\css\js等文件文件直接查看
 ![](http://wx2.sinaimg.cn/large/9444af88gy1fvnwqla3aig20lw0e7jv3.gif)
