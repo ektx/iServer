@@ -51,7 +51,7 @@ npm uni -g iservers
 
 ### 文件预览
 可以对 html\css\js等文件文件直接查看
-![](http://wx2.sinaimg.cn/large/9444af88gy1fvnwqla3aig20lw0e7jv3.gif)
+![](http://wx3.sinaimg.cn/large/9444af88ly1fwo814cgurg20lw0e70w9.gif)
 
 ### 打开本地文件
 在你查看的项目文件时，可以快速的打开本地地址。
@@ -66,10 +66,10 @@ npm uni -g iservers
 **iserver [options]**
 
 | 属性 | 类型 | 说明 | 默认值 |
-|:---:|:---:|:---:|:---:|
-| -p | number | 端口 | - |
-| -s | boolean | 是否要使用 https | true |
-| -b | [chrome|firefox|ie|opera] | 指定打开浏览器 | 默认浏览器 |
+|:---:|:---|:---|:---|
+| `-p` | `number` | 端口 | - |
+| `-s` | `boolean` | 是否要使用 https | true |
+| `-b` | `[chrome\|firefox\|ie\|opera]` | 指定打开浏览器 | 默认浏览器 |
 
 
 ## 相关资料  
