@@ -1,5 +1,13 @@
 # iServer
 
+## 7.4.0 更新内容
+- `NEW` 添加对.eslintrc 支持
+- `NEW` 添加服务器对.gitignore文件支持
+- `FIXED` 修复地址栏路径非/结尾页面报错问题
+- `FIXED` 添加对txt的显示
+- `FIXED` 修复对 vue 文件的支持
+- `IMPROVED` 优化标题显示功能
+
 ## 7.3.2 更新内容
 - `IMPROVED` 修复访问某些文件类型导致系统崩溃问题。
 - `IMPROVED` 修复 markdown 标题如果有连接生成错误问题
