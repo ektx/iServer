@@ -4,13 +4,11 @@
 
 [TOC]
 
-## 7.4.0 更新内容
-- `NEW` 添加对.eslintrc 支持
-- `NEW` 添加服务器对.gitignore文件支持
-- `FIXED` 修复地址栏路径非/结尾页面报错问题
-- `FIXED` 添加对txt的显示
-- `FIXED` 修复对 vue 文件的支持
-- `IMPROVED` 优化标题显示功能
+## 7.5.0 更新内容
+- `NEW` 添加高亮hash地址显示功能
+- `IMPROVED` 升级右键菜单功能
+- `IMPROVED` 优化markdown 文档
+- `FIXED` 修复二级码生成文件地址错误问题
 
 ## 功能      
 - 支持部分文件的直接预览
@@ -61,6 +59,9 @@ npm uni -g iservers
 你可以使用右键然后选择**复制当前路径**快速得到文件地址，然后可以在你要使用的地方，粘贴出来
 ![](http://wx1.sinaimg.cn/mw690/9444af88gy1fvnwr0ttkaj20h60dkq3v.jpg)
 
+### LightView
+高亮hash定位内容，让你更容易看到内容。
+![](http://wx3.sinaimg.cn/large/9444af88gy1fxd6cp076ag20q90hzq9m.gif)
 
 ## 属性说明
 **iserver [options]**
