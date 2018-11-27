@@ -1,5 +1,8 @@
 # iServers 
 
+A simple server developed using nodeJS.
+使用nodeJS开发的简单服务器。
+
 本地静态服务器，通过浏览器快捷管理文件服务。
 
 [TOC]
