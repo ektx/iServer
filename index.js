@@ -17,16 +17,12 @@ program.on('--help', () => {
 
 program.parse(process.argv)
 
-// 如果没有输入端口或是只输入了端口名并没有添加端口号时,默认为 8000
-if ((typeof program.port === 'boolean' && program.port) || !program.port) {
-	program.port = 8000
-} else {
-	program.port = parseInt(program.port)
-}
+// 默认端口为 8000
+program.port = typeof program.port === 'string' ? parseInt(program.port) : 8000
 
 // 启动
 main({
-	browser: !program.browser ? false : program.browser,
+	browser: Boolean(program.browser),
 	port: program.port,
 	version,
 	https: !program.http
