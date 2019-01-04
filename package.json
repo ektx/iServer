@@ -1,6 +1,6 @@
 {
 	"name": "iservers",
-	"version": "7.5.0",
+	"version": "7.5.1",
 	"author": {
 		"name": "ektx",
 		"email": "530675800@qq.com"
@@ -34,9 +34,9 @@
 		"multer": "^1.2.0",
 		"rimraf": "^2.6.2",
 		"shelljs": "^0.7.5",
-		"signale": "^1.2.1",
+		"signale": "^1.3.0",
 		"socket.io": "^2.1.1",
-		"spdy": "^3.4.7",
+		"spdy": "^4.0.0",
 		"tar-pack": "^3.1.4",
 		"tinify": "^1.3.0",
 		"uglify": "^0.1.5",

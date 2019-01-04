@@ -8,8 +8,6 @@ mime.define({
     'text/vue': ['vue', 'VUE']
 })
 
-const myTextType = ['.gitignore', '.eslintrc']
-  
 /**
  * 发送文件功能
  * @param {string} filePath 绝对文件地址
@@ -20,12 +18,8 @@ module.exports = async function(filePath, req, res) {
     let fileInfo = await statAsync(filePath)
     let fileType = mime.getType(filePath)
     
-    if (!fileType && myTextType.includes(fileInfo.file)) {
-        fileType = 'text/plain'
-    }
-
     if (!fileType) {
-        return res.status(505).send('Not Find This File Type!')
+        fileType = 'text/plain'
     }
 
     if (req.headers['range']) {

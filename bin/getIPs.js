@@ -2,8 +2,8 @@
 const os = require('os')
 
 function getIPs () {
-	let ipv4s = {};
-	let ipv6s = [];
+	let ipv4s = {}
+	let ipv6s = []
 	let ifaces = os.networkInterfaces();
 
 	for (let i in ifaces) {
