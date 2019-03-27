@@ -7,6 +7,10 @@ A simple server developed using nodeJS.
 
 [TOC]
 
+## 7.5.2 更新内容
+- `FIXED` 修改ip获取不正确问题
+
+
 ## 7.5.0 更新内容
 - `NEW` 添加高亮hash地址显示功能
 - `IMPROVED` 升级右键菜单功能
