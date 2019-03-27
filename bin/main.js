@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 const open = require('./open')
 const colors = require('colors')
 
-const IP = require('./getIPs')
+const ips = require('./getIPs')
 const rotues = require('./rotues')
 const parseURL = require('./parseURL')
 const socketEvt = require('./socketEvent')
@@ -56,11 +56,11 @@ module.exports = function (options) {
 	// socket io
 	socketEvt(require('socket.io')(server))
 
-	server.listen(serverPort, function() {
+	server.listen(serverPort, async () => {
 		interactive.success('[%d/2] 服务启动完成', 2)
 
-		let IPs = IP.getIPs()
-		let IP4 = IPs.IPv4.public
+		let serverIP = await ips.server()
+		let IP4 = serverIP.IPv4
 		let web = options.https ? 'https':'http'
 
 		if (options.browser) {
