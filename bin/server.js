@@ -46,16 +46,15 @@ async function serverInit (req, res) {
 		if (rootFileStat.isDir) {
 			if (isAPI) {
 				let files = await readdirAsync(filePath)
+				let { isServer: server } = await getIP.getClientIP(req)
 			
 				let childrenPathPromises = files.map(file => 
 					statAsync(path.join(filePath, file))
 				)
 
-				childrenInfo = await Promise.all(childrenPathPromises) 
-
 				res.send({
-					server: getIP.getClientIP(req).isServer,
-					data: childrenInfo
+					server,
+					data: await Promise.all(childrenPathPromises)
 				})
 			}
 			else {

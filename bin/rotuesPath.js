@@ -121,14 +121,10 @@ exports.postAll = (req, res) => {
 */
 exports.tool_zipdownload = zip
 
-
-/*
-	获取服务器IP
-	--------------------------------------
-	客户端获取功能	
-*/
-exports.serverIP = function (req, res) {
-	res.send({
-		mes: IP.getIPs()
-	})
+/**
+ * 客户端获取服务器IP
+ * @send {IPv6: '', IPv4: ''}
+ */
+exports.serverIP = async function (req, res) {
+	res.send(await IP.server())
 }
