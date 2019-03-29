@@ -1,5 +1,11 @@
 # iServer
 
+## 7.6.0
+- `NEW` 添加对 Gzip 的支持
+- `IMPROVED` 修复获取服务器IP错误问题
+- `IMPROVED` 优化Markdown显示
+- `IMPROVED` 优化服务器显示信息
+
 ## 7.4.0 更新内容
 - `NEW` 添加对.eslintrc 支持
 - `NEW` 添加服务器对.gitignore文件支持
