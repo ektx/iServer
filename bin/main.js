@@ -75,10 +75,10 @@ module.exports = function (options) {
 		}
 
 		console.log(`
-你可以通过以下地址访问服务:
+Server Running at:
 
-  ${web}://localhost:${serverPort}
-  ${web}://${IP4}:${serverPort}
+  - Local:   ${web}://localhost:${serverPort}
+  - Network: ${web}://${IP4}:${serverPort}
 
 `)
 	})
