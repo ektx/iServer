@@ -8,7 +8,7 @@ module.exports = function resHeaders (type = 'text/plain') {
     let option = {
         // 容许跨域请求 * 表示所有,你可以指定具体的域名可以访问
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': `${type};charset="utf8"`,
+        'Content-Type': `${type}; charset=UTF-8`,
         'x-xss-protection': '1; mode=block',
         'Server': `iServer ${pack.version}` 
     }

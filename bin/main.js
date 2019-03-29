@@ -6,6 +6,7 @@ const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
 const open = require('./open')
+const compression = require('compression')
 const colors = require('colors')
 
 const ips = require('./getIPs')
@@ -23,6 +24,9 @@ app.use(bodyParser.json())
 
 // GBK URL中文乱码问题
 app.use(parseURL)
+
+// Gzip
+app.use(compression())
 
 module.exports = function (options) {
 	console.log('='.repeat(40))
