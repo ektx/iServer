@@ -10,19 +10,6 @@ const IP  = require('./getIPs')
 
 const sendFile = require('./sendFile')
 
-
-// 访问 / [get]
-exports.root = (req, res) => {
-	// 默认访问根目录时,如果用户登录过则进入用户中心
-	if (req.session.act) {
-		res.redirect('/'+req.session.act)
-	} 
-	// 没有登录过则是进入登录页面
-	else {
-		res.render('login')
-	}
-}
-
 /*
 	请求服务器内部资源
 	-----------------------------------
