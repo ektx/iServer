@@ -17,7 +17,7 @@ mime.define({
 module.exports = async function(filePath, req, res) {
     let fileInfo = await statAsync(filePath)
     let fileType = mime.getType(filePath)
-    
+
     if (!fileType) {
         fileType = 'text/plain'
     }
