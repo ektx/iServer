@@ -22,3 +22,5 @@ yarn-error.log
 
 # windows
 Thumbs.db
+
+*.mp4
