@@ -1,91 +1,56 @@
-
+// V8
 const fs = require('fs-extra')
 const http = require('http')
-const spdy = require('spdy')
+const http2 = require('http2')
 const path = require('path')
-const express = require('express')
-const bodyParser = require('body-parser')
-const open = require('./open')
-const compression = require('compression')
-const colors = require('colors')
+const Koa = require('koa')
+const routes = require('./myRoutes')
 
-const ips = require('./getIPs')
-const rotues = require('./rotues')
-const parseURL = require('./parseURL')
-const socketEvt = require('./socketEvent')
-const { signale, interactive } = require('./signale')
+const app = new Koa()
 
-const app = express()
+app.use(routes)
 
-app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
-
-// parse application/json 
-app.use(bodyParser.json())
-
-// GBK URL中文乱码问题
-app.use(parseURL)
-
-// Gzip
-app.use(compression())
-
-module.exports = function (options) {
-	console.log('='.repeat(40))
-	signale.cli('iServer')
-	signale.version(options.version)
-
-	let	serverPort = options.port
+module.exports = function (opts) {
 	let server = null
 	
-	// 使用路由
-	rotues(app)
-
-	if (options.https) {
-		interactive.await('[%d/2] 启动 HTTP 服务中...', 1)
-
-		// http2 使用的证书，你可以自己重新生成
-		// 这里只是示例
-		const sslOptions = {
+	if (opts.https) {
+		const sslOpts = {
 			key: fs.readFileSync(path.join(__dirname, '../ssl/its.pem')),
 			cert: fs.readFileSync(path.join(__dirname, '../ssl/its-cert.pem'))
 		}
 
-		server = spdy.createServer(sslOptions, app)
-
+		server = http2.createSecureServer(sslOpts, app.callback())
 	} else {
-		interactive.await('[%d/2] 启动 HTTPS 服务中...', 1)
-
-		server = http.createServer(app)
+		server = http.createServer(app.callback())
 	}
-
-	// socket io
-	socketEvt(require('socket.io')(server))
-
-	server.listen(serverPort, async () => {
-		interactive.success('[%d/2] 服务启动完成', 2)
-
-		let serverIP = await ips.server()
-		let IP4 = serverIP.IPv4
-		let web = options.https ? 'https':'http'
-
-		if (options.browser) {
-			open(
-				`${web}://${IP4}:${serverPort}`,
-				options.browser
-			)
-		}
-
-		console.log(`
-Server Running at:
-
-  - Local:   ${web}://localhost:${serverPort}
-  - Network: ${web}://${IP4}:${serverPort}
-
-`)
+	// console.log(opts)
+	app.use(async (ctx, next) => {
+		await next()
+		const rt = ctx.response.get('X-Response-Time')
+		console.log(`${ctx.method} ${rt} - ${ctx.url}`)
 	})
 
-	server.on('error', e => {
-		if (e.code === 'EADDRINUSE') {
-			interactive.error('[%d/2] 当前端口被占用，请重试', 2)
-		}
+	// X-Response-Time
+	app.use(async (ctx, next) => {
+		const start = Date.now()
+		await next()
+		const ms = Date.now() - start
+		ctx.set('X-Response-Time', `${ms}ms`)
 	})
+
+	// CROS
+	app.use(async (ctx, next) => {
+		// const allowMethos = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
+		await next()
+		ctx.set('Access-Control-Allow-Origin', '*')
+		ctx.set('Access-Control-Max-Age', 86400)
+		ctx.set('Access-Control-Allow-Methods', ctx.method)
+	})
+	
+	// server info
+	app.use(async (ctx, next) => {
+		ctx.set('Server', `iServer ${opts.version}`)
+	})
+
+	server.listen(3000)
 }

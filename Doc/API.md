@@ -1,28 +1,20 @@
 # API
 
 ### 目录请求
+| 地址 | 请求方式 | 备注 |
+| --- | :---: | ---|
+| `api/*` | `GET` | 获取相应的目录下文件列表 |
 
-请求指定目录，返回目录信息
+返回当前目录下的文件列表信息
+| 参数 | 类型 | 备注 |
+| --- | :---: | ---|
+| name | String | 文件名 |
+| path | String | 文件在系统中的位置 |
+| isDir | Boolean | 是否为文件夹 |
+| type | String | 文件类型 |
+| stat | Object | 文件的具体信息 |
 
-> /api/your_ask_path
-
-```javascript
-// 请求根目录
-// http://localhost:9000/
-
-{
-	server: true, // true 表示访问终端与服务器是同一台设备
-	data: [
-		{
-			file: 'workman', // 名称
-			isDir: true,     // 表示是文件夹
-			path: '/Sites/workman', // 服务器上绝对路径
-			stats: {} 				// 文件的相关信息
-		}
-	]
-}
-```
-
+> stat 返回的是 fs.stat 所有信息，具体查看：[Class: fs.Stats](https://nodejs.org/dist/latest-v11.x/docs/api/fs.html#fs_class_fs_stats)
 
 ### 打开目录
 
