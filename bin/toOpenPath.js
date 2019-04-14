@@ -1,11 +1,9 @@
-
+const fs = require('fs-extra')
 const os = require('os')
-const path = require('path')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 
 const IP  = require('./getIPs')
-const statAsync = require('./statAsync')
 
 /*
 	打开文件目录功能
@@ -21,44 +19,41 @@ const statAsync = require('./statAsync')
 		name: 'def'
 	}
 */
-module.exports = async function (req, res) {
-
+module.exports = async function (ctx, file) {
 	let platform = os.platform()
-	let openPath = path.dirname(req.body.path)
-	let stat = await statAsync(openPath, req.body.name)
+	let stat = await fs.stat(file)
 
 	// 如果没有文件	
 	if (stat.code === 'ENOENT') {
-		return res.send({
-			success: false,
-			mes: stat
-		})
+		return ctx.body = {
+			success: false, 
+			mes: 'Not Find Anything!' 
+		}
 	}
 
 	// 正常情况
-	if ( stat.isDir ) {
-		openPath = req.body.path
+	if ( stat.isDirectory() ) {
+		console.log('is Dir')
 	}
+	console.log(file)
 
 	// 处理空格
-	openPath = openPath.replace(/\s/g, '\\ ');
+	file = file.replace(/\s/g, '\\ ');
 
-	if ((await IP.getClientIP(req)).isServer ) {
+	if ((await IP.getClientIP(ctx)).isServer ) {
 		switch (platform) {
 			case 'darwin':
-				exec(`open ${openPath}`)
+				exec(`open ${file}`)
 				break;
 			case 'linux2':
-				exec(`nautilus ${openPath}`)
+				exec(`nautilus ${file}`)
 				break;
 			case 'win32':
-				openPath = openPath.replace(/\//g, '\\');
-				exec(`explorer ${openPath}`)
+				file = file.replace(/\//g, '\\');
+				exec(`explorer ${file}`)
 				break;
 		}
 	}
 
-	res.send({
-		success: true
-	})
+	ctx.body = { success: true }
 }
