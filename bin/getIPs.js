@@ -13,9 +13,12 @@ async function getMacAdd () {
 	})
 }
 
+/**
+ * 获取当前服务器的 IP
+ * @returns 返回 IPv4 与 IPv6
+ */
 async function getIPs () {
-	let mac = await getMacAdd()
-
+	const mac = await getMacAdd()
 	const ip = {}
 	const ips = os.networkInterfaces()
 	
@@ -32,23 +35,19 @@ async function getIPs () {
 
 exports.server = getIPs
 
-/*
-	得到客户端 IP
-	--------------------------
-*/
-async function getClientIP (req) {
-
-	let isServer = false;
-	let ip = req.headers['x-forwarded-for'] ||
-			req.connection.remoteAddress ||
-			req.socket.remoteAddress ||
-			req.connection.socket.remoteAddress;
+/**
+ * 得到客户端 IP
+ * @param {Context} ctx koa context
+ */
+async function getClientIP (ctx) {
+	let isServer = false
+	let ip = ctx.request.ip
 
 	if (['::ffff:127.0.0.1', '127.0.0.1','::1'].includes(ip))
 		isServer = true
 	else {
 		ip = ip.match(/\d.+/)[0]; 
-		isServer = await getIPs().IPv4 === ip;
+		isServer = await getIPs().IPv4 === ip
 	}
 
 	return {
@@ -57,4 +56,4 @@ async function getClientIP (req) {
 	}
 }
 
-exports.getClientIP = getClientIP;
+exports.getClientIP = getClientIP

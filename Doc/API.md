@@ -1,9 +1,15 @@
 # API
 
-### 目录请求
+## 目录请求
 | 地址 | 请求方式 | 备注 |
 | --- | :---: | ---|
-| `api/*` | `GET` | 获取相应的目录下文件列表 |
+| `api/getFilePath` | `GET` | 获取相应的目录下文件列表 |
+
+请求参数
+| 参数 | 类型 | 备注 | 示例 |
+| --- | :---: | ---| --- |
+| path | String | 文件夹地址 | 访问根目录文件列表:<br/>api/getFilePath?path=/ |
+
 
 返回当前目录下的文件列表信息
 | 参数 | 类型 | 备注 |
@@ -16,30 +22,20 @@
 
 > stat 返回的是 fs.stat 所有信息，具体查看：[Class: fs.Stats](https://nodejs.org/dist/latest-v11.x/docs/api/fs.html#fs_class_fs_stats)
 
-### 打开目录
 
-打开指定文件目录
+## 打开目录
+| 地址 | 请求方式 | 备注 |
+| --- | :---: | ---|
+| `api/opendir` | `GET` | 获取相应的目录下文件列表 |
 
-> /api/opendir
-
-#### 传参
-- path [string] 文件路径
-- name [string] 文件名
-
-#### 示例
-```javascript
-// 打开 /abc/def 文件夹
-fetch('/api/opendir', {
-	method: 'POST',
-	data: JSON.stringify({
-		path: 'abc/def',
-		name: 'def'
-	})	
-})
-.then(res => res.json())
-.then(res => {
-	//...
-})
+请求参数
+| 参数 | 类型 | 备注 | 示例 |
+| --- | :---: | ---| --- |
+| path | String | 文件夹地址 | 打开服务器根目录:<br/>api/opedirn?path=/ |
 
 
-```
+返回当前目录下的文件列表信息
+| 参数 | 类型 | 备注 |
+| --- | :---: | ---|
+| success | Boolean | 成功失败 |
+| mes | String | 失败时返回失败信息 |

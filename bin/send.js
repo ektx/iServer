@@ -22,6 +22,8 @@ async function send (ctx, file, opts = {}) {
     const immutable = opts.immutable || false
     const maxage = opts.maxage || 0
 
+    ctx.path = decode(ctx.path)
+
     if (file === -1) return ctx.throw(400, 'failed to decode')
 
     let encodingExt = ''
@@ -45,8 +47,8 @@ async function send (ctx, file, opts = {}) {
         encodingExt = '.gz'
     }
 
-    // console.log('encodingExt:', encodingExt)
-    // console.log('extensions:', extensions)
+    console.log('encodingExt:', encodingExt)
+    console.log('extensions:', extensions)
     // 以扩展名来获取指定文件
     if (extensions && !/\.[^/]*$/.exec(file)) {
         const list = [...extensions]
@@ -72,6 +74,13 @@ async function send (ctx, file, opts = {}) {
         stats = await fs.stat(file)
 
         if (stats.isDirectory()) {
+            console.log('isDir', opts.from)
+
+            if (opts.from && opts.from === '*') {
+                ctx.redirect('/')
+                return
+            }
+
             let fileList = await fs.readdir(file)
 
             fileList = fileList.map(async val => {
@@ -124,4 +133,12 @@ async function send (ctx, file, opts = {}) {
  */
 function type (file, ext) {
     return ext !== '' ? extname(basename(file, ext)) : extname(file)
+}
+
+function decode (path) {
+    try {
+        return decodeURIComponent(path)
+    } catch (err) {
+        return -1
+    }
 }
