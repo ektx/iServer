@@ -47,8 +47,8 @@ async function send (ctx, file, opts = {}) {
         encodingExt = '.gz'
     }
 
-    console.log('encodingExt:', encodingExt)
-    console.log('extensions:', extensions)
+    // console.log('encodingExt:', encodingExt)
+    // console.log('extensions:', extensions)
     // 以扩展名来获取指定文件
     if (extensions && !/\.[^/]*$/.exec(file)) {
         const list = [...extensions]
@@ -74,8 +74,6 @@ async function send (ctx, file, opts = {}) {
         stats = await fs.stat(file)
 
         if (stats.isDirectory()) {
-            console.log('isDir', opts.from)
-
             if (opts.from && opts.from === '*') {
                 ctx.redirect('/')
                 return
