@@ -1,3 +1,4 @@
+// V8
 const fs = require('fs-extra')
 const os = require('os')
 const util = require('util')
@@ -53,7 +54,11 @@ module.exports = async function (ctx, file) {
 				exec(`explorer ${file}`)
 				break;
 		}
+		ctx.body = { success: true }
+	} else {
+		ctx.body = {
+			success: false,
+			mes: 'Sorry! Your Can\'t!'
+		}
 	}
-
-	ctx.body = { success: true }
 }
