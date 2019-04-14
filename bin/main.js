@@ -8,8 +8,6 @@ const routes = require('./myRoutes')
 
 const app = new Koa()
 
-app.use(routes)
-
 module.exports = function (opts) {
 	let server = null
 	
@@ -23,7 +21,9 @@ module.exports = function (opts) {
 	} else {
 		server = http.createServer(app.callback())
 	}
-	// console.log(opts)
+
+	app.use(routes)
+
 	app.use(async (ctx, next) => {
 		await next()
 		const rt = ctx.response.get('X-Response-Time')
