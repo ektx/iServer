@@ -1,6 +1,7 @@
 // V8
 const fs = require('fs-extra')
 const os = require('os')
+const path = require('path')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 
@@ -33,10 +34,9 @@ module.exports = async function (ctx, file) {
 	}
 
 	// 正常情况
-	if ( stat.isDirectory() ) {
-		console.log('is Dir')
+	if ( !stat.isDirectory() ) {
+		file = path.dirname(file)
 	}
-	console.log(file)
 
 	// 处理空格
 	file = file.replace(/\s/g, '\\ ');
