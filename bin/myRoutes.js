@@ -5,6 +5,7 @@ const path = require('path')
 const router = new Router()
 const send = require('./send')
 const opendir = require('./toOpenPath')
+const { getClientIP } = require('./getIPs')
 
 router
     .get('/favicon.ico', async (ctx, next) => {
@@ -26,8 +27,10 @@ router
         let file = ctx.query.path ? ctx.query.path : process.cwd()
         await opendir(ctx, file)
     })
+    .get('/api/isServer', async ctx => {
+        ctx.body = (await getClientIP(ctx)).isServer
+    })
     .get('*', async ctx => {
-        console.log('>>>', ctx.ip)
         let file = path.join(process.cwd(), ctx.path)
         await send(ctx, file, {from: '*'})
     })
