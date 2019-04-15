@@ -1,15 +1,17 @@
-// V8
 const fs = require('fs-extra')
 const http = require('http')
 const http2 = require('http2')
 const path = require('path')
 const Koa = require('koa')
 const routes = require('./myRoutes')
+const open = require('./open')
+const { getIPs } = require('./getIPs')
 
 const app = new Koa()
 
-module.exports = function (opts) {
+module.exports = async function (opts) {
 	let server = null
+	let serverIP = await getIPs()
 	
 	if (opts.https) {
 		const sslOpts = {
@@ -52,5 +54,18 @@ module.exports = function (opts) {
 		ctx.set('Server', `iServer ${opts.version}`)
 	})
 
-	server.listen(3000)
+	server.listen(opts.port, async () => {
+		let protocol = opts.https ? 'https' : 'http'
+		let local = `${protocol}://localhost:${opts.port}`
+		let network = `${protocol}://${serverIP.IPv4}:${opts.port}
+		`
+		console.log(`\niServer v${opts.version}`)
+		console.log(`Server Running at:\n`)
+		console.log(`  - Local:   ${local}`)
+		console.log(`  - Network: ${network}`)
+
+		if (opts.browser) {
+			open(local, opts.browser)
+		}
+	})
 }

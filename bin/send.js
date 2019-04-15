@@ -1,4 +1,4 @@
-// V8 https://github.com/koajs/send/blob/master/index.js
+// https://github.com/koajs/send/blob/master/index.js
 const fs = require('fs-extra')
 const path = require('path')
 const assert = require('assert')
