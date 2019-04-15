@@ -1,4 +1,3 @@
-// V8
 const fs = require('fs-extra')
 
 /**

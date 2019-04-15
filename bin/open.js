@@ -64,14 +64,13 @@ function escape(s) {
     return s.replace(/"/g, '\\\"');
 }
 
+/**
+ * 在浏览器中打开页面
+ * @param {string} url url地址
+ * @param {string} name 浏览器名称
+ */
+module.exports = function (url, name) {
+    name = typeof name === 'boolean' ? '' : name
 
-/*
-    在浏览器中打开页面
-    --------------------------------------
-
-*/
-module.exports = function (url, browserName) {
-    browserName = typeof browserName === 'boolean' ? '' : browserName
-
-    open(url, browserName)
+    open(url, name)
 }

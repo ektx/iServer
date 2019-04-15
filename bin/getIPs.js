@@ -1,4 +1,3 @@
-// V8
 const os = require('os')
 const macaddress = require('macaddress')
 
@@ -34,7 +33,7 @@ async function getIPs () {
 	return ip
 }
 
-exports.server = getIPs
+exports.getIPs = getIPs
 
 /**
  * 得到客户端 IP
