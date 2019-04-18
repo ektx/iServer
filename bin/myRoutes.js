@@ -3,7 +3,7 @@ const path = require('path')
 const router = new Router()
 const send = require('./send')
 const opendir = require('./toOpenPath')
-const { getClientIP } = require('./getIPs')
+const { getClientIP, getIPs } = require('./getIPs')
 
 router
     .get('/favicon.ico', async (ctx, next) => {
@@ -21,7 +21,7 @@ router
         let file = path.join(__dirname, ctx.path.replace('/@', '../web'))
         await send(ctx, file)
     })
-    .get('/api/getFileList', async (ctx, next) => {
+    .get('/api/filelist', async (ctx, next) => {
         ctx.$next = true
         await next()
         let file = path.join(process.cwd(), ctx.query.path)
@@ -37,6 +37,11 @@ router
         ctx.$next = true
         await next()
         ctx.body = (await getClientIP(ctx)).isServer
+    })
+    .get('/api/serverip', async (ctx, next) => {
+        ctx.$next = true
+        await next()
+        ctx.body = (await getIPs())
     })
     .get('*', async (ctx, next) => {
         if (ctx.$next) {
