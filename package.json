@@ -23,29 +23,11 @@
 	"dependencies": {
 		"assert": "^1.4.1",
 		"body-parser": "^1.18.3",
-		"colors": "^1.3.1",
 		"commander": "^2.20.0",
-		"compression": "^1.7.4",
-		"cssnano": "^3.10.0",
-		"express": "5.0.0-alpha.7",
-		"express-session": "^1.15.6",
 		"fs-extra": "^7.0.1",
-		"js-beautify": "^1.6.12",
-		"jszip": "^3.1.3",
 		"koa": "^2.7.0",
 		"koa-router": "^7.4.0",
-		"macaddress": "^0.2.9",
-		"mime": "^2.3.1",
-		"multer": "^1.2.0",
-		"rimraf": "^2.6.2",
-		"shelljs": "^0.7.5",
-		"signale": "^1.3.0",
-		"socket.io": "^2.1.1",
-		"spdy": "^4.0.0",
-		"tar-pack": "^3.1.4",
-		"tinify": "^1.3.0",
-		"uglify": "^0.1.5",
-		"uglify-es": "^3.2.1"
+		"macaddress": "^0.2.9"
 	},
 	"license": "MIT"
 }
