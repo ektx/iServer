@@ -11,14 +11,15 @@ async function send (ctx, file, opts = {}) {
     assert(ctx, 'koa context required')
     assert(file, 'file pathname required')
 
+    // 解码地址，增加对英文之外的路径支持
+    file = decodeURIComponent(file)
+
     // Try to serve the brotli version of a file automatically 
     // when brotli is supported by a client and 
     // if the requested file with .br extension exists (note, that brotli is only accepted over https). defaults to true.
     const brotli = opts.brotli !== false
     // extensions Try to match extensions from passed array to search for file when no extension is sufficed in URL. First found is served. (defaults to false)
     const extensions = Array.isArray(opts.extensions) ? opts.extensions : false
-    const format = opts.format !== false
-    const index = opts.index
     const immutable = opts.immutable || false
     const maxage = opts.maxage || 0
 
@@ -47,8 +48,6 @@ async function send (ctx, file, opts = {}) {
         encodingExt = '.gz'
     }
 
-    // console.log('encodingExt:', encodingExt)
-    // console.log('extensions:', extensions)
     // 以扩展名来获取指定文件
     if (extensions && !/\.[^/]*$/.exec(file)) {
         const list = [...extensions]
@@ -114,9 +113,9 @@ async function send (ctx, file, opts = {}) {
         ctx.set('Last-Modified', stats.mtime.toUTCString())
     if (!ctx.response.get('Cache-Control')) {
         const directives = ['max-age=' + (maxage / 1000 | 0)]
-        if (immutable) {
-            directives.push('immutable')
-        }
+
+        if (immutable) directives.push('immutable')
+
         ctx.set('Cache-Control', directives.join(','))
     }
 
