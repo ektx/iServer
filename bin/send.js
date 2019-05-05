@@ -38,8 +38,7 @@ async function send (ctx, file, opts = {}) {
         ctx.res.removeHeader('Content-Length')
         encodingExt = '.br'
     } else if (
-        ctx.acceptsEncodings('gzip', 'identity') === 'gizp' &&
-        gzip &&
+        ctx.acceptsEncodings('gzip', 'identity') === 'gzip' &&
         (await fs.exists(file + '.gz'))
     ) {
         file += '.gz'
