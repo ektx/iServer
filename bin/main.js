@@ -29,7 +29,7 @@ module.exports = async function (opts) {
 	app.use(async (ctx, next) => {
 		await next()
 		const rt = ctx.response.get('X-Response-Time')
-		console.log(`${ctx.method} ${rt} - ${ctx.url}`)
+		console.log(`${ctx.method} ${rt} - ${decodeURIComponent(ctx.url)}`)
 	})
 
 	// X-Response-Time
