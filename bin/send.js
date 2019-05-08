@@ -73,7 +73,8 @@ async function send (ctx, file, opts = {}) {
 
         if (stats.isDirectory()) {
             if (opts.from && opts.from === '*') {
-                ctx.redirect('/')
+                // SPA
+                await send(ctx, path.join(__dirname, '../web/index.html'))
                 return
             }
 
