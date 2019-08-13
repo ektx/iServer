@@ -4,9 +4,9 @@ const mime = require('mime')
 const statAsync = require('./statAsync')
 const resDefHeader = require('./resDefHeader')
 
-mime.define({
-    'text/vue': ['vue', 'VUE']
-})
+// mime.define({
+//     'text/vue': ['vue', 'VUE']
+// })
 
 /**
  * 发送文件功能

@@ -1,7 +1,7 @@
 
 const fs = require('fs-extra')
 const http = require('http')
-const spdy = require('spdy')
+const spdy = require('https')
 const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
