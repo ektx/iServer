@@ -7,24 +7,20 @@ A simple server developed using nodeJS.
 
 [TOC]
 
-## 7.5.2 更新内容
-- `FIXED` 修改ip获取不正确问题
+## 主题效果   
+支持暗夜模式与白昼模式 
 
+![主题效果](https://wx2.sinaimg.cn/large/9444af88ly1g755fd6hthj219p0u0dsi.jpg)
 
-## 7.5.0 更新内容
-- `NEW` 添加高亮hash地址显示功能
-- `IMPROVED` 升级右键菜单功能
-- `IMPROVED` 优化markdown 文档
-- `FIXED` 修复二级码生成文件地址错误问题
-
-## 功能      
-- 支持部分文件的直接预览
+- 支持 HTML、CSS、Vue、JOSN、markdown 等文件的预览
 - 支持打开本地文件目录
 - 支持快速复制文件目录  
+- 支持快速查寻功能
 - 支持预览图片
-- 支持 markdown 文件浏览
+- 支持 markdown 文件渲染
+- 支持 HTML 文件的预览
 - 支持使用二维码快速访问
-- 支持滚动历史记录
+- LightView（支持滚动历史记录）
 
 ![](http://wx3.sinaimg.cn/large/9444af88gy1fuxazeqwtcj20go0c5abm.jpg)
 
