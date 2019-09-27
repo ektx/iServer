@@ -22,15 +22,12 @@ A simple server developed using nodeJS.
 - 支持使用二维码快速访问
 - LightView（支持滚动历史记录）
 
-![](http://wx3.sinaimg.cn/large/9444af88gy1fuxazeqwtcj20go0c5abm.jpg)
-
-## 安装
+## Installation
 ```bash
 npm i -g iservers
 ```
 
-
-## 使用
+## Usage
 ```bash
 # 进入你想要作用服务器根目录的地址:
 cd yourExistingFolder
@@ -43,12 +40,12 @@ iserver -p 8000 -b
 iserver -h
 ```
 
-## 卸装
+## UnInstallation
 ```bash
 npm uni -g iservers
 ```
 
-## 功能展示 
+## Features 
 
 ### 文件预览
 可以对 html\css\js等文件文件直接查看
@@ -79,7 +76,7 @@ npm uni -g iservers
 ## 相关资料  
 
 查看 [node.js](https://nodejs.org/)  
-查看 [Express](http://expressjs.com/)  
+查看 [koa](https://koajs.com/)  
 
 
 ## License
