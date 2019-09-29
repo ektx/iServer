@@ -22,7 +22,6 @@
 	},
 	"dependencies": {
 		"assert": "^1.4.1",
-		"body-parser": "^1.18.3",
 		"commander": "^2.20.0",
 		"fs-extra": "^7.0.1",
 		"koa": "^2.7.0",
