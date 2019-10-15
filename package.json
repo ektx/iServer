@@ -1,6 +1,6 @@
 {
 	"name": "iservers",
-	"version": "8.0.1-beta3",
+	"version": "8.0.2-beta1",
 	"author": {
 		"name": "ektx",
 		"email": "530675800@qq.com"
@@ -22,11 +22,13 @@
 	},
 	"dependencies": {
 		"assert": "^1.4.1",
+		"chokidar": "^3.2.1",
 		"commander": "^2.20.0",
 		"fs-extra": "^7.0.1",
 		"koa": "^2.7.0",
 		"koa-router": "^7.4.0",
-		"macaddress": "^0.2.9"
+		"macaddress": "^0.2.9",
+		"socket.io": "^2.3.0"
 	},
 	"license": "MIT"
 }

@@ -1,5 +1,7 @@
 # API
 
+[toc]
+
 ## 目录请求
 | 地址 | 请求方式 | 备注 |
 | --- | :---: | ---|
@@ -45,7 +47,27 @@
 | --- | :---: | ---|
 | `api/isServer` | `GET` | 是否与服务器同机器，<br/>true 是；false 否 |
 
-## 是否与服务器同机器
-| 地址 | 请求方式 | 备注 |
-| --- | :---: | ---|
-| `api/serverip` | `GET` | 获取服务器IP |
+
+## Socket API
+
+### FileEvent
+返回当前系统中的文件变化情况。以下为客户端示例：
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
+<script>
+let socket = io()
+// 接收事件
+socket.on('FileEvent', msg => {
+  console.log(msg)
+})
+</script>
+```
+
+msg 返回 Object 数据内容
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| type | String | add 添加<br>change 改变<br>unlink 删除 |
+| path | string | 当前的路径 |
