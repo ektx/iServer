@@ -6,6 +6,8 @@ const Koa = require('koa')
 const routes = require('./myRoutes')
 const open = require('./open')
 const { getIPs } = require('./getIPs')
+const IO = require('./socketIO')
+const watch = require('./watch')
 
 const app = new Koa()
 
@@ -23,6 +25,11 @@ module.exports = async function (opts) {
 	} else {
 		server = http.createServer(app.callback())
 	}
+
+	// Socket.IO
+	const io = require('socket.io')(server)
+	IO(io)
+	watch(io)
 
 	app.use(routes)
 
