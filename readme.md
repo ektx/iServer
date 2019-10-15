@@ -8,7 +8,7 @@ A simple server developed using nodeJS.
 [TOC]
 
 ## 主题效果   
-支持暗夜模式与白昼模式 
+支持深色模式与白昼模式   
 
 ![主题效果](https://wx2.sinaimg.cn/large/9444af88ly1g755fd6hthj219p0u0dsi.jpg)
 

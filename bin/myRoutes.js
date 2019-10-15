@@ -4,6 +4,7 @@ const router = new Router()
 const send = require('./send')
 const opendir = require('./toOpenPath')
 const { getClientIP, getIPs } = require('./getIPs')
+const { watchAdd } = require('./watch')
 
 router
     .get('/favicon.ico', async (ctx, next) => {
@@ -25,7 +26,9 @@ router
         ctx.$next = true
         await next()
         let file = path.join(process.cwd(), ctx.query.path)
+        
         await send(ctx, file)
+        watchAdd(file)
     })
     .get('/api/opendir', async (ctx, next) => {
         ctx.$next = true
