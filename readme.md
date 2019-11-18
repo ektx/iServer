@@ -10,7 +10,7 @@ A simple server developed using nodeJS.
 ## 主题效果   
 支持深色模式与白昼模式   
 
-![主题效果](https://wx2.sinaimg.cn/large/9444af88ly1g755fd6hthj219p0u0dsi.jpg)
+![主题效果](http://ww1.sinaimg.cn/large/9444af88ly1g9270mkrdpj219p0u0jui.jpg)
 
 - 支持 HTML、CSS、Vue、JOSN、markdown 等文件的预览
 - 支持打开本地文件目录
@@ -46,6 +46,11 @@ npm uni -g iservers
 ```
 
 ## Features 
+
+### 动态监听文件的变化
+![Nov-18-2019 15-11-13.gif](http://ww1.sinaimg.cn/large/9444af88ly1g927pt321hg20hs0bfkjq.gif)
+
+同时也支持文件夹的变化监听。
 
 ### 文件预览
 可以对 html\css\js等文件文件直接查看
