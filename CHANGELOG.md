@@ -1,5 +1,9 @@
 # iServer
 
+## 8.0.3
+- `NEW` 增加暗夜模式
+- `IMPROVED` 其它细节改进
+
 ## 7.6.0
 - `NEW` 添加对 Gzip 的支持
 - `IMPROVED` 修复获取服务器IP错误问题
