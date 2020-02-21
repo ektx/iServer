@@ -15,7 +15,7 @@ A simple server developed using nodeJS.
 - 支持 HTML、CSS、Vue、JOSN、markdown 等文件的预览
 - 支持打开本地文件目录
 - 支持快速复制文件目录  
-- 支持快速查寻功能
+- 支持快速查寻功能(过滤列表功能)
 - 支持预览图片
 - 支持 markdown 文件渲染
 - 支持 HTML 文件的预览
@@ -34,7 +34,7 @@ cd yourExistingFolder
 
 # 启动:
 # 启动8000端口并在浏览器中打开服务器根目录
-iserver -p 8000 -b
+iserver
 
 # 帮助信息
 iserver -h
@@ -73,7 +73,7 @@ npm uni -g iservers
 
 | 属性 | 类型 | 说明 | 默认值 |
 |:---:|:---|:---|:---|
-| `-p` | `number` | 端口 | - |
+| `-p` | `number` | 端口 | 8080 |
 | `-s` | `boolean` | 是否要使用 https | true |
 | `-b` | `[chrome\|firefox\|ie\|opera]` | 指定打开浏览器 | 默认浏览器 |
 
