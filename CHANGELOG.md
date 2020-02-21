@@ -1,5 +1,8 @@
 # iServer
 
+## 8.0.4
+- `IMPROVED` 改善 markdown 表格显示
+
 ## 8.0.3
 - `NEW` 增加暗夜模式
 - `IMPROVED` 其它细节改进
