@@ -8,7 +8,7 @@ A simple server developed using nodeJS.
 [TOC]
 
 ## 主题效果   
-支持深色模式与白昼模式   
+支持深色主题与浅色主题   
 
 ![主题效果](http://ww1.sinaimg.cn/large/9444af88ly1g9270mkrdpj219p0u0jui.jpg)
 
@@ -33,7 +33,7 @@ npm i -g iservers
 cd yourExistingFolder
 
 # 启动:
-# 启动8000端口并在浏览器中打开服务器根目录
+# 启动 8080 端口服务
 iserver
 
 # 帮助信息
