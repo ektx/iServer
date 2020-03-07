@@ -54,19 +54,19 @@ npm uni -g iservers
 
 ### 文件预览
 可以对 html\css\js等文件文件直接查看
-![](http://wx3.sinaimg.cn/large/9444af88ly1fwo814cgurg20lw0e70w9.gif)
+![](http://ww1.sinaimg.cn/large/9444af88ly1gcliv754czg20lw0e70w9.gif)
 
 ### 打开本地文件
 在你查看的项目文件时，可以快速的打开本地地址。
-![](http://wx3.sinaimg.cn/large/9444af88gy1fvnwqugwvsg20lw0e7jyt.gif)
+![](http://ww1.sinaimg.cn/large/9444af88ly1gcliw9n4oog20lw0e7jyt.gif)
 
 ### 复制文件路径
 你可以使用右键然后选择**复制当前路径**快速得到文件地址，然后可以在你要使用的地方，粘贴出来
-![](http://wx1.sinaimg.cn/mw690/9444af88gy1fvnwr0ttkaj20h60dkq3v.jpg)
+![](http://ww1.sinaimg.cn/large/9444af88ly1gclix16aj6j20h60dk3za.jpg)
 
 ### LightView
-高亮hash定位内容，让你更容易看到内容。
-![](http://wx3.sinaimg.cn/large/9444af88gy1fxd6cp076ag20q90hzq9m.gif)
+
+点击目录或切换浏览器历史记录时，高亮定位内容，并高亮显示。
 
 ## 属性说明
 **iserver [options]**
