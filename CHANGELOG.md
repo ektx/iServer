@@ -10,6 +10,7 @@
 - `IMPROVED` 优化 markdown 代码块提示当前代码信息。
 - `IMPROVED` 优化对 golang 的支持
 - `IMPROVED` 优化对未知文件类型的支持
+- `IMPROVED` 优化二维码显示
 
 ## 8.0.4
 - `IMPROVED` 改善 markdown 表格显示
