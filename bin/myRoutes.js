@@ -14,7 +14,6 @@ router
         await next()
     })
     .get('/', async (ctx, next) => {
-        // TODO: 让主页面可配制化
         ctx.$next = true
         await next()
         await send(ctx, path.join(__dirname, '../web/index.html'))
@@ -30,7 +29,6 @@ router
         ctx.$next = true
         await next()
         let { __directory } = process.__iserverConfig
-        console.log(__directory)
         let file = path.join(__directory, ctx.query.path)
         
         await send(ctx, file)
@@ -57,15 +55,7 @@ router
         await next()
         ctx.body = (await getIPs())
     })
-    .get('*', async (ctx, next) => {
-        if (ctx.$next) {
-            await next()
-        } else {
-            await next()
-            let file = path.join(process.cwd(), ctx.path)
-            await send(ctx, file, {from: '*'})
-        }
-    })
+    .get('*', getAllFile)
     .post('/upload', koaBody({
         formidable: {
             //设置文件的默认保存目录，不设置则保存在系统临时目录下  os
@@ -96,4 +86,18 @@ router
         ctx.body = JSON.stringify(result)
     })
 
+/**
+ * 获取通用文件请求
+ * @param {*} ctx 
+ * @param {*} next 
+ */
+async function getAllFile (ctx, next) {
+    await next()
+    if (!ctx.$next) {
+        let { __directory } = process.__iserverConfig
+        let file = path.join(__directory, ctx.path)
+        
+        await send(ctx, file, {from: '*'})
+    }
+}
 module.exports = router.routes()
