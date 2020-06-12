@@ -1,6 +1,6 @@
 {
 	"name": "iservers",
-	"version": "8.0.6",
+	"version": "8.1.0",
 	"author": {
 		"name": "ektx",
 		"email": "530675800@qq.com"
@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"assert": "^1.4.1",
+		"chalk": "^4.0.0",
 		"chokidar": "^3.2.1",
 		"commander": "^2.20.0",
 		"fs-extra": "^7.0.1",

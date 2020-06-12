@@ -5,8 +5,6 @@ const assert = require('assert')
 const sendFile = require('./sendFile')
 const { basename, extname } = require('path')
 
-module.exports = send
-
 async function send (ctx, file, opts = {}) {
     assert(ctx, 'koa context required')
     assert(file, 'file pathname required')
@@ -139,3 +137,5 @@ function decode (path) {
         return -1
     }
 }
+
+module.exports = send

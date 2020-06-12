@@ -2,11 +2,12 @@ const fs = require('fs-extra')
 const path = require('path')
 const Router = require('koa-router')
 const koaBody = require('koa-body')
-const router = new Router()
 const send = require('./send')
 const opendir = require('./toOpenPath')
 const { getClientIP, getIPs } = require('./getIPs')
 const { watchAdd } = require('./watch')
+
+const router = new Router()
 
 router
     .get('/favicon.ico', async (ctx, next) => {
@@ -24,18 +25,26 @@ router
         let file = path.join(__dirname, ctx.path.replace('/@', '../web'))
         await send(ctx, file)
     })
+    // 获取文件夹下文件列表
     .get('/api/filelist', async (ctx, next) => {
         ctx.$next = true
         await next()
-        let file = path.join(process.cwd(), ctx.query.path)
+        let { __directory } = process.__iserverConfig
+        console.log(__directory)
+        let file = path.join(__directory, ctx.query.path)
         
         await send(ctx, file)
         watchAdd(file)
     })
+    // 打开对应文件的文件夹
     .get('/api/opendir', async (ctx, next) => {
         ctx.$next = true
         await next()
-        let file = ctx.query.path ? ctx.query.path : process.cwd()
+
+        let { __directory } = process.__iserverConfig
+        let { path: _p } = ctx.query.path
+        let file = _p ? _p : __directory
+
         await opendir(ctx, file)
     })
     .get('/api/isServer', async (ctx, next) => {

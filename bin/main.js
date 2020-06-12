@@ -14,6 +14,7 @@ const app = new Koa()
 module.exports = async function (opts) {
 	let server = null
 	let serverIP = await getIPs()
+	process.__iserverConfig = opts
 	
 	if (opts.https) {
 		const sslOpts = {
@@ -54,7 +55,6 @@ module.exports = async function (opts) {
 
 	// CROS
 	app.use(async (ctx, next) => {
-		// const allowMethos = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
 		await next()
 		ctx.set('Access-Control-Allow-Origin', '*')
 		ctx.set('Access-Control-Max-Age', 86400)
@@ -62,7 +62,7 @@ module.exports = async function (opts) {
 	})
 	
 	// server info
-	app.use(async (ctx, next) => {
+	app.use(async ctx => {
 		ctx.set('Server', `iServer ${opts.version}`)
 	})
 
@@ -76,8 +76,6 @@ module.exports = async function (opts) {
 		console.log(`  - Local:   ${local}`)
 		console.log(`  - Network: ${network}`)
 
-		if (opts.browser) {
-			open(local, opts.browser)
-		}
+		if (opts.browser) open(local, opts.browser)
 	})
 }
