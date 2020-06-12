@@ -70,8 +70,9 @@ async function send (ctx, file, opts = {}) {
         stats = await fs.stat(file)
 
         if (stats.isDirectory()) {
+            // 在访问非根路径(eg:localhost:8080/abc)时
             if (opts.from && opts.from === '*') {
-                // SPA
+                // 先返回 SPA 主页面
                 await send(ctx, path.join(__dirname, '../web/index.html'))
                 return
             }
