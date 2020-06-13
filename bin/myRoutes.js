@@ -100,4 +100,5 @@ async function getAllFile (ctx, next) {
         await send(ctx, file, {from: '*'})
     }
 }
+
 module.exports = router.routes()
