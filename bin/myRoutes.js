@@ -1,4 +1,4 @@
-const fs = require('fs-extra')
+const fs = require('fs')
 const path = require('path')
 const Router = require('koa-router')
 const koaBody = require('koa-body')
@@ -56,7 +56,7 @@ router
         ctx.body = (await getIPs())
     })
     .get('*', getAllFile)
-    .post('/upload', koaBody({
+    .post('/api/upload', koaBody({
         formidable: {
             //设置文件的默认保存目录，不设置则保存在系统临时目录下  os
             uploadDir: path.resolve(__dirname, '../tem')
