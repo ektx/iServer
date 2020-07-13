@@ -1,4 +1,4 @@
-const fs = require('fs-extra')
+const fs = require('fs')
 const http = require('http')
 const http2 = require('http2')
 const path = require('path')
