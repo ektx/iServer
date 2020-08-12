@@ -4,7 +4,7 @@ const Router = require('koa-router')
 const koaBody = require('koa-body')
 const send = require('./send')
 const opendir = require('./toOpenPath')
-const { getClientIP, getIPs } = require('./getIPs')
+const { isServer, getIPs } = require('./getIPs')
 const { watchAdd } = require('./watch')
 
 const router = new Router()
@@ -48,7 +48,9 @@ router
     .get('/api/isServer', async (ctx, next) => {
         ctx.$next = true
         await next()
-        ctx.body = (await getClientIP(ctx)).isServer
+        let ip = ctx.request.ip
+
+        ctx.body = await isServer(ip)
     })
     .get('/api/serverip', async (ctx, next) => {
         ctx.$next = true
