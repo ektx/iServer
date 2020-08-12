@@ -1,59 +1,44 @@
 const os = require('os')
 const macaddress = require('macaddress')
 
-async function getMacAdd () {
-	return new Promise((resolve, reject) => {
-		macaddress.one((err, mac) => {
-			if (err) {
-				reject(err)
-				return
-			}
-			resolve(mac)
-		})
-	})
-}
-
 /**
  * 获取当前服务器的 IP
  * @returns 返回 IPv4 与 IPv6
  */
 async function getIPs () {
-	const mac = await getMacAdd()
-	const ip = {}
-	const ips = os.networkInterfaces()
-	
-	for (let key in ips) {
-		ips[key].forEach(item => {
-			if (item.mac === mac) {
-				ip[item.family] = item.address
-			}
-		})
-	}
-	
-	return ip
+  const mac = await macaddress.one()
+  const ip = {}
+  const ips = os.networkInterfaces()
+
+  for (let key in ips) {
+    ips[key].forEach(item => {
+      if (item.mac === mac) {
+        ip[item.family] = item.address
+      }
+    })
+  }
+
+  return ip
 }
 
 exports.getIPs = getIPs
 
 /**
- * 得到客户端 IP
- * @param {Context} ctx koa context
+ * 是否在服务器端
+ * @param {String} ip 客户端 IP 地址
  */
-async function getClientIP (ctx) {
-	let isServer = false
-	let ip = ctx.request.ip
+async function isServer (ip) {
+  let isServer = false
 
-	if (['::ffff:127.0.0.1', '127.0.0.1','::1'].includes(ip))
-		isServer = true
-	else {
-		ip = ip.match(/\d.+/)[0]; 
-		isServer = await getIPs().IPv4 === ip
-	}
+  if (['::ffff:127.0.0.1', '127.0.0.1','::1'].includes(ip)) {
+    isServer = true
+  } else {
+    let ipv4 = ip.match(/\d.+/)[0]
 
-	return {
-		ip,
-		isServer // 是否请求来自服务器
-	}
+    isServer = (await getIPs()).IPv4 === ipv4
+  }
+
+  return isServer
 }
 
-exports.getClientIP = getClientIP
+exports.isServer = isServer
