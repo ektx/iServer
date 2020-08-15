@@ -45,18 +45,8 @@ router
 
         await opendir(ctx, file)
     })
-    .get('/api/isServer', async (ctx, next) => {
-        ctx.$next = true
-        await next()
-        let ip = ctx.request.ip
-
-        ctx.body = await isServer(ip)
-    })
-    .get('/api/serverip', async (ctx, next) => {
-        ctx.$next = true
-        await next()
-        ctx.body = (await getIPs())
-    })
+    .get('/api/isServer', getServerStatus)
+    .get('/api/serverIP', serverIP)
     .get('*', getAllFile)
     .post('/api/upload', koaBody({
         formidable: {
@@ -100,6 +90,26 @@ async function getAllFile (ctx, next) {
         let file = path.join(__directory, ctx.path)
         
         await send(ctx, file, {from: '*'})
+    }
+}
+
+async function getServerStatus (ctx, next) {
+    ctx.$next = true
+    await next()
+    let ip = ctx.request.ip
+
+    ctx.body = {
+        status: 'success',
+        data: await isServer(ip)
+    }
+}
+
+async function serverIP (ctx, next) {
+    ctx.$next = true
+    await next()
+    ctx.body = {
+        status: 'success',
+        data: (await getIPs())
     }
 }
 
