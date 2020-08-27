@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const Router = require('koa-router')
+const Router = require('@koa/router')
 const koaBody = require('koa-body')
 const send = require('./send')
 const opendir = require('./toOpenPath')
@@ -18,7 +18,7 @@ router
         await next()
         await send(ctx, path.join(__dirname, '../web/index.html'))
     })
-    .get('/@/*', async (ctx, next) => {
+    .get('/@/(.*)', async (ctx, next) => {
         ctx.$next = true
         await next()
         let file = path.join(__dirname, ctx.path.replace('/@', '../web'))
@@ -47,7 +47,7 @@ router
     })
     .get('/api/isServer', getServerStatus)
     .get('/api/serverIP', serverIP)
-    .get('*', getAllFile)
+    .get('(.*)', getAllFile)
     .post('/api/upload', koaBody({
         formidable: {
             //设置文件的默认保存目录，不设置则保存在系统临时目录下  os
