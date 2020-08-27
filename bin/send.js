@@ -1,23 +1,16 @@
-// https://github.com/koajs/send/blob/master/index.js
 const fs = require('fs-extra')
 const path = require('path')
-const assert = require('assert')
 const sendFile = require('./sendFile')
-const { basename, extname } = require('path')
+const { basename, extname, join } = require('path')
 
 async function send (ctx, file, opts = {}) {
-    assert(ctx, 'koa context required')
-    assert(file, 'file pathname required')
-
     // 解码地址，增加对英文之外的路径支持
     file = decodeURIComponent(file)
 
     // Try to serve the brotli version of a file automatically 
     // when brotli is supported by a client and 
     // if the requested file with .br extension exists (note, that brotli is only accepted over https). defaults to true.
-    const brotli = opts.brotli !== false
-    // extensions Try to match extensions from passed array to search for file when no extension is sufficed in URL. First found is served. (defaults to false)
-    const extensions = Array.isArray(opts.extensions) ? opts.extensions : false
+    // const brotli = opts.brotli !== false
     const immutable = opts.immutable || false
     const maxage = opts.maxage || 0
 
@@ -28,7 +21,7 @@ async function send (ctx, file, opts = {}) {
     let encodingExt = ''
     if (
         ctx.acceptsEncodings('br', 'identity') === 'br' && 
-        brotli &&
+        // brotli &&
         (await fs.exists(file + '.br'))
     ) {
         file += '.br'
@@ -43,26 +36,6 @@ async function send (ctx, file, opts = {}) {
         ctx.set('Content-Encoding', 'gzip')
         ctx.res.removeHeader('Content-Length')
         encodingExt = '.gz'
-    }
-
-    // 以扩展名来获取指定文件
-    if (extensions && !/\.[^/]*$/.exec(file)) {
-        const list = [...extensions]
-
-        for (let i = 0; i < list.length; i++) {
-            let ext = list[i]
-            if (typeof ext !== 'string') {
-                throw new TypeError('option extensions must be array of strings or false')
-            }
-
-            if (!/^\./.exec(ext)) ext = '.' + ext
-            
-            // 判断文件是否存在 
-            if (await fs.exists(file + ext)) {
-                file += ext
-                break
-            }
-        }
     }
 
     let stats

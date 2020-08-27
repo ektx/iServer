@@ -21,14 +21,13 @@
 		"iserver": "index.js"
 	},
 	"dependencies": {
-		"assert": "^1.4.1",
+		"@koa/router": "^9.4.0",
 		"chalk": "^4.0.0",
-		"chokidar": "^3.2.1",
-		"commander": "^2.20.0",
+		"chokidar": "^3.4.2",
+		"commander": "^6.0.0",
 		"fs-extra": "^7.0.1",
 		"koa": "^2.7.0",
 		"koa-body": "^4.1.1",
-		"koa-router": "^7.4.0",
 		"macaddress": "^0.5.1",
 		"socket.io": "^2.3.0"
 	},
