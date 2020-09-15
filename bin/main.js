@@ -78,4 +78,8 @@ module.exports = async function (opts) {
 
 		if (opts.browser) open(local, opts.browser)
 	})
+
+	server.on('error', err => {
+		console.log('❌', err)
+	})
 }
