@@ -4,7 +4,6 @@ import chalk from 'chalk'
 import program from 'commander'
 import { version } from '../package.json'
 
-console.log(111)
 program
 	.version(version)
 	.option('-b, --browser [name]', 'turn on the server and open the specified browser, name as [chrome|firefox|ie|opera]')
