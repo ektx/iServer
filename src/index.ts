@@ -28,7 +28,7 @@ program.parse(process.argv)
 let { directory, port, watch } = program
 
 // 默认端口为 8080
-program.port = typeof port === 'string' ? parseInt(port) : 8080
+program.port = typeof port === 'string' ? parseInt(port) : 8000
 
 // 默认监听用户浏览器访问目录
 // 0 不使用文件监听功能，文件的变化，系统不提示

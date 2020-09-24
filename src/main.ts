@@ -13,7 +13,7 @@ import WebSocket from 'ws'
 
 const app = new Koa()
 
-module.exports = async function (opts: any) {
+export default async function (opts: any) {
 	let server = null
 	// let serverIP = await getIPs()
 	// process.__iserverConfig = opts
