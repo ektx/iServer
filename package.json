@@ -20,8 +20,12 @@
     "http2"
   ],
   "bin": {
-    "iserver": "index.js"
+    "iserver": "bin/iserver.js"
   },
+  "files": [
+    "bin",
+    "dist"
+  ],
   "dependencies": {
     "@koa/router": "^9.4.0",
     "chalk": "^4.0.0",
