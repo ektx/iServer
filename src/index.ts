@@ -3,6 +3,7 @@ import path from 'path'
 import chalk from 'chalk'
 import program from 'commander'
 import { version } from '../package.json'
+import main from './main'
 
 program
 	.version(version)
@@ -18,7 +19,7 @@ program.on('--help', () => {
 
   Use Option:
     
-    eg: Start the server and open the default browser: 
+    eg: Start the server and open the default browser 
     iserver -p 9000 -b
 `)
 })
@@ -28,7 +29,7 @@ program.parse(process.argv)
 let { directory, port, watch } = program
 
 // 默认端口为 8080
-program.port = typeof port === 'string' ? parseInt(port) : 8000
+program.port = typeof port === 'string' ? parseInt(port) : 8080
 
 // 默认监听用户浏览器访问目录
 // 0 不使用文件监听功能，文件的变化，系统不提示
@@ -43,7 +44,7 @@ program.__directory = path.join(process.cwd(), program.directory)
 // 判断目录是否存在，不存在时关闭
 if (fs.existsSync(program.__directory)) {
   // 启动
-  // main({...program, version})
+  main({...program, version})
 } else {
   console.log(chalk.red(`⚠️ ${program.__directory} 不存在`))
 }

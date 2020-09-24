@@ -1,10 +1,9 @@
-
 import fs from 'fs'
 import http from 'http'
 import http2 from 'http2'
 import path from 'path'
 import Koa from 'koa'
-import WebSocket from 'ws'
+// import WebSocket from 'ws'
 // import { watchInit } from './watch'
 // import routes from './myRoutes'
 // import open = require('./open')
