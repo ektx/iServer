@@ -5,7 +5,7 @@ import path from 'path'
 import Koa from 'koa'
 // import WebSocket from 'ws'
 // import { watchInit } from './watch'
-// import routes from './myRoutes'
+import routes from './route'
 // import open = require('./open')
 // import { getIPs } = require('./getIPs')
 // import IO = require('./socketIO')
@@ -38,7 +38,7 @@ export default async function (opts: any) {
 		// watchInit(io, 0)
 	}
 
-	// app.use(routes)
+	app.use(routes)
 
 	app.use(async (ctx, next) => {
 		await next()
