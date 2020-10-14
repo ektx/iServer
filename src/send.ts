@@ -16,7 +16,7 @@ export default async function(
 
   // 解码地址，增加对英文之外的路径支持
   file = decode(file)
-console.log(file)
+
   if (file === -1) return ctx.throw(400, '解析失败')
 
   // 文件是否存在及是否为文件
@@ -25,7 +25,9 @@ console.log(file)
     stats = await fs.promises.stat(file)
 
     if (stats.isDirectory()) {
-      return ctx.throw(400, 'It is directory, not file!')
+      ctx.status = 404
+      ctx.body = 'It is directory, not file!'
+      return
     }
   } catch (err) {
     const notfound = ['ENOENT', 'ENAMETOOLONG', 'ENOTDIR']
