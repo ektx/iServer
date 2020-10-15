@@ -39,12 +39,12 @@ program.watch = typeof watch === 'string' ? parseInt(watch) : 1
 
 program.directory = typeof directory === 'string' ? directory : '/'
 // 设置项目的目录地址
-program.__directory = path.join(process.cwd(), program.directory)
+program.webRoot = path.join(process.cwd(), program.directory)
 
 // 判断目录是否存在，不存在时关闭
-if (fs.existsSync(program.__directory)) {
+if (fs.existsSync(program.webRoot)) {
   // 启动
   main({...program, version})
 } else {
-  console.log(chalk.red(`⚠️ ${program.__directory} 不存在`))
+  console.log(chalk.red(`⚠️ ${program.webRoot} 不存在`))
 }

@@ -50,7 +50,7 @@ export default async function (opts: any) {
 
   app.use(async (ctx, next) => {
     console.log('设置全局配制信息')
-    ctx.set('ServerRoot', opts.__directory)
+    ctx.set('ServerRoot', opts.webRoot)
     await next()
   })
 

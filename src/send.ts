@@ -1,9 +1,9 @@
 // 参考：https://github.com/koajs/send/blob/master/index.js
 import fs from 'fs'
 import { Context } from 'koa'
-import { extname, basename } from 'path'
+import { extname, basename, join } from 'path'
 
-export default async function(
+export default async function send(
   ctx: Context, 
   file: any, 
   opts: any = {}
@@ -25,8 +25,9 @@ export default async function(
     stats = await fs.promises.stat(file)
 
     if (stats.isDirectory()) {
-      ctx.status = 404
-      ctx.body = 'It is directory, not file!'
+      // ctx.status = 404
+      // ctx.body = 'It is directory, not a file!'
+      await send(ctx, join(__dirname, '../../web/index.html'))
       return
     }
   } catch (err) {
@@ -56,7 +57,7 @@ export default async function(
 
   if (!ctx.type) ctx.type = type(file, encodingExt)
 
-  ctx.body = fs.createReadStream(file)
+  sendRangeFile(ctx, file, stats)
 } 
 
 function type (file: string, ext: string) {
@@ -69,4 +70,50 @@ function decode(path: string): string | number {
   } catch(err) {
     return -1
   }
+}
+
+function sendRangeFile(
+  ctx: Context, 
+  file: string,
+  stats: fs.Stats
+) {
+  if (ctx.header.range) {
+    const { size } = stats
+    let {start, end} = getRange(ctx.header.range)
+console.log(start, end )
+    end = end ? end : size -1
+
+    if (start >= size || end >= size) {
+      ctx.status = 416
+      return ctx.set('Content-Range', `bytes */${size}`)
+    }
+    // 206 部分响应
+    ctx.status = 206
+    ctx.set('Content-Range', `bytes ${start}-${end}/${size}`)
+    ctx.body = fs.createReadStream(file, {start, end})
+  } else {
+    ctx.set('Accept-Ranges', 'bytes')
+    ctx.body = fs.createReadStream(file)
+  }
+}
+
+interface RangeObj {
+  start: number;
+  end: number;
+}
+
+function getRange(range: string): any  {
+  let obj: RangeObj = {
+    start: 0,
+    end: 0
+  }
+
+  let match = /bytes=([0-9]*)-([0-9]*)/.exec(range)
+
+  if (match) {
+    if (match[1]) obj.start = Number(match[1])
+    if (match[2]) obj.end = Number(match[2])
+  }
+
+  return obj
 }
