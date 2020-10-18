@@ -80,7 +80,6 @@ function sendRangeFile(
   if (ctx.header.range) {
     const { size } = stats
     let {start, end} = getRange(ctx.header.range)
-console.log(start, end )
     end = end ? end : size -1
 
     if (start >= size || end >= size) {
