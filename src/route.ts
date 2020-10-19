@@ -10,19 +10,20 @@ const router = new Router()
 
 router
   .get('/', async (ctx: Context, next): Promise<void> => {
-    console.log('Root')
     await next()
     await send(ctx, join(__dirname, '../../web/index.html'))
   })
   .get('(.*)', async (ctx, next) => {
-    console.log('Get All')
     let file: string = ''
     await next()
     
+    // 访问服务器上的系统资源
     if (ctx.path.startsWith('/@/')) {
       file = ctx.path.replace('/@', '../../web')
       await send(ctx, join(__dirname, file))
-    } else {
+    } 
+    // 访问服务启动处文件
+    else {
       let root = ctx.response.get('ServerRoot')
       await send(ctx, join(root, '../', ctx.path))
     }
