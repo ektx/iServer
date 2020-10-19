@@ -3,13 +3,17 @@ import fs from 'fs'
 import { Context } from 'koa'
 import { extname, basename, join } from 'path'
 
+/**
+ * 发送指定的文件
+ * @param ctx 上下文
+ * @param file 文件地址
+ * @param opts 配制选择
+ */
 export default async function send(
   ctx: Context, 
   file: any, 
   opts: any = {}
 ): Promise<void> {
-  // 结尾是否为 /
-  // const trailingSlash: boolean = file[file.length - 1] === '/'
   const immutable = opts.immutable || false
   const maxage = opts.maxage || 0
   let encodingExt = ''
@@ -25,8 +29,7 @@ export default async function send(
     stats = await fs.promises.stat(file)
 
     if (stats.isDirectory()) {
-      // ctx.status = 404
-      // ctx.body = 'It is directory, not a file!'
+      // 是目前就发送默认页面给客户端
       await send(ctx, join(__dirname, '../../web/index.html'))
       return
     }
@@ -64,6 +67,10 @@ function type (file: string, ext: string) {
   return ext !== '' ? extname(basename(file, ext)) : extname(file)
 }
 
+/**
+ * 解码 url 地址
+ * @param path url地址
+ */
 function decode(path: string): string | number {
   try {
     return decodeURIComponent(path)
@@ -76,7 +83,7 @@ function sendRangeFile(
   ctx: Context, 
   file: string,
   stats: fs.Stats
-) {
+): void {
   if (ctx.header.range) {
     const { size } = stats
     let {start, end} = getRange(ctx.header.range)
@@ -101,7 +108,11 @@ interface RangeObj {
   end: number;
 }
 
-function getRange(range: string): any  {
+/**
+ * 获取起止位置
+ * @param range 
+ */
+function getRange(range: string): RangeObj  {
   let obj: RangeObj = {
     start: 0,
     end: 0
