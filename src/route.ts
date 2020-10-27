@@ -14,7 +14,7 @@ router
     await send(ctx, join(__dirname, '../../web/index.html'))
   })
   .get('(.*)', async (ctx, next) => {
-    let file: string = ''
+    let file = ''
     await next()
     
     // 访问服务器上的系统资源

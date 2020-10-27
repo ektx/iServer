@@ -3,6 +3,10 @@ import fs from 'fs'
 import { Context } from 'koa'
 import { extname, basename, join } from 'path'
 
+interface Options {
+  immutable?: boolean,
+  maxage?: number
+}
 /**
  * 发送指定的文件
  * @param ctx 上下文
@@ -12,7 +16,7 @@ import { extname, basename, join } from 'path'
 export default async function send(
   ctx: Context, 
   file: any, 
-  opts: any = {}
+  opts: Options = {}
 ): Promise<void> {
   const immutable = opts.immutable || false
   const maxage = opts.maxage || 0
@@ -24,7 +28,7 @@ export default async function send(
   if (file === -1) return ctx.throw(400, '解析失败')
 
   // 文件是否存在及是否为文件
-  let stats
+  let stats: fs.Stats
   try {
     stats = await fs.promises.stat(file)
 
@@ -63,7 +67,7 @@ export default async function send(
   sendRangeFile(ctx, file, stats)
 } 
 
-function type (file: string, ext: string) {
+function type (file: string, ext: string): string {
   return ext !== '' ? extname(basename(file, ext)) : extname(file)
 }
 

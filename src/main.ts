@@ -84,8 +84,8 @@ export default async function (opts: any) {
   })
 
   server.listen(opts.port, async () => {
-    let protocol: string = opts.https ? 'https' : 'http'
-    let local: string = `${protocol}://localhost:${opts.port}`
+    let protocol = opts.https ? 'https' : 'http'
+    let local = `${protocol}://localhost:${opts.port}`
     // let network = `${protocol}://${serverIP.IPv4}:${opts.port}`
     
     console.log(`\niServer v${opts.version}`)
