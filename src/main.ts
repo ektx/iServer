@@ -51,7 +51,11 @@ export default async function (opts: any) {
   app.use(async (ctx, next) => {
     console.log('设置全局配制信息')
     ctx.set('ServerRoot', opts.webRoot)
+    ctx.set('ServerDirname', opts.dirname)
+    // ctx.$serverRoot = opts.webRoot
     await next()
+    ctx.remove('ServerRoot')
+    ctx.remove('ServerDirname')
   })
 
   app.use(routes)

@@ -40,7 +40,8 @@ program.watch = typeof watch === 'string' ? parseInt(watch) : 1
 program.directory = typeof directory === 'string' ? directory : '/'
 // 设置项目的目录地址
 program.webRoot = path.join(process.cwd(), program.directory)
-
+// 服务器目录地址
+program.dirname = path.join(__dirname, '../../web/')
 // 判断目录是否存在，不存在时关闭
 if (fs.existsSync(program.webRoot)) {
   // 启动

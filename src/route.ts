@@ -4,7 +4,7 @@ import Router from '@koa/router'
 import { Context } from 'koa'
 // import koaBody from 'koa-body'
 import send from './send'
-import { join } from 'path'
+import { join, relative } from 'path'
 
 const router = new Router()
 
@@ -14,17 +14,26 @@ router
     await send(ctx, join(__dirname, '../../web/index.html'))
   })
   .get('(.*)', async (ctx, next) => {
+    let root = ctx.response.get('ServerRoot')
+    let dirname = ctx.response.get('ServerDirname')
     let file = ''
     await next()
     
     // 访问服务器上的系统资源
     if (ctx.path.startsWith('/@/')) {
       file = ctx.path.replace('/@', '../../web')
-      await send(ctx, join(__dirname, file))
+      file = join(__dirname, file)
+
+      // 处理非法路径访问
+      if (file.startsWith(dirname)) {
+        await send(ctx, file)
+      } else {
+        ctx.status = 403
+        ctx.body = '无法访问'
+      }
     } 
     // 访问服务启动处文件
     else {
-      let root = ctx.response.get('ServerRoot')
       await send(ctx, join(root, '../', ctx.path))
     }
   })
