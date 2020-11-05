@@ -1,7 +1,8 @@
 // 参考：https://github.com/koajs/send/blob/master/index.js
 import fs from 'fs'
 import { Context } from 'koa'
-import { extname, basename, join } from 'path'
+import { join } from 'path'
+import { type } from './utils'
 
 interface Options {
   immutable?: boolean,
@@ -41,7 +42,7 @@ export default async function send(
     const notfound = ['ENOENT', 'ENAMETOOLONG', 'ENOTDIR']
 
     if(notfound.includes(err.code)) {
-      ctx.status = 403
+      ctx.status = 404
       ctx.body = `404\n${err}`
       return
     }
@@ -66,10 +67,6 @@ export default async function send(
 
   sendRangeFile(ctx, file, stats)
 } 
-
-function type (file: string, ext: string): string {
-  return ext !== '' ? extname(basename(file, ext)) : extname(file)
-}
 
 /**
  * 解码 url 地址

@@ -7,19 +7,19 @@ import main from './main'
 
 program
 	.version(version)
-	.option('-b, --browser [name]', 'turn on the server and open the specified browser, name as [chrome|firefox|ie|opera]')
-	.option('-p, --port [port]', 'set server port, default 8080')
-  .option('-s, --https', 'use HTTPS ,default HTTP')
+	.option('-b, --browser [name]', '在浏览器中启动，如 [chrome|firefox|ie|opera]')
+	.option('-p, --port [port]', '设置服务器端口 8080')
+  .option('-s, --https', '开启 HTTPS 服务')
   .option('-w, --watch [value]', '0 关闭监听, 1 浏览器访问目录, 2 所有文件')
   .option('-d, --directory [path]', '设置服务根目录，默认为当前目录')
 
 program.on('--help', () => {
 	console.log(`
-  Quick Strat: iserver
+  快速启动: iserver
 
-  Use Option:
+  设置:
     
-    eg: Start the server and open the default browser 
+    在默认浏览器中打开端口 9000 服务 
     iserver -p 9000 -b
 `)
 })
