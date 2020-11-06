@@ -21,7 +21,7 @@ router
     
     path = join(root, path)
     let files = await fs.promises.readdir(path)
-console.log(path, root)
+
     if (path.startsWith(root)) {
       let list = files.map(async file => {
         let _path = join(path, file)
