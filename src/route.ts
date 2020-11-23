@@ -14,6 +14,7 @@ router
     await next()
     await send(ctx, join(__dirname, '../../web/index.html'))
   })
+  // eg:/api/files?path=/ 
   .get('/api/files', async(ctx: Context, next): Promise<void> => {
     await next()
     let root = ctx.response.get('ServerRoot')
