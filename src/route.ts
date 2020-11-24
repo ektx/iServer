@@ -35,6 +35,7 @@ router
           extname: type(_path, '')
         }
       })
+      ctx.status = 200
       ctx.body = await Promise.all(list)
     } else {
       ctx.status = 403
