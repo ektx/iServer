@@ -3,7 +3,12 @@ import { Context } from 'koa'
 // import koaBody from 'koa-body'
 import send from './send'
 import { join } from 'path'
-import { getFile, getFileList, isOnServer } from './route/main'
+import { 
+  getFile, 
+  getFileList, 
+  isOnServer,
+  openPath
+} from './route/main'
 
 const router = new Router()
 
@@ -15,6 +20,7 @@ router
   .get('/api/files', getFileList)
   .get('/api/getFile', getFile)
   .get('/api/isServer', isOnServer)
+  .get('/api/open', openPath)
   .get('(.*)', async (ctx, next) => {
     let root = ctx.response.get('ServerRoot')
     let dirname = ctx.response.get('ServerDirname')

@@ -13,7 +13,7 @@ async function getIPS() {
   for (let key in ips) {
     ips[key].forEach(item => {
       if (item.mac === mac) {
-        ip[item.family] = item.address
+        (<any>ip)[item.family] = item.address
       }
     })
   }
@@ -27,7 +27,7 @@ async function isServer(ip: string) {
   if (['::ffff:127.0.0.1', '127.0.0.1','::1'].includes(ip)) {
     result = true
   } else {
-    let ipv4 = ip.match(/\d.+/)[0]
+    let ipv4 = (<any>ip).match(/\d.+/)[0]
 
     result = (<any>(await getIPS())).IPv4 === ipv4
   }
