@@ -3,6 +3,7 @@ import { join } from 'path'
 import fs from 'fs'
 import send from '../send'
 import { type } from '../utils'
+import { isServer } from '../ip'
 
 interface Query {
   path: string
@@ -60,4 +61,13 @@ export async function getFile (ctx: Context, next: Next): Promise<void> {
   path = join(root, path)
 
   isSafePath(ctx, path) && await send(ctx, path)
+}
+
+export async function isOnServer(ctx: Context, next: Next) {
+  await next();
+
+  ctx.body = {
+    status: 'success',
+    data: await isServer(ctx.request.ip)
+  }
 }

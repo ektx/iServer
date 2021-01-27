@@ -3,7 +3,7 @@ import { Context } from 'koa'
 // import koaBody from 'koa-body'
 import send from './send'
 import { join } from 'path'
-import { getFile, getFileList } from './route/main'
+import { getFile, getFileList, isOnServer } from './route/main'
 
 const router = new Router()
 
@@ -14,6 +14,7 @@ router
   })
   .get('/api/files', getFileList)
   .get('/api/getFile', getFile)
+  .get('/api/isServer', isOnServer)
   .get('(.*)', async (ctx, next) => {
     let root = ctx.response.get('ServerRoot')
     let dirname = ctx.response.get('ServerDirname')
@@ -21,7 +22,7 @@ router
     await next()
 
     console.log('root >>>',root)
-    console.log('dirname >>>',dirname)
+    console.log('dirname >> >>>',dirname)
     
     // 访问服务器上的系统资源
     if (ctx.path.startsWith('/@/')) {
