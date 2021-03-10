@@ -7,14 +7,14 @@ import Koa from 'koa'
 // import { watchInit } from './watch'
 import routes from './route'
 // import open = require('./open')
-// import { getIPs } = require('./getIPs')
+import { getIPs } from './ip'
 // import IO = require('./socketIO')
 
 const app = new Koa()
 
 export default async function (opts: any) {
   let server = null
-  // let serverIP = await getIPs()
+  let serverIP = await getIPs()
   // process.__iserverConfig = opts
   
   if (opts.https) {
@@ -90,12 +90,12 @@ export default async function (opts: any) {
   server.listen(opts.port, async () => {
     let protocol = opts.https ? 'https' : 'http'
     let local = `${protocol}://localhost:${opts.port}`
-    // let network = `${protocol}://${serverIP.IPv4}:${opts.port}`
+    let network = `${protocol}://${serverIP.IPv4}:${opts.port}`
     
     console.log(`\niServer v${opts.version}`)
     console.log(`Server Running at:\n`)
     console.log(`  - Local:   ${local}`)
-    // console.log(`  - Network: ${network}`)
+    console.log(`  - Network: ${network}`)
 
     if (opts.browser) open(local, opts.browser)
   })
