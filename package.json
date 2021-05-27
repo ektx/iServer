@@ -11,8 +11,7 @@
     "url": "https://github.com/ektx/iServer.git"
   },
   "scripts": {
-    "dev": "tsc -w --incremental",
-    "changeLog": "conventional-changelog -p angular -i CHANGELOG.md -s"
+    "dev": "tsc -w --incremental"
   },
   "keywords": [
     "node.js",
@@ -45,8 +44,6 @@
     "@types/koa": "^2.11.4",
     "@types/koa__router": "^8.0.2",
     "@types/ws": "^7.2.6",
-    "commitizen": "^4.2.3",
-    "conventional-changelog-cli": "^2.1.1",
     "typescript": "^4.0.3"
   }
 }

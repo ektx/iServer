@@ -4,7 +4,7 @@ import http2 from 'http2'
 import path from 'path'
 import Koa from 'koa'
 // import WebSocket from 'ws'
-// import { watchInit } from './watch'
+import { watch } from './watch'
 import routes from './route'
 // import open = require('./open')
 import { getIPs } from './ip'
@@ -37,6 +37,7 @@ export default async function (opts: any) {
   } else {
     // watchInit(io, 0)
   }
+  watch(opts.webRoot)
 
   app.use(async (ctx, next) => {
     console.log(900000)

@@ -7,7 +7,7 @@ let watcher = null
 let timer = null
 let initLevel = undefined
 
-function watchDir (addr, depth) {
+function watchDir (addr, depth = 99) {
   watcher = chokidar.watch(addr, {
     ignored: filePath => {
       if (
